@@ -53,7 +53,8 @@ void CDriver::PythonInterface_Preprocessing(){
     }
     geometry_container[iZone][MESH_0]->UpdateCustomBoundaryConditions(geometry_container[iZone], config_container[iZone]);
 
-    if ((config_container[iZone]->GetKind_Solver() == EULER) ||
+    if ((config_container[iZone]->GetKind_Solver() == IMPACT) ||
+        (config_container[iZone]->GetKind_Solver() == EULER) ||
         (config_container[iZone]->GetKind_Solver() == NAVIER_STOKES) ||
         (config_container[iZone]->GetKind_Solver() == RANS)) {
 
@@ -801,7 +802,7 @@ void CGeneralDriver::ResetConvergence() {
 
   switch (config_container[ZONE_0]->GetKind_Solver()) {
 
-    case EULER: case NAVIER_STOKES: case RANS:
+    case EULER: case NAVIER_STOKES: case RANS: case IMPACT:
     integration_container[ZONE_0][FLOW_SOL]->SetConvergence(false);
       if (config_container[ZONE_0]->GetKind_Solver() == RANS) integration_container[ZONE_0][TURB_SOL]->SetConvergence(false);
       if(config_container[ZONE_0]->GetKind_Trans_Model() == LM) integration_container[ZONE_0][TRANS_SOL]->SetConvergence(false);
@@ -895,7 +896,7 @@ void CFluidDriver::ResetConvergence() {
   for(iZone = 0; iZone < nZone; iZone++) {
     switch (config_container[iZone]->GetKind_Solver()) {
 
-    case EULER: case NAVIER_STOKES: case RANS:
+    case EULER: case NAVIER_STOKES: case RANS: case IMPACT:
       integration_container[iZone][FLOW_SOL]->SetConvergence(false);
       if (config_container[iZone]->GetKind_Solver() == RANS) integration_container[iZone][TURB_SOL]->SetConvergence(false);
       if(config_container[iZone]->GetKind_Trans_Model() == LM) integration_container[iZone][TRANS_SOL]->SetConvergence(false);
