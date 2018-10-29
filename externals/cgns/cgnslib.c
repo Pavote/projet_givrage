@@ -164,7 +164,7 @@ const char * PointSetTypeName[NofValidPointSetTypes] =
     };
 const char * GoverningEquationsTypeName[NofValidGoverningEquationsTypes]=
     {"Null", "UserDefined",
-     "FullPotential", "Euler", "NSLaminar",
+     "FullPotential", "Euler", "Impact", "NSLaminar",
      "NSTurbulent", "NSLaminarIncompressible",
      "NSTurbulentIncompressible"
     };

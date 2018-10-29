@@ -25,11 +25,11 @@
   3. This notice may not be removed or altered from any source distribution.
 
  * -------------------------------------------------------------------------
- * 
+ *
  *  DEVELOPER'S NOTE:
- *    When adding a defined constant to this file, also add the same defined 
+ *    When adding a defined constant to this file, also add the same defined
  *    constant to cgns_f.F90
- *          
+ *
  * ------------------------------------------------------------------------- */
 
 #ifndef CGNSLIB_H
@@ -336,7 +336,8 @@ typedef enum {
   CGNS_ENUMV( NSLaminar ) =4,
   CGNS_ENUMV( NSTurbulent ) =5,
   CGNS_ENUMV( NSLaminarIncompressible ) =6,
-  CGNS_ENUMV( NSTurbulentIncompressible ) =7
+  CGNS_ENUMV( NSTurbulentIncompressible ) =7,
+  CGNS_ENUMV( Impact ) =8
 } CGNS_ENUMT( GoverningEquationsType_t );
 
 /* Any model type will accept both ModelTypeNull and ModelTypeUserDefined.
