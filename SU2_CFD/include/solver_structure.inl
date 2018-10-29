@@ -75,9 +75,9 @@ inline unsigned short CSolver::GetIterLinSolver(void) { return IterLinSolver; }
 
 inline su2double CSolver::GetCSensitivity(unsigned short val_marker, unsigned long val_vertex) { return 0; }
 
-inline void CSolver::SetResidual_DualTime(CGeometry *geometry, CSolver **solver_container, CConfig *config, unsigned short iRKStep, 
+inline void CSolver::SetResidual_DualTime(CGeometry *geometry, CSolver **solver_container, CConfig *config, unsigned short iRKStep,
                                      unsigned short iMesh, unsigned short RunTime_EqSystem) { }
-                                     
+
 inline void CSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_container, CConfig *config, unsigned long ExtIter) { }
 
 inline void CSolver::ResetInitialCondition(CGeometry **geometry, CSolver ***solver_container, CConfig *config, unsigned long ExtIter) { }
@@ -577,13 +577,13 @@ inline void CSolver::Viscous_Residual(CGeometry *geometry,
                                       CNumerics *numerics, CConfig
                                       *config, unsigned short iMesh,
                                       unsigned short iRKstep) { }
-                     
+
 inline void CSolver::AddStiffMatrix(su2double ** StiffMatrix_Elem, unsigned long Point_0, unsigned long Point_1, unsigned long Point_2, unsigned long Point_3) { }
-                     
-inline void CSolver::Source_Residual(CGeometry *geometry, CSolver **solver_container, 
+
+inline void CSolver::Source_Residual(CGeometry *geometry, CSolver **solver_container,
                           CNumerics *numerics, CNumerics *second_numerics, CConfig *config, unsigned short iMesh) { }
-                     
-inline void CSolver::Source_Template(CGeometry *geometry, CSolver **solver_container, 
+
+inline void CSolver::Source_Template(CGeometry *geometry, CSolver **solver_container,
                           CNumerics *numerics, CConfig *config, unsigned short iMesh) { }
 
 inline su2double CSolver::GetTotal_Sens_Geo() { return 0; }
@@ -682,38 +682,38 @@ inline void CSolver::Evaluate_ObjFunc(CConfig *config) {};
 
 inline void CSolver::Solve_System(CGeometry *geometry, CSolver **solver_container, CConfig *config) { }
 
-inline void CSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, 
+inline void CSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
 									 unsigned short val_marker) { }
 
-inline void CSolver::BC_Clamped(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, 
+inline void CSolver::BC_Clamped(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
                    unsigned short val_marker) { }
 
-inline void CSolver::BC_DispDir(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, 
+inline void CSolver::BC_DispDir(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
                    unsigned short val_marker) { }
 
-inline void CSolver::BC_Clamped_Post(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, 
-                   unsigned short val_marker) { }
-                   
-inline void CSolver::BC_Normal_Displacement(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, 
-                   unsigned short val_marker) { }
-                                                       
-inline void CSolver::BC_Normal_Load(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, 
+inline void CSolver::BC_Clamped_Post(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
                    unsigned short val_marker) { }
 
-inline void CSolver::BC_Dir_Load(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, 
+inline void CSolver::BC_Normal_Displacement(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
                    unsigned short val_marker) { }
-                   
-inline void CSolver::BC_Sine_Load(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, 
-                   unsigned short val_marker) { }                   
-                   
-inline void CSolver::BC_Damper(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, 
-                                     unsigned short val_marker) { }             									 							 
-                  
+
+inline void CSolver::BC_Normal_Load(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
+                   unsigned short val_marker) { }
+
+inline void CSolver::BC_Dir_Load(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
+                   unsigned short val_marker) { }
+
+inline void CSolver::BC_Sine_Load(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
+                   unsigned short val_marker) { }
+
+inline void CSolver::BC_Damper(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
+                                     unsigned short val_marker) { }
+
 inline void CSolver::BC_Isothermal_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) { }
 
 inline void CSolver::BC_HeatFlux_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) { }
-                  
-inline void CSolver::BC_Dirichlet(CGeometry *geometry, CSolver **solver_container, CConfig *config, 
+
+inline void CSolver::BC_Dirichlet(CGeometry *geometry, CSolver **solver_container, CConfig *config,
                   unsigned short val_marker) { }
 
 inline void CSolver::BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
@@ -737,13 +737,13 @@ inline void CSolver::BC_ActDisk(CGeometry *geometry, CSolver **solver_container,
 inline void CSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                     CConfig *config, unsigned short val_marker) { }
 
-inline void CSolver::BC_Sym_Plane(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics, 
+inline void CSolver::BC_Sym_Plane(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                   CConfig *config, unsigned short val_marker) { }
-                  
-inline void CSolver::BC_Custom(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, 
+
+inline void CSolver::BC_Custom(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                      CConfig *config, unsigned short val_marker) { }
 
-inline void CSolver::BC_Riemann(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics, 
+inline void CSolver::BC_Riemann(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                      CConfig *config, unsigned short val_marker) { }
 
 inline void CSolver::BC_TurboRiemann(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
@@ -755,7 +755,7 @@ inline void CSolver::PreprocessBC_Giles(CGeometry *geometry, CConfig *config,
 inline void CSolver::BC_Giles(CGeometry *geometry, CSolver **solver_container,
                             CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) { }
 
-inline void CSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics, 
+inline void CSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                      CConfig *config, unsigned short val_marker) { }
 
 inline void CSolver::BC_Inlet_Turbo(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
@@ -764,28 +764,28 @@ inline void CSolver::BC_Inlet_Turbo(CGeometry *geometry, CSolver **solver_contai
 inline void CSolver::BC_Inlet_MixingPlane(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                      CConfig *config, unsigned short val_marker) { }
 
-inline void CSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics, 
+inline void CSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                       CConfig *config, unsigned short val_marker) { }
-                      
+
 inline void CSolver::BC_Supersonic_Inlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                      CConfig *config, unsigned short val_marker) { }
 
 inline void CSolver::BC_Supersonic_Outlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                                          CConfig *config, unsigned short val_marker) { }
 
-inline void CSolver::BC_Engine_Inflow(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics, 
+inline void CSolver::BC_Engine_Inflow(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                       CConfig *config, unsigned short val_marker) { }
 
-inline void CSolver::BC_Engine_Exhaust(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics, 
+inline void CSolver::BC_Engine_Exhaust(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                       CConfig *config, unsigned short val_marker) { }
-                                            
-inline void CSolver::BC_Neumann(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, 
+
+inline void CSolver::BC_Neumann(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                       CConfig *config, unsigned short val_marker) { }
-                  
-inline void CSolver::BC_Dielec(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, 
+
+inline void CSolver::BC_Dielec(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                    CConfig *config, unsigned short val_marker) { }
-                                         
-inline void CSolver::BC_Electrode(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, 
+
+inline void CSolver::BC_Electrode(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                   CConfig *config, unsigned short val_marker) { }
 
 inline void CSolver::BC_ConjugateHeat_Interface(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
@@ -802,18 +802,18 @@ inline void CSolver::SetActDisk_BCThrust(CGeometry *geometry, CSolver **solver_c
                                          CConfig *config, unsigned short iMesh, bool Output) { }
 
 inline void CSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container, CConfig *config,
-                      unsigned short iMesh, unsigned long Iteration) { }  
-                      
-inline void CSolver::Postprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config, 
-                      unsigned short iMesh) { }  
+                      unsigned short iMesh, unsigned long Iteration) { }
+
+inline void CSolver::Postprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config,
+                      unsigned short iMesh) { }
 
 inline void CSolver::Postprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config,  CNumerics **numerics,
-                      unsigned short iMesh) { }  
+                      unsigned short iMesh) { }
 
-inline void CSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, 
+inline void CSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                     CConfig *config, unsigned short iMesh, unsigned short iRKStep) { }
 
-inline void CSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, 
+inline void CSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                      CConfig *config, unsigned short iMesh) { }
 
 inline void CSolver::Preprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config, unsigned short iMesh, unsigned short iRKStep, unsigned short RunTime_EqSystem, bool Output) { }
@@ -854,7 +854,7 @@ inline void CSolver::Viscous_DeltaForces(CGeometry *geometry, CConfig *config) {
 
 inline void CSolver::Wave_Strength(CGeometry *geometry, CConfig *config) { }
 
-inline void CSolver::ExplicitRK_Iteration(CGeometry *geometry, CSolver **solver_container, 
+inline void CSolver::ExplicitRK_Iteration(CGeometry *geometry, CSolver **solver_container,
                       CConfig *config, unsigned short iRKStep) { }
 
 inline void CSolver::ClassicalRK4_Iteration(CGeometry *geometry, CSolver **solver_container,
@@ -878,7 +878,7 @@ inline void CSolver::GeneralizedAlpha_UpdateSolution(CGeometry *geometry, CSolve
 
 inline void CSolver::GeneralizedAlpha_UpdateLoads(CGeometry *geometry, CSolver **solver_container, CConfig *config) { }
 
-inline void CSolver::Compute_Residual(CGeometry *geometry, CSolver **solver_container, CConfig *config, 
+inline void CSolver::Compute_Residual(CGeometry *geometry, CSolver **solver_container, CConfig *config,
                     unsigned short iMesh) { }
 
 inline void CSolver::SetRes_RMS(unsigned short val_var, su2double val_residual) { Residual_RMS[val_var] = val_residual; }
@@ -962,7 +962,7 @@ inline su2double CSolver::GetMax_Delta_Time(unsigned short val_Species) { return
 
 inline su2double CSolver::GetMin_Delta_Time(unsigned short val_Species) { return 0.0; }
 
-inline void CSolver::Copy_Zone_Solution(CSolver ***solver1_solution, CGeometry **solver1_geometry, CConfig *solver1_config, 
+inline void CSolver::Copy_Zone_Solution(CSolver ***solver1_solution, CGeometry **solver1_geometry, CConfig *solver1_config,
                       CSolver ***solver2_solution, CGeometry **solver2_geometry, CConfig *solver2_config) {};
 
 inline CFluidModel* CSolver::GetFluidModel(void) { return NULL;}
@@ -974,7 +974,7 @@ inline void CSolver::Set_Prestretch(CGeometry *geometry, CConfig *config) { }
 inline void CSolver::Set_ElementProperties(CGeometry *geometry, CConfig *config) { }
 
 inline su2double CSolver::Compute_LoadCoefficient(su2double CurrentTime, su2double RampTime, CConfig *config) { return 0.0; }
-                      
+
 inline void CSolver::Compute_StiffMatrix(CGeometry *geometry, CSolver **solver_container, CNumerics **numerics, CConfig *config) { }
 
 inline void CSolver::Compute_StiffMatrix_NodalStressRes(CGeometry *geometry, CSolver **solver_container, CNumerics **numerics, CConfig *config) { }
@@ -989,7 +989,7 @@ inline void CSolver::Compute_NodalStress(CGeometry *geometry, CSolver **solver_c
 
 inline void CSolver::Compute_DeadLoad(CGeometry *geometry, CSolver **solver_container, CNumerics **numerics, CConfig *config) { }
 
-inline void CSolver::Initialize_SystemMatrix(CGeometry *geometry, CSolver **solver_container, CConfig *config) { }  
+inline void CSolver::Initialize_SystemMatrix(CGeometry *geometry, CSolver **solver_container, CConfig *config) { }
 
 inline void CSolver::Compute_IntegrationConstants(CConfig *config) { }
 
@@ -1032,6 +1032,11 @@ inline void CSolver::ExtractAdjoint_Variables(CGeometry *geometry, CConfig *conf
 inline void CSolver::SetFreeStream_Solution(CConfig *config){}
 
 inline void CEulerSolver::Set_NewSolution(CGeometry *geometry) {
+  for (unsigned long iPoint = 0; iPoint < geometry->GetnPoint(); iPoint++)
+    node[iPoint]->SetSolution_New();
+}
+
+inline void CImpactSolver::Set_NewSolution(CGeometry *geometry) {
   for (unsigned long iPoint = 0; iPoint < geometry->GetnPoint(); iPoint++)
     node[iPoint]->SetSolution_New();
 }
@@ -1137,10 +1142,10 @@ inline su2double CSolver::GetConjugateHeatVariable(unsigned short val_marker, un
 
 inline su2double CEulerSolver::GetDensity_Inf(void) { return Density_Inf; }
 
-inline su2double CEulerSolver::GetModVelocity_Inf(void) { 
-  su2double Vel2 = 0; 
-  for (unsigned short iDim = 0; iDim < nDim; iDim++) 
-    Vel2 += Velocity_Inf[iDim]*Velocity_Inf[iDim]; 
+inline su2double CEulerSolver::GetModVelocity_Inf(void) {
+  su2double Vel2 = 0;
+  for (unsigned short iDim = 0; iDim < nDim; iDim++)
+    Vel2 += Velocity_Inf[iDim]*Velocity_Inf[iDim];
   return sqrt(Vel2);
 }
 
@@ -1622,6 +1627,493 @@ inline void CEulerSolver::SetPressure_Inf(su2double p_inf) {Pressure_Inf = p_inf
 
 inline void CEulerSolver::SetTemperature_Inf(su2double t_inf) {Temperature_Inf = t_inf;}
 
+inline su2double CImpactSolver::GetDensity_Inf(void) { return Density_Inf; }
+
+inline su2double CImpactSolver::GetModVelocity_Inf(void) {
+  su2double Vel2 = 0;
+  for (unsigned short iDim = 0; iDim < nDim; iDim++)
+    Vel2 += Velocity_Inf[iDim]*Velocity_Inf[iDim];
+  return sqrt(Vel2);
+}
+
+inline su2double CImpactSolver::GetDensity_Energy_Inf(void) { return Density_Inf*Energy_Inf; }
+
+inline su2double CImpactSolver::GetDensity_Velocity_Inf(unsigned short val_dim) { return Density_Inf*Velocity_Inf[val_dim]; }
+
+inline su2double CImpactSolver::GetVelocity_Inf(unsigned short val_dim) { return Velocity_Inf[val_dim]; }
+
+inline su2double *CImpactSolver::GetVelocity_Inf(void) { return Velocity_Inf; }
+
+inline su2double CImpactSolver::GetPressure_Inf(void) { return Pressure_Inf; }
+
+inline su2double CImpactSolver::GetCPressure(unsigned short val_marker, unsigned long val_vertex) { return CPressure[val_marker][val_vertex]; }
+
+inline su2double CImpactSolver::GetCPressureTarget(unsigned short val_marker, unsigned long val_vertex) { return CPressureTarget[val_marker][val_vertex]; }
+
+inline void CImpactSolver::SetCPressureTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_pressure) { CPressureTarget[val_marker][val_vertex] = val_pressure; }
+
+inline su2double *CImpactSolver::GetCharacPrimVar(unsigned short val_marker, unsigned long val_vertex) { return CharacPrimVar[val_marker][val_vertex]; }
+
+inline void CImpactSolver::SetCharacPrimVar(unsigned short val_marker, unsigned long val_vertex, unsigned short val_var, su2double val_value) { CharacPrimVar[val_marker][val_vertex][val_var] = val_value; }
+
+inline su2double *CImpactSolver::GetDonorPrimVar(unsigned short val_marker, unsigned long val_vertex) { return DonorPrimVar[val_marker][val_vertex]; }
+
+inline void CImpactSolver::SetDonorPrimVar(unsigned short val_marker, unsigned long val_vertex, unsigned short val_var, su2double val_value) { DonorPrimVar[val_marker][val_vertex][val_var] = val_value; }
+
+inline su2double CImpactSolver::GetDonorPrimVar(unsigned short val_marker, unsigned long val_vertex, unsigned short val_var) { return DonorPrimVar[val_marker][val_vertex][val_var]; }
+
+inline unsigned long CImpactSolver::GetDonorGlobalIndex(unsigned short val_marker, unsigned long val_vertex) { return DonorGlobalIndex[val_marker][val_vertex]; }
+
+inline void CImpactSolver::SetDonorGlobalIndex(unsigned short val_marker, unsigned long val_vertex, unsigned long val_index) { DonorGlobalIndex[val_marker][val_vertex] = val_index; }
+
+inline su2double CImpactSolver::GetActDisk_DeltaP(unsigned short val_marker, unsigned long val_vertex) { return ActDisk_DeltaP[val_marker][val_vertex]; }
+
+inline void CImpactSolver::SetActDisk_DeltaP(unsigned short val_marker, unsigned long val_vertex, su2double val_deltap) { ActDisk_DeltaP[val_marker][val_vertex] = val_deltap; }
+
+inline su2double CImpactSolver::GetActDisk_DeltaT(unsigned short val_marker, unsigned long val_vertex) { return ActDisk_DeltaT[val_marker][val_vertex]; }
+
+inline void CImpactSolver::SetActDisk_DeltaT(unsigned short val_marker, unsigned long val_vertex, su2double val_deltat) { ActDisk_DeltaT[val_marker][val_vertex] = val_deltat; }
+
+inline su2double CImpactSolver::GetInlet_Ttotal(unsigned short val_marker, unsigned long val_vertex) { return Inlet_Ttotal[val_marker][val_vertex]; }
+
+inline su2double CImpactSolver::GetInlet_Ptotal(unsigned short val_marker, unsigned long val_vertex) { return Inlet_Ptotal[val_marker][val_vertex]; }
+
+inline su2double CImpactSolver::GetInlet_FlowDir(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim) { return Inlet_FlowDir[val_marker][val_vertex][val_dim]; }
+
+inline void CImpactSolver::SetInlet_Ttotal(unsigned short val_marker, unsigned long val_vertex, su2double val_ttotal) {
+  /*--- Since this call can be accessed indirectly using python, do some error
+   * checking to prevent segmentation faults ---*/
+  if (val_marker >= nMarker)
+    SU2_MPI::Error("Out-of-bounds marker index used on inlet.", CURRENT_FUNCTION);
+  else if (Inlet_Ttotal == NULL || Inlet_Ttotal[val_marker] == NULL)
+    SU2_MPI::Error("Tried to set custom inlet BC on an invalid marker.", CURRENT_FUNCTION);
+  else if (val_vertex >= nVertex[val_marker])
+    SU2_MPI::Error("Out-of-bounds vertex index used on inlet.", CURRENT_FUNCTION);
+  else
+    Inlet_Ttotal[val_marker][val_vertex] = val_ttotal;
+}
+
+inline void CImpactSolver::SetInlet_Ptotal(unsigned short val_marker, unsigned long val_vertex, su2double val_ptotal) {
+  /*--- Since this call can be accessed indirectly using python, do some error
+   * checking to prevent segmentation faults ---*/
+  if (val_marker >= nMarker)
+    SU2_MPI::Error("Out-of-bounds marker index used on inlet.", CURRENT_FUNCTION);
+  else if (Inlet_Ptotal == NULL || Inlet_Ptotal[val_marker] == NULL)
+    SU2_MPI::Error("Tried to set custom inlet BC on an invalid marker.", CURRENT_FUNCTION);
+  else if (val_vertex >= nVertex[val_marker])
+    SU2_MPI::Error("Out-of-bounds vertex index used on inlet.", CURRENT_FUNCTION);
+  else
+    Inlet_Ptotal[val_marker][val_vertex] = val_ptotal;
+}
+
+inline void CImpactSolver::SetInlet_FlowDir(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim, su2double val_flowdir) {
+  /*--- Since this call can be accessed indirectly using python, do some error
+   * checking to prevent segmentation faults ---*/
+  if (val_marker >= nMarker)
+    SU2_MPI::Error("Out-of-bounds marker index used on inlet.", CURRENT_FUNCTION);
+  else if (Inlet_FlowDir == NULL || Inlet_FlowDir[val_marker] == NULL)
+      SU2_MPI::Error("Tried to set custom inlet BC on an invalid marker.", CURRENT_FUNCTION);
+  else if (val_vertex >= nVertex[val_marker])
+    SU2_MPI::Error("Out-of-bounds vertex index used on inlet.", CURRENT_FUNCTION);
+  else
+    Inlet_FlowDir[val_marker][val_vertex][val_dim] = val_flowdir;
+}
+
+inline su2double CImpactSolver::GetCL_Inv(unsigned short val_marker) { return CL_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetCD_Inv(unsigned short val_marker) { return CD_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CL(unsigned short val_marker) { return Surface_CL[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CD(unsigned short val_marker) { return Surface_CD[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CSF(unsigned short val_marker) { return Surface_CSF[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CEff(unsigned short val_marker) { return Surface_CEff[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CFx(unsigned short val_marker) { return Surface_CFx[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CFy(unsigned short val_marker) { return Surface_CFy[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CFz(unsigned short val_marker) { return Surface_CFz[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CMx(unsigned short val_marker) { return Surface_CMx[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CMy(unsigned short val_marker) { return Surface_CMy[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CMz(unsigned short val_marker) { return Surface_CMz[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CL_Inv(unsigned short val_marker) { return Surface_CL_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CD_Inv(unsigned short val_marker) { return Surface_CD_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CSF_Inv(unsigned short val_marker) { return Surface_CSF_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CEff_Inv(unsigned short val_marker) { return Surface_CEff_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CFx_Inv(unsigned short val_marker) { return Surface_CFx_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CFy_Inv(unsigned short val_marker) { return Surface_CFy_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CFz_Inv(unsigned short val_marker) { return Surface_CFz_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CMx_Inv(unsigned short val_marker) { return Surface_CMx_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CMy_Inv(unsigned short val_marker) { return Surface_CMy_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CMz_Inv(unsigned short val_marker) { return Surface_CMz_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CL_Mnt(unsigned short val_marker) { return Surface_CL_Mnt[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CD_Mnt(unsigned short val_marker) { return Surface_CD_Mnt[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CSF_Mnt(unsigned short val_marker) { return Surface_CSF_Mnt[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CEff_Mnt(unsigned short val_marker) { return Surface_CEff_Mnt[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CFx_Mnt(unsigned short val_marker) { return Surface_CFx_Mnt[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CFy_Mnt(unsigned short val_marker) { return Surface_CFy_Mnt[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CFz_Mnt(unsigned short val_marker) { return Surface_CFz_Mnt[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CMx_Mnt(unsigned short val_marker) { return Surface_CMx_Mnt[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CMy_Mnt(unsigned short val_marker) { return Surface_CMy_Mnt[val_marker]; }
+
+inline su2double CImpactSolver::GetSurface_CMz_Mnt(unsigned short val_marker) { return Surface_CMz_Mnt[val_marker]; }
+
+inline su2double CImpactSolver::GetInflow_MassFlow(unsigned short val_marker) { return Inflow_MassFlow[val_marker]; }
+
+inline su2double CImpactSolver::GetExhaust_MassFlow(unsigned short val_marker) { return Exhaust_MassFlow[val_marker]; }
+
+inline su2double CImpactSolver::GetInflow_Pressure(unsigned short val_marker) { return Inflow_Pressure[val_marker]; }
+
+inline su2double CImpactSolver::GetInflow_Mach(unsigned short val_marker) { return Inflow_Mach[val_marker]; }
+
+inline su2double CImpactSolver::GetCSF_Inv(unsigned short val_marker) { return CSF_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetCEff_Inv(unsigned short val_marker) { return CEff_Inv[val_marker]; }
+
+inline su2double CImpactSolver::GetTotal_CL() { return Total_CL; }
+
+inline void CImpactSolver::SetTotal_ComboObj(su2double ComboObj) {Total_ComboObj = ComboObj; }
+
+inline su2double CImpactSolver::GetTotal_ComboObj() { return Total_ComboObj; }
+
+inline su2double CImpactSolver::GetTotal_CD() { return Total_CD; }
+
+inline su2double CImpactSolver::GetTotal_NetThrust() { return Total_NetThrust; }
+
+inline su2double CImpactSolver::GetTotal_Power() { return Total_Power; }
+
+inline su2double CImpactSolver::GetTotal_SolidCD() { return Total_SolidCD; }
+
+inline su2double CImpactSolver::GetTotal_ReverseFlow() { return Total_ReverseFlow; }
+
+inline su2double CImpactSolver::GetTotal_MFR() { return Total_MFR; }
+
+inline su2double CImpactSolver::GetTotal_Prop_Eff() { return Total_Prop_Eff; }
+
+inline su2double CImpactSolver::GetTotal_ByPassProp_Eff() { return Total_ByPassProp_Eff; }
+
+inline su2double CImpactSolver::GetTotal_Adiab_Eff() { return Total_Adiab_Eff; }
+
+inline su2double CImpactSolver::GetTotal_Poly_Eff() { return Total_Poly_Eff; }
+
+inline su2double CImpactSolver::GetTotal_IDC_Mach() { return Total_IDC_Mach; }
+
+inline su2double CImpactSolver::GetTotal_DC60() { return Total_DC60; }
+
+inline su2double CImpactSolver::GetTotal_Custom_ObjFunc() { return Total_Custom_ObjFunc; }
+
+inline su2double CImpactSolver::GetTotal_CMx() { return Total_CMx; }
+
+inline su2double CImpactSolver::GetTotal_CMy() { return Total_CMy; }
+
+inline su2double CImpactSolver::GetTotal_CMz() { return Total_CMz; }
+
+inline su2double CImpactSolver::GetTotal_CoPx() { return Total_CoPx; }
+
+inline su2double CImpactSolver::GetTotal_CoPy() { return Total_CoPy; }
+
+inline su2double CImpactSolver::GetTotal_CoPz() { return Total_CoPz; }
+
+inline su2double CImpactSolver::GetTotal_CFx() { return Total_CFx; }
+
+inline su2double CImpactSolver::GetTotal_CFy() { return Total_CFy; }
+
+inline su2double CImpactSolver::GetTotal_CFz() { return Total_CFz; }
+
+inline su2double CImpactSolver::GetTotal_CSF() { return Total_CSF; }
+
+inline su2double CImpactSolver::GetTotal_CEff() { return Total_CEff; }
+
+inline su2double CImpactSolver::GetTotal_CT() { return Total_CT; }
+
+inline void CImpactSolver::SetTotal_CT(su2double val_Total_CT) { Total_CT = val_Total_CT; }
+
+inline su2double CImpactSolver::GetTotal_CQ() { return Total_CQ; }
+
+inline su2double CImpactSolver::GetTotal_HeatFlux() { return Total_Heat; }
+
+inline su2double CImpactSolver::GetTotal_MaxHeatFlux() { return Total_MaxHeat; }
+
+inline void CImpactSolver::SetTotal_CQ(su2double val_Total_CQ) { Total_CQ = val_Total_CQ; }
+
+inline void CImpactSolver::SetTotal_HeatFlux(su2double val_Total_Heat) { Total_Heat = val_Total_Heat; }
+
+inline void CImpactSolver::SetTotal_MaxHeatFlux(su2double val_Total_MaxHeat) { Total_MaxHeat = val_Total_MaxHeat; }
+
+inline su2double CImpactSolver::GetTotal_CMerit() { return Total_CMerit; }
+
+inline su2double CImpactSolver::GetTotal_CEquivArea() { return Total_CEquivArea; }
+
+inline su2double CImpactSolver::GetTotal_AeroCD() { return Total_AeroCD; }
+
+inline su2double CImpactSolver::GetTotal_IDR() { return Total_IDR; }
+
+inline su2double CImpactSolver::GetTotal_IDC() { return Total_IDC; }
+
+inline su2double CImpactSolver::GetTotal_CpDiff() { return Total_CpDiff; }
+
+inline su2double CImpactSolver::GetTotal_HeatFluxDiff() { return Total_HeatFluxDiff; }
+
+inline su2double CImpactSolver::GetTotal_CNearFieldOF() { return Total_CNearFieldOF; }
+
+inline void CImpactSolver::AddTotal_ComboObj(su2double val_obj) {Total_ComboObj +=val_obj;}
+
+inline void CImpactSolver::SetTotal_CEquivArea(su2double val_cequivarea) { Total_CEquivArea = val_cequivarea; }
+
+inline void CImpactSolver::SetTotal_AeroCD(su2double val_aerocd) { Total_AeroCD = val_aerocd; }
+
+inline void CImpactSolver::SetTotal_CpDiff(su2double pressure) { Total_CpDiff = pressure; }
+
+inline void CImpactSolver::SetTotal_HeatFluxDiff(su2double heat) { Total_HeatFluxDiff = heat; }
+
+inline void CImpactSolver::SetTotal_CNearFieldOF(su2double cnearfieldpress) { Total_CNearFieldOF = cnearfieldpress; }
+
+inline void CImpactSolver::SetTotal_CL(su2double val_Total_CL) { Total_CL = val_Total_CL; }
+
+inline void CImpactSolver::SetTotal_CD(su2double val_Total_CD) { Total_CD = val_Total_CD; }
+
+inline void CImpactSolver::SetTotal_NetThrust(su2double val_Total_NetThrust) { Total_NetThrust = val_Total_NetThrust; }
+
+inline void CImpactSolver::SetTotal_Power(su2double val_Total_Power) { Total_Power = val_Total_Power; }
+
+inline void CImpactSolver::SetTotal_SolidCD(su2double val_Total_SolidCD) { Total_SolidCD = val_Total_SolidCD; }
+
+inline void CImpactSolver::SetTotal_ReverseFlow(su2double val_Total_ReverseFlow) { Total_ReverseFlow = val_Total_ReverseFlow; }
+
+inline void CImpactSolver::SetTotal_MFR(su2double val_Total_MFR) { Total_MFR = val_Total_MFR; }
+
+inline void CImpactSolver::SetTotal_Prop_Eff(su2double val_Total_Prop_Eff) { Total_Prop_Eff = val_Total_Prop_Eff; }
+
+inline void CImpactSolver::SetTotal_ByPassProp_Eff(su2double val_Total_ByPassProp_Eff) { Total_ByPassProp_Eff = val_Total_ByPassProp_Eff; }
+
+inline void CImpactSolver::SetTotal_Adiab_Eff(su2double val_Total_Adiab_Eff) { Total_Adiab_Eff = val_Total_Adiab_Eff; }
+
+inline void CImpactSolver::SetTotal_Poly_Eff(su2double val_Total_Poly_Eff) { Total_Poly_Eff = val_Total_Poly_Eff; }
+
+inline void CImpactSolver::SetTotal_IDC(su2double val_Total_IDC) { Total_IDC = val_Total_IDC; }
+
+inline void CImpactSolver::SetTotal_IDC_Mach(su2double val_Total_IDC_Mach) { Total_IDC_Mach = val_Total_IDC_Mach; }
+
+inline void CImpactSolver::SetTotal_IDR(su2double val_Total_IDR) { Total_IDR = val_Total_IDR; }
+
+inline void CImpactSolver::SetTotal_DC60(su2double val_Total_DC60) { Total_DC60 = val_Total_DC60; }
+
+inline void CImpactSolver::SetTotal_Custom_ObjFunc(su2double val_total_custom_objfunc, su2double val_weight) { Total_Custom_ObjFunc = val_total_custom_objfunc*val_weight; }
+
+inline void CImpactSolver::AddTotal_Custom_ObjFunc(su2double val_total_custom_objfunc, su2double val_weight) { Total_Custom_ObjFunc += val_total_custom_objfunc*val_weight; }
+
+inline su2double CImpactSolver::GetAllBound_CL_Inv() { return AllBound_CL_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CD_Inv() { return AllBound_CD_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CSF_Inv() { return AllBound_CSF_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CEff_Inv() { return AllBound_CEff_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CMx_Inv() { return AllBound_CMx_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CMy_Inv() { return AllBound_CMy_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CMz_Inv() { return AllBound_CMz_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CoPx_Inv() { return AllBound_CoPx_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CoPy_Inv() { return AllBound_CoPy_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CoPz_Inv() { return AllBound_CoPz_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CFx_Inv() { return AllBound_CFx_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CFy_Inv() { return AllBound_CFy_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CFz_Inv() { return AllBound_CFz_Inv; }
+
+inline su2double CImpactSolver::GetAllBound_CL_Mnt() { return AllBound_CL_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CD_Mnt() { return AllBound_CD_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CSF_Mnt() { return AllBound_CSF_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CEff_Mnt() { return AllBound_CEff_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CMx_Mnt() { return AllBound_CMx_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CMy_Mnt() { return AllBound_CMy_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CMz_Mnt() { return AllBound_CMz_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CoPx_Mnt() { return AllBound_CoPx_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CoPy_Mnt() { return AllBound_CoPy_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CoPz_Mnt() { return AllBound_CoPz_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CFx_Mnt() { return AllBound_CFx_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CFy_Mnt() { return AllBound_CFy_Mnt; }
+
+inline su2double CImpactSolver::GetAllBound_CFz_Mnt() { return AllBound_CFz_Mnt; }
+
+inline su2double CImpactSolver::GetAverageDensity(unsigned short valMarker, unsigned short valSpan){return AverageDensity[valMarker][valSpan];}
+
+inline su2double CImpactSolver::GetAveragePressure(unsigned short valMarker, unsigned short valSpan){return AveragePressure[valMarker][valSpan];}
+
+inline su2double* CImpactSolver::GetAverageTurboVelocity(unsigned short valMarker, unsigned short valSpan){return AverageTurboVelocity[valMarker][valSpan];}
+
+inline su2double CImpactSolver::GetAverageNu(unsigned short valMarker, unsigned short valSpan){return AverageNu[valMarker][valSpan];}
+
+inline su2double CImpactSolver::GetAverageKine(unsigned short valMarker, unsigned short valSpan){return AverageKine[valMarker][valSpan];}
+
+inline su2double CImpactSolver::GetAverageOmega(unsigned short valMarker, unsigned short valSpan){return AverageOmega[valMarker][valSpan];}
+
+inline su2double CImpactSolver::GetExtAverageNu(unsigned short valMarker, unsigned short valSpan){return ExtAverageNu[valMarker][valSpan];}
+
+inline su2double CImpactSolver::GetExtAverageKine(unsigned short valMarker, unsigned short valSpan){return ExtAverageKine[valMarker][valSpan];}
+
+inline su2double CImpactSolver::GetExtAverageOmega(unsigned short valMarker, unsigned short valSpan){return ExtAverageOmega[valMarker][valSpan];}
+
+inline void CImpactSolver::SetExtAverageDensity(unsigned short valMarker, unsigned short valSpan, su2double valDensity){ExtAverageDensity[valMarker][valSpan] = valDensity;}
+
+inline void CImpactSolver::SetExtAveragePressure(unsigned short valMarker, unsigned short valSpan, su2double valPressure){ExtAveragePressure[valMarker][valSpan] = valPressure;}
+
+inline void CImpactSolver::SetExtAverageTurboVelocity(unsigned short valMarker, unsigned short valSpan, unsigned short valIndex, su2double valTurboVelocity){ExtAverageTurboVelocity[valMarker][valSpan][valIndex] = valTurboVelocity;}
+
+inline void CImpactSolver::SetExtAverageNu(unsigned short valMarker, unsigned short valSpan, su2double valNu){ExtAverageNu[valMarker][valSpan] = valNu;}
+
+inline void CImpactSolver::SetExtAverageKine(unsigned short valMarker, unsigned short valSpan, su2double valKine){ExtAverageKine[valMarker][valSpan] = valKine;}
+
+inline void CImpactSolver::SetExtAverageOmega(unsigned short valMarker, unsigned short valSpan, su2double valOmega){ExtAverageOmega[valMarker][valSpan] = valOmega;}
+
+inline su2double  CImpactSolver::GetDensityIn(unsigned short inMarkerTP, unsigned short valSpan){return DensityIn[inMarkerTP][valSpan];}
+
+inline su2double  CImpactSolver::GetPressureIn(unsigned short inMarkerTP, unsigned short valSpan){return PressureIn[inMarkerTP][valSpan];}
+
+inline su2double* CImpactSolver::GetTurboVelocityIn(unsigned short inMarkerTP, unsigned short valSpan){return TurboVelocityIn[inMarkerTP][valSpan];}
+
+inline su2double  CImpactSolver::GetDensityOut(unsigned short inMarkerTP, unsigned short valSpan){return DensityOut[inMarkerTP][valSpan];}
+
+inline su2double  CImpactSolver::GetPressureOut(unsigned short inMarkerTP, unsigned short valSpan){return PressureOut[inMarkerTP][valSpan];}
+
+inline su2double* CImpactSolver::GetTurboVelocityOut(unsigned short inMarkerTP, unsigned short valSpan){return TurboVelocityOut[inMarkerTP][valSpan];}
+
+inline su2double CImpactSolver::GetKineIn(unsigned short inMarkerTP, unsigned short valSpan){return KineIn[inMarkerTP][valSpan];}
+
+inline su2double CImpactSolver::GetOmegaIn(unsigned short inMarkerTP, unsigned short valSpan){return OmegaIn[inMarkerTP][valSpan];}
+
+inline su2double CImpactSolver::GetNuIn(unsigned short inMarkerTP, unsigned short valSpan){return NuIn[inMarkerTP][valSpan];}
+
+inline su2double CImpactSolver::GetKineOut(unsigned short inMarkerTP, unsigned short valSpan){return KineOut[inMarkerTP][valSpan];}
+
+inline su2double CImpactSolver::GetOmegaOut(unsigned short inMarkerTP, unsigned short valSpan){return OmegaOut[inMarkerTP][valSpan];}
+
+inline su2double CImpactSolver::GetNuOut(unsigned short inMarkerTP, unsigned short valSpan){return NuOut[inMarkerTP][valSpan];}
+
+inline void CImpactSolver::SetDensityIn(su2double value, unsigned short inMarkerTP, unsigned short valSpan){DensityIn[inMarkerTP][valSpan] = value;}
+
+inline void CImpactSolver::SetPressureIn(su2double value, unsigned short inMarkerTP, unsigned short valSpan){PressureIn[inMarkerTP][valSpan] = value;}
+
+inline void CImpactSolver::SetTurboVelocityIn(su2double *value, unsigned short inMarkerTP, unsigned short valSpan){
+  unsigned short iDim;
+
+  for(iDim = 0; iDim < nDim; iDim++)
+    TurboVelocityIn[inMarkerTP][valSpan][iDim] = value[iDim];
+}
+
+inline void CImpactSolver::SetDensityOut(su2double value, unsigned short inMarkerTP, unsigned short valSpan){DensityOut[inMarkerTP][valSpan] = value;}
+
+inline void CImpactSolver::SetPressureOut(su2double value, unsigned short inMarkerTP, unsigned short valSpan){PressureOut[inMarkerTP][valSpan] = value;}
+
+inline void CImpactSolver::SetTurboVelocityOut(su2double *value, unsigned short inMarkerTP, unsigned short valSpan){
+  unsigned short iDim;
+
+  for(iDim = 0; iDim < nDim; iDim++)
+    TurboVelocityOut[inMarkerTP][valSpan][iDim] = value[iDim];
+}
+
+inline void CImpactSolver::SetKineIn(su2double value, unsigned short inMarkerTP, unsigned short valSpan){KineIn[inMarkerTP][valSpan] = value;}
+
+inline void CImpactSolver::SetOmegaIn(su2double value, unsigned short inMarkerTP, unsigned short valSpan){OmegaIn[inMarkerTP][valSpan] = value;}
+
+inline void CImpactSolver::SetNuIn(su2double value, unsigned short inMarkerTP, unsigned short valSpan){NuIn[inMarkerTP][valSpan] = value;}
+
+inline void CImpactSolver::SetKineOut(su2double value, unsigned short inMarkerTP, unsigned short valSpan){KineOut[inMarkerTP][valSpan] = value;}
+
+inline void CImpactSolver::SetOmegaOut(su2double value, unsigned short inMarkerTP, unsigned short valSpan){OmegaOut[inMarkerTP][valSpan] = value;}
+
+inline void CImpactSolver::SetNuOut(su2double value, unsigned short inMarkerTP, unsigned short valSpan){NuOut[inMarkerTP][valSpan] = value;}
+
+inline void CImpactSolver::ComputeTurboVelocity(su2double *cartesianVelocity, su2double *turboNormal, su2double *turboVelocity, unsigned short marker_flag, unsigned short kind_turb) {
+
+  if ((kind_turb == AXIAL && nDim == 3) || (kind_turb == CENTRIPETAL_AXIAL && marker_flag == OUTFLOW) || (kind_turb == AXIAL_CENTRIFUGAL && marker_flag == INFLOW) ){
+    turboVelocity[2] =  turboNormal[0]*cartesianVelocity[0] + cartesianVelocity[1]*turboNormal[1];
+    turboVelocity[1] =  turboNormal[0]*cartesianVelocity[1] - turboNormal[1]*cartesianVelocity[0];
+    turboVelocity[0] = cartesianVelocity[2];
+  }
+  else{
+    turboVelocity[0] =  turboNormal[0]*cartesianVelocity[0] + cartesianVelocity[1]*turboNormal[1];
+    turboVelocity[1] =  turboNormal[0]*cartesianVelocity[1] - turboNormal[1]*cartesianVelocity[0];
+    if (marker_flag == INFLOW){
+      turboVelocity[0] *= -1.0;
+      turboVelocity[1] *= -1.0;
+    }
+    if(nDim == 3)
+      turboVelocity[2] = cartesianVelocity[2];
+  }
+}
+
+inline void CImpactSolver::ComputeBackVelocity(su2double *turboVelocity, su2double *turboNormal, su2double *cartesianVelocity, unsigned short marker_flag, unsigned short kind_turb){
+
+  if ((kind_turb == AXIAL && nDim == 3) || (kind_turb == CENTRIPETAL_AXIAL && marker_flag == OUTFLOW) || (kind_turb == AXIAL_CENTRIFUGAL && marker_flag == INFLOW)){
+    cartesianVelocity[0] = turboVelocity[2]*turboNormal[0] - turboVelocity[1]*turboNormal[1];
+    cartesianVelocity[1] = turboVelocity[2]*turboNormal[1] + turboVelocity[1]*turboNormal[0];
+    cartesianVelocity[2] = turboVelocity[0];
+  }
+  else{
+    cartesianVelocity[0] =  turboVelocity[0]*turboNormal[0] - turboVelocity[1]*turboNormal[1];
+    cartesianVelocity[1] =  turboVelocity[0]*turboNormal[1] + turboVelocity[1]*turboNormal[0];
+
+    if (marker_flag == INFLOW){
+      cartesianVelocity[0] *= -1.0;
+      cartesianVelocity[1] *= -1.0;
+    }
+
+    if(nDim == 3)
+      cartesianVelocity[2] = turboVelocity[2];
+  }
+}
+
+
+inline CFluidModel* CImpactSolver::GetFluidModel(void) { return FluidModel;}
+
+inline void CImpactSolver::SetPressure_Inf(su2double p_inf) {Pressure_Inf = p_inf;}
+
+inline void CImpactSolver::SetTemperature_Inf(su2double t_inf) {Temperature_Inf = t_inf;}
+
 inline su2double CNSSolver::GetViscosity_Inf(void) { return Viscosity_Inf; }
 
 inline su2double CNSSolver::GetTke_Inf(void) { return Tke_Inf; }
@@ -2070,7 +2562,7 @@ inline su2double CHeatSolverFVM::GetConjugateHeatVariable(unsigned short val_mar
 inline void CHeatSolverFVM::SetConjugateHeatVariable(unsigned short val_marker, unsigned long val_vertex, unsigned short pos_var, su2double relaxation_factor, su2double val_var) {
   ConjugateVar[val_marker][val_vertex][pos_var] = relaxation_factor*val_var + (1.0-relaxation_factor)*ConjugateVar[val_marker][val_vertex][pos_var]; }
 
-inline su2double CFEASolver::Get_MassMatrix(unsigned long iPoint, unsigned long jPoint, unsigned short iVar, unsigned short jVar){ 
+inline su2double CFEASolver::Get_MassMatrix(unsigned long iPoint, unsigned long jPoint, unsigned short iVar, unsigned short jVar){
   return MassMatrix.GetBlock(iPoint, jPoint, iVar, jVar); }
 
 inline unsigned short CFEASolver::Get_iElem_iDe(unsigned long iElem){ return iElem_iDe[iElem]; }
@@ -2153,27 +2645,37 @@ inline su2double CDiscAdjSolver::GetTotal_Sens_ModVel() { return Total_Sens_ModV
 
 inline su2double CDiscAdjSolver::GetCSensitivity(unsigned short val_marker, unsigned long val_vertex) { return CSensitivity[val_marker][val_vertex]; }
 
-inline void CEulerSolver::SetSlidingState(unsigned short val_marker, unsigned long val_vertex, unsigned short val_state, unsigned long donor_index, su2double component){ 
-  SlidingState[val_marker][val_vertex][val_state][donor_index] = component; 
+inline void CEulerSolver::SetSlidingState(unsigned short val_marker, unsigned long val_vertex, unsigned short val_state, unsigned long donor_index, su2double component){
+  SlidingState[val_marker][val_vertex][val_state][donor_index] = component;
+}
+
+inline void CImpactSolver::SetSlidingState(unsigned short val_marker, unsigned long val_vertex, unsigned short val_state, unsigned long donor_index, su2double component){
+  SlidingState[val_marker][val_vertex][val_state][donor_index] = component;
 }
 
 inline void CSolver::SetSlidingState(unsigned short val_marker, unsigned long val_vertex, unsigned short val_state, unsigned long donor_index, su2double component){ }
 
 inline su2double CEulerSolver::GetSlidingState(unsigned short val_marker, unsigned long val_vertex, unsigned short val_state, unsigned long donor_index) { return SlidingState[val_marker][val_vertex][val_state][donor_index]; }
 
+inline su2double CImpactSolver::GetSlidingState(unsigned short val_marker, unsigned long val_vertex, unsigned short val_state, unsigned long donor_index) { return SlidingState[val_marker][val_vertex][val_state][donor_index]; }
+
 inline su2double CSolver::GetSlidingState(unsigned short val_marker, unsigned long val_vertex, unsigned short val_state, unsigned long donor_index) { return 0; }
 
 inline int CEulerSolver::GetnSlidingStates(unsigned short val_marker, unsigned long val_vertex){ return SlidingStateNodes[val_marker][val_vertex]; }
+
+inline int CImpactSolver::GetnSlidingStates(unsigned short val_marker, unsigned long val_vertex){ return SlidingStateNodes[val_marker][val_vertex]; }
 
 inline int CSolver::GetnSlidingStates(unsigned short val_marker, unsigned long val_vertex){ return 0; }
 
 inline void CEulerSolver::SetnSlidingStates(unsigned short val_marker, unsigned long val_vertex, int value){ SlidingStateNodes[val_marker][val_vertex] = value; }
 
+inline void CImpactSolver::SetnSlidingStates(unsigned short val_marker, unsigned long val_vertex, int value){ SlidingStateNodes[val_marker][val_vertex] = value; }
+
 inline void CSolver::SetnSlidingStates(unsigned short val_marker, unsigned long val_vertex, int value){}
 
 inline void CSolver::SetSlidingStateStructure(unsigned short val_marker, unsigned long val_vertex){}
 
-inline void CEulerSolver::SetSlidingStateStructure(unsigned short val_marker, unsigned long val_vertex){	
+inline void CEulerSolver::SetSlidingStateStructure(unsigned short val_marker, unsigned long val_vertex){
   int iVar;
 
   for( iVar = 0; iVar < nPrimVar+1; iVar++){
@@ -2185,15 +2687,25 @@ inline void CEulerSolver::SetSlidingStateStructure(unsigned short val_marker, un
     SlidingState[val_marker][val_vertex][iVar] = new su2double[ GetnSlidingStates(val_marker, val_vertex) ];
 }
 
+inline void CImpactSolver::SetSlidingStateStructure(unsigned short val_marker, unsigned long val_vertex){
+  int iVar;
 
+  for( iVar = 0; iVar < nPrimVar+1; iVar++){
+    if( SlidingState[val_marker][val_vertex][iVar] != NULL )
+      delete [] SlidingState[val_marker][val_vertex][iVar];
+  }
 
-inline void CTurbSolver::SetSlidingState(unsigned short val_marker, unsigned long val_vertex, unsigned short val_state, unsigned long donor_index, su2double component){ 
-  SlidingState[val_marker][val_vertex][val_state][donor_index] = component; 
+  for( iVar = 0; iVar < nPrimVar+1; iVar++)
+    SlidingState[val_marker][val_vertex][iVar] = new su2double[ GetnSlidingStates(val_marker, val_vertex) ];
+}
+
+inline void CTurbSolver::SetSlidingState(unsigned short val_marker, unsigned long val_vertex, unsigned short val_state, unsigned long donor_index, su2double component){
+  SlidingState[val_marker][val_vertex][val_state][donor_index] = component;
 }
 
 inline int CTurbSolver::GetnSlidingStates(unsigned short val_marker, unsigned long val_vertex){ return SlidingStateNodes[val_marker][val_vertex]; }
 
-inline void CTurbSolver::SetSlidingStateStructure(unsigned short val_marker, unsigned long val_vertex){	
+inline void CTurbSolver::SetSlidingStateStructure(unsigned short val_marker, unsigned long val_vertex){
   int iVar;
 
   for( iVar = 0; iVar < nVar+1; iVar++){
