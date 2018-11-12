@@ -6827,7 +6827,6 @@ void COutput::SpecialOutput_ForcesBreakdown(CSolver ****solver, CGeometry ***geo
     switch (Kind_Solver) {
       case IMPACT:
         if (Kind_Regime == COMPRESSIBLE) Breakdown_file << "Compressible Impact equations." << "\n";
-        if (Kind_Regime == INCOMPRESSIBLE) Breakdown_file << "Incompressible Impact equations." << "\n";
         break;
       case EULER:
         if (Kind_Regime == COMPRESSIBLE) Breakdown_file << "Compressible Euler equations." << "\n";

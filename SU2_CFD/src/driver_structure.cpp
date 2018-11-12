@@ -252,7 +252,6 @@ CDriver::CDriver(char* confFile,
         switch (config_container[iZone]->GetKind_Solver()) {
           case IMPACT:
             if (Kind_Regime == COMPRESSIBLE) cout << "Compressible Impact equations." << endl;
-            if (Kind_Regime == INCOMPRESSIBLE) cout << "Incompressible Impact equations." << endl;
             break;
           case EULER: case DISC_ADJ_EULER:
             if (Kind_Regime == COMPRESSIBLE) cout << "Compressible Euler equations." << endl;

@@ -3696,13 +3696,6 @@ void CConfig::SetPostprocessing(unsigned short val_software, unsigned short val_
     }
   }
 
-  if ((Kind_Solver == IMPACT) && (Kind_Regime == INCOMPRESSIBLE)) {
-    /*--- Force inviscid problems to use constant density and disable energy. ---*/
-    if (Kind_DensityModel != CONSTANT || Energy_Equation == true) {
-      SU2_MPI::Error("Inviscid incompressible problems must be constant density (no energy eqn.).\n Use DENSITY_MODEL= CONSTANT and ENERGY_EQUATION= NO.", CURRENT_FUNCTION);
-    }
-  }
-
   /*--- Default values should recover original incompressible behavior (for old config files). ---*/
 
   if (Kind_Regime == INCOMPRESSIBLE) {
@@ -3734,14 +3727,6 @@ void CConfig::SetPostprocessing(unsigned short val_software, unsigned short val_
   }
 
   if ((Kind_Regime == INCOMPRESSIBLE) && (Kind_Solver != EULER) && (Kind_Solver != ADJ_EULER) && (Kind_Solver != DISC_ADJ_EULER)) {
-    if (Kind_ViscosityModel == SUTHERLAND) {
-      if ((Kind_FluidModel != INC_IDEAL_GAS)) {
-        SU2_MPI::Error("Sutherland's law only valid for ideal gases in incompressible flows.\n Must use VISCOSITY_MODEL=CONSTANT_VISCOSITY and set viscosity with\n MU_CONSTANT, or use DENSITY_MODEL= VARIABLE with FLUID_MODEL= INC_IDEAL_GAS for VISCOSITY_MODEL=SUTHERLAND.\n NOTE: FREESTREAM_VISCOSITY is no longer used for incompressible flows!", CURRENT_FUNCTION);
-      }
-    }
-  }
-
-  if ((Kind_Regime == INCOMPRESSIBLE) && (Kind_Solver != IMPACT)) {
     if (Kind_ViscosityModel == SUTHERLAND) {
       if ((Kind_FluidModel != INC_IDEAL_GAS)) {
         SU2_MPI::Error("Sutherland's law only valid for ideal gases in incompressible flows.\n Must use VISCOSITY_MODEL=CONSTANT_VISCOSITY and set viscosity with\n MU_CONSTANT, or use DENSITY_MODEL= VARIABLE with FLUID_MODEL= INC_IDEAL_GAS for VISCOSITY_MODEL=SUTHERLAND.\n NOTE: FREESTREAM_VISCOSITY is no longer used for incompressible flows!", CURRENT_FUNCTION);
@@ -4471,7 +4456,6 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
         break;
       case IMPACT:
         if (Kind_Regime == COMPRESSIBLE) cout << "Compressible Impact equations." << endl;
-        if (Kind_Regime == INCOMPRESSIBLE) cout << "Incompressible Impact equations." << endl;
         break;
       case NAVIER_STOKES: case DISC_ADJ_NAVIER_STOKES:
         if (Kind_Regime == COMPRESSIBLE) cout << "Compressible Laminar Navier-Stokes' equations." << endl;
