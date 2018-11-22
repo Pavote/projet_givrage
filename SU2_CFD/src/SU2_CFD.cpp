@@ -40,13 +40,13 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-  
+
   unsigned short nZone, nDim;
   char config_file_name[MAX_STRING_SIZE];
   bool fsi, turbo, zone_specific, periodic = false;
-  
+
   /*--- MPI initialization, and buffer setting ---*/
-  
+
 #ifdef HAVE_MPI
   int  buffsize;
   char *buffptr;
@@ -56,9 +56,9 @@ int main(int argc, char *argv[]) {
 #else
   SU2_Comm MPICommunicator(0);
 #endif
-  
+
   /*--- Create a pointer to the main SU2 Driver ---*/
-  
+
   CDriver *driver = NULL;
 
   /*--- Load in the number of zones and spatial dimensions in the mesh file (If no config
@@ -92,13 +92,13 @@ int main(int argc, char *argv[]) {
         config->GetKind_Solver() == HEAT_EQUATION) ) {
 
     /*--- Single zone problem: instantiate the single zone driver class. ---*/
-    
+
     if (nZone > 1 ) {
       SU2_MPI::Error("The required solver doesn't support multizone simulations", CURRENT_FUNCTION);
     }
-    
-    driver = new CGeneralDriver(config_file_name, nZone, nDim, periodic, MPICommunicator);
 
+    driver = new CGeneralDriver(config_file_name, nZone, nDim, periodic, MPICommunicator);
+    
   } else if (config->GetUnsteady_Simulation() == HARMONIC_BALANCE) {
 
     /*--- Harmonic balance problem: instantiate the Harmonic Balance driver class. ---*/
@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
       } else {
 
         driver = new CDiscAdjFluidDriver(config_file_name, nZone, nDim, periodic, MPICommunicator);
-        
+
       }
 
     } else if (turbo) {
@@ -152,20 +152,20 @@ int main(int argc, char *argv[]) {
       /*--- Instantiate the class for external aerodynamics ---*/
 
       driver = new CFluidDriver(config_file_name, nZone, nDim, periodic, MPICommunicator);
-      
+
     }
-    
+
   }
 
   delete config;
   config = NULL;
 
   /*--- Launch the main external loop of the solver ---*/
-  
+
   driver->StartSolver();
 
   /*--- Postprocess all the containers, close history file, exit SU2 ---*/
-  
+
   driver->Postprocessing();
 
   if (driver != NULL) delete driver;
@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
   free(buffptr);
   SU2_MPI::Finalize();
 #endif
-  
+
   return EXIT_SUCCESS;
-  
+
 }

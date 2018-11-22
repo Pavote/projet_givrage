@@ -1706,7 +1706,7 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
     /*--- Definition of the source term integration scheme for each equation and mesh level ---*/
     for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++)
       numerics_container[iMGlevel][TEMPLATE_SOL][SOURCE_FIRST_TERM] = new CSource_Template(nDim, nVar_Template, config);
-
+      cout << "************************************************************************************************************CSource_Template"<< endl;
     /*--- Definition of the boundary condition method ---*/
     for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
       numerics_container[iMGlevel][TEMPLATE_SOL][CONV_BOUND_TERM] = new CConvective_Template(nDim, nVar_Template, config);
@@ -1915,23 +1915,23 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
     for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
 
       if (config->GetBody_Force() == YES)
-        if (incompressible) numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceIncBodyForce(nDim, nVar_Flow, config);
-        else numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceBodyForce(nDim, nVar_Flow, config);
+        if (incompressible) {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceIncBodyForce(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceIncBodyForce"<< endl;}
+        else {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceBodyForce(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceBodyForce"<< endl;}
       else if (incompressible && (config->GetKind_DensityModel() == BOUSSINESQ))
-        numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceBoussinesq(nDim, nVar_Flow, config);
+        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceBoussinesq(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceBoussinesq"<< endl;}
       else if (config->GetRotating_Frame() == YES)
-        numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceRotatingFrame_Flow(nDim, nVar_Flow, config);
+        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceRotatingFrame_Flow(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceRotatingFrame_Flow"<< endl;}
       else if (config->GetAxisymmetric() == YES)
-        if (incompressible) numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceIncAxisymmetric_Flow(nDim, nVar_Flow, config);
-      else numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceAxisymmetric_Flow(nDim, nVar_Flow, config);
+        if (incompressible) {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceIncAxisymmetric_Flow(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceIncAxisymmetric_Flow"<< endl;}
+      else {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceAxisymmetric_Flow(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceAxisymmetric_Flow"<< endl;}
       else if (config->GetGravityForce() == YES)
-        numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceGravity(nDim, nVar_Flow, config);
+        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceGravity(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceGravity"<< endl;}
       else if (config->GetWind_Gust() == YES)
-        numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceWindGust(nDim, nVar_Flow, config);
+        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceWindGust(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceWindGust"<< endl;}
       else
-        numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Flow, config);
+        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceNothing1"<< endl;}
 
-      numerics_container[iMGlevel][FLOW_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Flow, config);
+      numerics_container[iMGlevel][FLOW_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceNothing2"<< endl;
     }
 
   }
@@ -1971,13 +1971,13 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
     /*--- Definition of the source term integration scheme for each equation and mesh level ---*/
 
     for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
-      if (spalart_allmaras) numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSA(nDim, nVar_Turb, config);
-      else if (e_spalart_allmaras) numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSA_E(nDim, nVar_Turb, config);
-      else if (comp_spalart_allmaras) numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSA_COMP(nDim, nVar_Turb, config);
-      else if (e_comp_spalart_allmaras) numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSA_E_COMP(nDim, nVar_Turb, config);
-      else if (neg_spalart_allmaras) numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSA_Neg(nDim, nVar_Turb, config);
-      else if (menter_sst) numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSST(nDim, nVar_Turb, constants, config);
-      numerics_container[iMGlevel][TURB_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Turb, config);
+      if (spalart_allmaras) {numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSA(nDim, nVar_Turb, config); cout << "************************************************************************************************************CSourcePieceWise_TurbSA"<< endl;}
+      else if (e_spalart_allmaras) {numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSA_E(nDim, nVar_Turb, config);cout << "************************************************************************************************************CSourcePieceWise_TurbSA_E"<< endl;}
+      else if (comp_spalart_allmaras) {numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSA_COMP(nDim, nVar_Turb, config); cout << "************************************************************************************************************CSourcePieceWise_TurbSA_COMP"<< endl;}
+      else if (e_comp_spalart_allmaras) {numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSA_E_COMP(nDim, nVar_Turb, config); cout << "************************************************************************************************************CSourcePieceWise_TurbSA_E_COMP"<< endl;}
+      else if (neg_spalart_allmaras) {numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSA_Neg(nDim, nVar_Turb, config); cout << "************************************************************************************************************CSourcePieceWise_TurbSA_Neg"<< endl;}
+      else if (menter_sst) {numerics_container[iMGlevel][TURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TurbSST(nDim, nVar_Turb, constants, config);cout << "************************************************************************************************************CSourcePieceWise_TurbSST"<< endl;}
+      numerics_container[iMGlevel][TURB_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Turb, config); cout << "************************************************************************************************************CSourceNothing3"<< endl;
     }
 
     /*--- Definition of the boundary condition method ---*/
@@ -2022,8 +2022,8 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
 
     /*--- Definition of the source term integration scheme for each equation and mesh level ---*/
     for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
-      numerics_container[iMGlevel][TRANS_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TransLM(nDim, nVar_Trans, config);
-      numerics_container[iMGlevel][TRANS_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Trans, config);
+      numerics_container[iMGlevel][TRANS_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_TransLM(nDim, nVar_Trans, config); cout << "************************************************************************************************************CSourcePieceWise_TransLM"<< endl;
+      numerics_container[iMGlevel][TRANS_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Trans, config); cout << "************************************************************************************************************CSourceNothing4"<< endl;
     }
 
     /*--- Definition of the boundary condition method ---*/
@@ -2039,8 +2039,8 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
     numerics_container[MESH_0][POISSON_SOL][VISC_TERM] = new CGalerkin_Flow(nDim, nVar_Poisson, config);
 
     /*--- Definition of the source term integration scheme for each equation and mesh level ---*/
-    numerics_container[MESH_0][POISSON_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Poisson, config);
-    numerics_container[MESH_0][POISSON_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Poisson, config);
+    numerics_container[MESH_0][POISSON_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Poisson, config); cout << "************************************************************************************************************CSourceNothing5"<< endl;
+    numerics_container[MESH_0][POISSON_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Poisson, config); cout << "************************************************************************************************************CSourceNothing6"<< endl;
 
   }
 
@@ -2079,8 +2079,8 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
     numerics_container[MESH_0][HEAT_SOL][VISC_TERM] = new CGalerkin_Flow(nDim, nVar_Heat, config);
 
     /*--- Definition of the source term integration scheme for each equation and mesh level ---*/
-    numerics_container[MESH_0][HEAT_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Heat, config);
-    numerics_container[MESH_0][HEAT_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Heat, config);
+    numerics_container[MESH_0][HEAT_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Heat, config); cout << "************************************************************************************************************CSourceNothing7"<< endl;
+    numerics_container[MESH_0][HEAT_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Heat, config); cout << "************************************************************************************************************CSourceNothing8"<< endl;
 
   }
 
@@ -2187,25 +2187,25 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
 
         if (adj_ns) {
 
-          numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_FIRST_TERM] = new CSourceViscous_AdjFlow(nDim, nVar_Adj_Flow, config);
+          numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_FIRST_TERM] = new CSourceViscous_AdjFlow(nDim, nVar_Adj_Flow, config); cout << "************************************************************************************************************CSourceViscous_AdjFlow"<< endl;
 
           if (config->GetRotating_Frame() == YES)
-            numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_SECOND_TERM] = new CSourceRotatingFrame_AdjFlow(nDim, nVar_Adj_Flow, config);
+            {numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_SECOND_TERM] = new CSourceRotatingFrame_AdjFlow(nDim, nVar_Adj_Flow, config); cout << "************************************************************************************************************CSourceRotatingFrame_AdjFlow"<< endl;}
           else
-            numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_SECOND_TERM] = new CSourceConservative_AdjFlow(nDim, nVar_Adj_Flow, config);
+            {numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_SECOND_TERM] = new CSourceConservative_AdjFlow(nDim, nVar_Adj_Flow, config); cout << "************************************************************************************************************CSourceConservative_AdjFlow"<< endl;}
 
         }
 
         else {
 
           if (config->GetRotating_Frame() == YES)
-            numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_FIRST_TERM] = new CSourceRotatingFrame_AdjFlow(nDim, nVar_Adj_Flow, config);
+            {numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_FIRST_TERM] = new CSourceRotatingFrame_AdjFlow(nDim, nVar_Adj_Flow, config); cout << "************************************************************************************************************CSourceRotatingFrame_AdjFlow"<< endl;}
           else if (config->GetAxisymmetric() == YES)
-            numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_FIRST_TERM] = new CSourceAxisymmetric_AdjFlow(nDim, nVar_Adj_Flow, config);
+            {numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_FIRST_TERM] = new CSourceAxisymmetric_AdjFlow(nDim, nVar_Adj_Flow, config);  cout << "************************************************************************************************************CSourceAxisymmetric_AdjFlow"<< endl;}
           else
-            numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Adj_Flow, config);
+            {numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Adj_Flow, config); cout << "************************************************************************************************************CSourceNothing9"<< endl;}
 
-          numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Adj_Flow, config);
+          numerics_container[iMGlevel][ADJFLOW_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Adj_Flow, config); cout << "************************************************************************************************************CSourceNothing10"<< endl;
 
         }
 
@@ -2259,8 +2259,8 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
     /*--- Definition of the source term integration scheme for each equation and mesh level ---*/
     for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
       if (spalart_allmaras) {
-        numerics_container[iMGlevel][ADJTURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_AdjTurb(nDim, nVar_Adj_Turb, config);
-        numerics_container[iMGlevel][ADJTURB_SOL][SOURCE_SECOND_TERM] = new CSourceConservative_AdjTurb(nDim, nVar_Adj_Turb, config);
+        numerics_container[iMGlevel][ADJTURB_SOL][SOURCE_FIRST_TERM] = new CSourcePieceWise_AdjTurb(nDim, nVar_Adj_Turb, config); cout << "************************************************************************************************************CSourcePieceWise_AdjTurb"<< endl;
+        numerics_container[iMGlevel][ADJTURB_SOL][SOURCE_SECOND_TERM] = new CSourceConservative_AdjTurb(nDim, nVar_Adj_Turb, config); cout << "************************************************************************************************************CSourceConservative_AdjTurb"<< endl;
       }
       else if (neg_spalart_allmaras) {SU2_MPI::Error("Adjoint Neg SA turbulence model not implemented.", CURRENT_FUNCTION);}
       else if (menter_sst) {SU2_MPI::Error("Adjoint SST turbulence model not implemented.", CURRENT_FUNCTION);}
