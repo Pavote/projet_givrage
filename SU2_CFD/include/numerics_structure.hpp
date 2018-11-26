@@ -4950,6 +4950,37 @@ public:
 };
 
 /*!
+ * \class CSourceDropletDrag
+ * \brief Class for the impact problem.
+ * \author B. Constant, M. Fleurotte, A. Motte, I. Moufid
+ */
+class CSourceDropletDrag : public CNumerics {
+    su2double *Body_Force_Vector;
+    
+public:
+    
+    /*!
+     * \param[in] val_nDim - Number of dimensions of the problem.
+     * \param[in] val_nVar - Number of variables of the problem.
+     * \param[in] config - Definition of the particular problem.
+     */
+    CSourceDropletDrag(unsigned short val_nDim, unsigned short val_nVar, CConfig *config);
+    
+    /*!
+     * \brief Destructor of the class.
+     */
+    ~CSourceDropletDrag(void);
+    
+    /*!
+     * \brief Source term integration for a body force.
+     * \param[out] val_residual - Pointer to the residual vector.
+     * \param[in] config - Definition of the particular problem.
+     */
+    void ComputeResidual(su2double *val_residual, CConfig *config);
+    
+};
+
+/*!
  * \class CSourceBodyForce
  * \brief Class for the source term integration of a body force.
  * \ingroup SourceDiscr

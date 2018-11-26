@@ -1913,25 +1913,28 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
 
     /*--- Definition of the source term integration scheme for each equation and mesh level ---*/
     for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
-
+        
+      if (impact)
+          {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceDropletDrag(nDim, nVar_Flow, config); cout <<
+        
       if (config->GetBody_Force() == YES)
-        if (incompressible) {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceIncBodyForce(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceIncBodyForce"<< endl;}
-        else {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceBodyForce(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceBodyForce"<< endl;}
+        if (incompressible) {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceIncBodyForce(nDim, nVar_Flow, config); cout <<
+        else {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceBodyForce(nDim, nVar_Flow, config); cout <<
       else if (incompressible && (config->GetKind_DensityModel() == BOUSSINESQ))
-        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceBoussinesq(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceBoussinesq"<< endl;}
+        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceBoussinesq(nDim, nVar_Flow, config); cout <<
       else if (config->GetRotating_Frame() == YES)
-        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceRotatingFrame_Flow(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceRotatingFrame_Flow"<< endl;}
+        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceRotatingFrame_Flow(nDim, nVar_Flow, config); cout <<
       else if (config->GetAxisymmetric() == YES)
-        if (incompressible) {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceIncAxisymmetric_Flow(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceIncAxisymmetric_Flow"<< endl;}
-      else {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceAxisymmetric_Flow(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceAxisymmetric_Flow"<< endl;}
+        if (incompressible) {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceIncAxisymmetric_Flow(nDim, nVar_Flow, config); cout <<
+      else {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceAxisymmetric_Flow(nDim, nVar_Flow, config); cout <<
       else if (config->GetGravityForce() == YES)
-        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceGravity(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceGravity"<< endl;}
+        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceGravity(nDim, nVar_Flow, config); cout <<
       else if (config->GetWind_Gust() == YES)
-        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceWindGust(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceWindGust"<< endl;}
+        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceWindGust(nDim, nVar_Flow, config); cout <<
       else
-        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceNothing1"<< endl;}
+        {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Flow, config); cout <<
 
-      numerics_container[iMGlevel][FLOW_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Flow, config); cout << "************************************************************************************************************CSourceNothing2"<< endl;
+      numerics_container[iMGlevel][FLOW_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Flow, config); cout <<
     }
 
   }
