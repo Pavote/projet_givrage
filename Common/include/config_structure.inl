@@ -535,6 +535,12 @@ inline su2double CConfig::GetOmega_Ref(void) { return Omega_Ref; }
 
 inline su2double CConfig::GetForce_Ref(void) { return Force_Ref; }
 
+inline su2double CConfig::GetDroplet_LWC(void) { return Droplet_LWC; }
+
+inline su2double CConfig::GetRho_Water(void) { return Rho_Water; }
+
+inline su2double CConfig::GetDroplet_Diameter(void) { return Droplet_Diameter; }
+
 inline su2double CConfig::GetPressure_FreeStreamND(void) { return Pressure_FreeStreamND; }
 
 inline su2double CConfig::GetPressure_ThermodynamicND(void) { return Pressure_ThermodynamicND; }
