@@ -1795,7 +1795,25 @@ public:
    * \return Reference force for non-dimensionalization.
    */
   su2double GetForce_Ref(void);
-  
+    
+  /*!
+   * \brief Get the value of the reference droplet drag coefficient.
+   * \return Reference droplet drag coefficient.
+   */
+  su2double GetDroplet_LWC(void);
+    
+  /*!
+   * \brief Get the value of the reference water density.
+   * \return Reference density for water.
+   */
+  su2double GetRho_Water(void);
+    
+  /*!
+   * \brief Get the value of the reference droplet diameter.
+   * \return Reference diameter for droplet.
+   */
+    su2double GetDroplet_Diameter(void);
+    
   /*!
    * \brief Get the value of the non-dimensionalized freestream pressure.
    * \return Non-dimensionalized freestream pressure.
