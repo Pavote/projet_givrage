@@ -100,6 +100,7 @@ libSU2Core_sources = \
   ../src/numerics_direct_transition.cpp \
   ../src/numerics_direct_turbulent.cpp \
   ../src/numerics_direct_wave.cpp \
+  ../src/numerics_direct_impact.cpp \
   ../src/numerics_direct_elasticity_nonlinear.cpp \
   ../src/numerics_direct_elasticity_linear.cpp \
   ../src/numerics_direct_elasticity.cpp \

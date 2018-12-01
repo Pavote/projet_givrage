@@ -673,6 +673,15 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   addDoubleOption("THERMAL_EXPANSION_COEFF", Thermal_Expansion_Coeff, 0.00347);
   /*!\brief MOLECULAR_WEIGHT \n DESCRIPTION: Molecular weight for an incompressible ideal gas (28.96 g/mol (air) default) \ingroup Config*/
   addDoubleOption("MOLECULAR_WEIGHT", Molecular_Weight, 28.96);
+    
+  /*--- Options related to the IMPACT problem---*/
+    
+  /* DESCRIPTION: Droplet drag coefficient */
+  addDoubleOption("DROPLET_LWC", Droplet_LWC, 1);
+  /* DESCRIPTION: Density for water */
+  addDoubleOption("RHO_WATER", Rho_Water, 1);
+  /* DESCRIPTION: Diameter for droplet */
+  addDoubleOption("DROPLET_DIAMETER", Droplet_Diameter, 1);
 
   /*--- Options related to VAN der WAALS MODEL and PENG ROBINSON ---*/
 

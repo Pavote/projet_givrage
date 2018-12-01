@@ -690,6 +690,12 @@ inline void CConfig::SetOmega_Ref(su2double val_omega_ref) { Omega_Ref = val_ome
 
 inline void CConfig::SetForce_Ref(su2double val_force_ref) { Force_Ref = val_force_ref; }
 
+inline void CConfig::SetDroplet_LWC(su2double val_droplet_lwc) { Droplet_LWC = val_droplet_lwc; }
+
+inline void CConfig::SetRho_Water(su2double val_rho_water) { Rho_Water = val_rho_water; }
+
+inline void CConfig::SetDroplet_Diameter(su2double val_droplet_diameter) { Droplet_Diameter = val_droplet_diameter; }
+
 inline void CConfig::SetGas_Constant_Ref(su2double val_gas_constant_ref) { Gas_Constant_Ref = val_gas_constant_ref; }
 
 inline void CConfig::SetGas_Constant(su2double val_gas_constant) { Gas_Constant = val_gas_constant; }

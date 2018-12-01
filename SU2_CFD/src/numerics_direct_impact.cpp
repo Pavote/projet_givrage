@@ -39,39 +39,51 @@
 #include <limits>
 
 CSourceDropletDrag::CSourceDropletDrag(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) {
-    
+
     /*--- Store the pointer to the constant body force vector. ---*/
-    
+
     Body_Force_Vector = new su2double[nDim];
     for (unsigned short iDim = 0; iDim < nDim; iDim++)
         Body_Force_Vector[iDim] = config->GetBody_Force_Vector()[iDim];
-    
+
+    su2double Droplet_LWC = config->GetDroplet_LWC();
+    su2double Rho_Water = config->GetRho_Water();
+    su2double Droplet_Diameter= config->GetDroplet_Diameter();
+    cout << "*************************************************************************************" << endl;
+    cout << "Droplet_LWC = " << Droplet_LWC << " Rho_Water = " << Rho_Water << " Droplet_Diameter = " << Droplet_Diameter << endl;
+    cout << "*************************************************************************************" << endl;
 }
 
 CSourceDropletDrag::~CSourceDropletDrag(void) {
-    
+
     if (Body_Force_Vector != NULL) delete [] Body_Force_Vector;
-    
+
 }
 
 void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *config) {
-    
+
     unsigned short iDim;
     su2double Droplet_LWC = config->GetDroplet_LWC();
-    
+    su2double Rho_Water = config->GetRho_Water();
+    su2double Droplet_Diameter= config->GetDroplet_Diameter();
+
+    cout << "*************************************************************************************" << endl;
+    cout << "Droplet_LWC = " << Droplet_LWC << " Rho_Water = " << Rho_Water << " Droplet_Diameter = " << Droplet_Diameter << endl;
+    cout << "*************************************************************************************" << endl;
+
     /*--- Zero the continuity contribution ---*/
-    
+
     val_residual[0] = 0.0;
-    
+
     /*--- Momentum contribution ---*/
-    
+
     for (iDim = 0; iDim < nDim; iDim++)
         val_residual[iDim+1] = -Volume * U_i[0] * Body_Force_Vector[iDim] / Droplet_LWC;
-    
+
     /*--- Energy contribution ---*/
-    
+
     val_residual[nDim+1] = 0.0;
     for (iDim = 0; iDim < nDim; iDim++)
         val_residual[nDim+1] += -Volume * U_i[iDim+1] * Body_Force_Vector[iDim] / Droplet_LWC;
-    
+
 }

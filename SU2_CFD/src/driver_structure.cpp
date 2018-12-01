@@ -1913,10 +1913,9 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
 
     /*--- Definition of the source term integration scheme for each equation and mesh level ---*/
     for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
-      if (impact)
-      {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceDropletDrag(nDim, nVar_Flow, config);}
       if (config->GetBody_Force() == YES)
           if (incompressible) {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceIncBodyForce(nDim, nVar_Flow, config);}
+          else if (impact) {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceDropletDrag(nDim, nVar_Flow, config);}
           else {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceBodyForce(nDim, nVar_Flow, config);}
       else if (incompressible && (config->GetKind_DensityModel() == BOUSSINESQ))
       {numerics_container[iMGlevel][FLOW_SOL][SOURCE_FIRST_TERM] = new CSourceBoussinesq(nDim, nVar_Flow, config);}

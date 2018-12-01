@@ -814,6 +814,9 @@ private:
   Wall_Temperature,           /*!< \brief Temperature at an isotropic wall in Kelvin. */
   Omega_Ref,                  /*!< \brief Reference angular velocity for non-dimensionalization. */
   Force_Ref,                  /*!< \brief Reference body force for non-dimensionalization. */
+  Droplet_LWC,                /*!< \brief Reference droplet drag coefficient. */
+  Rho_Water,                  /*!< \brief Reference water density. */
+  Droplet_Diameter,           /*!< \brief Reference droplet diameter. */
   Pressure_FreeStreamND,      /*!< \brief Farfield pressure value (external flow). */
   Pressure_ThermodynamicND,   /*!< \brief Farfield thermodynamic pressure value. */
   Temperature_FreeStreamND,   /*!< \brief Farfield temperature value (external flow). */
@@ -1005,9 +1008,6 @@ private:
   su2double *default_nacelle_location;        /*!< \brief Location of the nacelle. */
   su2double *ExtraRelFacGiles; /*!< \brief coefficient for extra relaxation factor for Giles BC*/
   bool Body_Force;            /*!< \brief Flag to know if a body force is included in the formulation. */
-  bool Droplet_LWC;
-  bool Rho_Water;
-  bool Droplet_Diameter;
   su2double *Body_Force_Vector;  /*!< \brief Values of the prescribed body force vector. */
   su2double *FreeStreamTurboNormal; /*!< \brief Direction to initialize the flow in turbomachinery computation */
   su2double Restart_Bandwidth_Agg; /*!< \brief The aggregate of the bandwidth for writing binary restarts (to be averaged later). */
@@ -2379,6 +2379,24 @@ public:
    * \return Value of the Froude number.
    */
   void SetForce_Ref(su2double val_force_ref);
+
+  /*!
+   * \brief Set the value of the reference droplet drag coefficient.
+   * \return Value of the droplet drag coefficient.
+   */
+  void SetDroplet_LWC(su2double val_droplet_lwc);
+    
+  /*!
+   *\brief Set the value of the reference water density.
+   * \return Value density for water.
+   */
+  void SetRho_Water(su2double val_rho_water);
+    
+  /*!
+   * \brief Set the value of the reference droplet diameter.
+   * \return Value of the diameter for droplet.
+   */
+  void SetDroplet_Diameter(su2double val_droplet_diameter);
   
   /*!
    * \brief Set the Froude number for free surface problems.
