@@ -49,9 +49,6 @@ CSourceDropletDrag::CSourceDropletDrag(unsigned short val_nDim, unsigned short v
     su2double Droplet_LWC = config->GetDroplet_LWC();
     su2double Rho_Water = config->GetRho_Water();
     su2double Droplet_Diameter= config->GetDroplet_Diameter();
-    cout << "*************************************************************************************" << endl;
-    cout << "Droplet_LWC = " << Droplet_LWC << " Rho_Water = " << Rho_Water << " Droplet_Diameter = " << Droplet_Diameter << endl;
-    cout << "*************************************************************************************" << endl;
 }
 
 CSourceDropletDrag::~CSourceDropletDrag(void) {
@@ -66,10 +63,6 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
     su2double Droplet_LWC = config->GetDroplet_LWC();
     su2double Rho_Water = config->GetRho_Water();
     su2double Droplet_Diameter= config->GetDroplet_Diameter();
-
-    cout << "*************************************************************************************" << endl;
-    cout << "Droplet_LWC = " << Droplet_LWC << " Rho_Water = " << Rho_Water << " Droplet_Diameter = " << Droplet_Diameter << endl;
-    cout << "*************************************************************************************" << endl;
 
     /*--- Zero the continuity contribution ---*/
 
