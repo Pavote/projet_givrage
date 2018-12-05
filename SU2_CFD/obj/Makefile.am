@@ -125,6 +125,7 @@ libSU2Core_sources = \
   ../src/solver_direct_transition.cpp \
   ../src/solver_direct_turbulent.cpp \
   ../src/solver_direct_wave.cpp \
+  ../src/solver_direct_impact.cpp \
   ../src/solver_direct_elasticity.cpp \
   ../src/solver_structure.cpp \
   ../src/solver_template.cpp \
@@ -142,6 +143,7 @@ libSU2Core_sources = \
   ../src/variable_direct_transition.cpp \
   ../src/variable_direct_turbulent.cpp \
   ../src/variable_direct_wave.cpp \
+  ../src/variable_direct_impact.cpp \
   ../src/variable_direct_elasticity.cpp \
   ../src/variable_structure.cpp \
   ../src/variable_template.cpp

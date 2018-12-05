@@ -1,7 +1,7 @@
 /*!
  * \file variable_direct_mean.cpp
  * \brief Definition of the solution fields.
- * \author F. Palacios, T. Economon
+ * \author  B. Constant, M. Fleurotte, A. Motte, I. Moufid, F. Morency
  * \version 6.1.0 "Falcon"
  *
  * The current SU2 release has been coordinated by the
@@ -37,7 +37,7 @@
 
 #include "../include/variable_structure.hpp"
 
-CEulerVariable::CEulerVariable(void) : CVariable() {
+CImpactVariable::CImpactVariable(void) : CVariable() {
 
   /*--- Array initialization ---*/
 
@@ -67,7 +67,7 @@ CEulerVariable::CEulerVariable(void) : CVariable() {
   Solution_BGS_k = NULL;
 }
 
-CEulerVariable::CEulerVariable(su2double val_density, su2double *val_velocity, su2double val_energy, unsigned short val_nDim,
+CImpactVariable::CImpactVariable(su2double val_density, su2double *val_velocity, su2double val_energy, unsigned short val_nDim,
                                unsigned short val_nvar, CConfig *config) : CVariable(val_nDim, val_nvar, config) {
     unsigned short iVar, iDim, iMesh, nMGSmooth = 0;
 
@@ -242,7 +242,7 @@ CEulerVariable::CEulerVariable(su2double val_density, su2double *val_velocity, s
 
 }
 
-CEulerVariable::CEulerVariable(su2double *val_solution, unsigned short val_nDim, unsigned short val_nvar, CConfig *config) : CVariable(val_nDim, val_nvar, config) {
+CImpactVariable::CImpactVariable(su2double *val_solution, unsigned short val_nDim, unsigned short val_nvar, CConfig *config) : CVariable(val_nDim, val_nvar, config) {
     unsigned short iVar, iDim, iMesh, nMGSmooth = 0;
 
   bool dual_time = ((config->GetUnsteady_Simulation() == DT_STEPPING_1ST) ||
@@ -407,7 +407,7 @@ CEulerVariable::CEulerVariable(su2double *val_solution, unsigned short val_nDim,
 
 }
 
-CEulerVariable::~CEulerVariable(void) {
+CImpactVariable::~CImpactVariable(void) {
     unsigned short iVar;
 
   if (HB_Source         != NULL) delete [] HB_Source;
@@ -437,7 +437,7 @@ CEulerVariable::~CEulerVariable(void) {
 
 }
 
-void CEulerVariable::SetGradient_PrimitiveZero(unsigned short val_primvar) {
+void CImpactVariable::SetGradient_PrimitiveZero(unsigned short val_primvar) {
     unsigned short iVar, iDim;
 
     for (iVar = 0; iVar < val_primvar; iVar++)
@@ -445,7 +445,7 @@ void CEulerVariable::SetGradient_PrimitiveZero(unsigned short val_primvar) {
             Gradient_Primitive[iVar][iDim] = 0.0;
 }
 
-void CEulerVariable::SetGradient_SecondaryZero(unsigned short val_secondaryvar) {
+void CImpactVariable::SetGradient_SecondaryZero(unsigned short val_secondaryvar) {
     unsigned short iVar, iDim;
 
     for (iVar = 0; iVar < val_secondaryvar; iVar++)
@@ -453,7 +453,7 @@ void CEulerVariable::SetGradient_SecondaryZero(unsigned short val_secondaryvar) 
             Gradient_Secondary[iVar][iDim] = 0.0;
 }
 
-su2double CEulerVariable::GetProjVel(su2double *val_vector) {
+su2double CImpactVariable::GetProjVel(su2double *val_vector) {
     su2double ProjVel;
     unsigned short iDim;
 
@@ -464,7 +464,7 @@ su2double CEulerVariable::GetProjVel(su2double *val_vector) {
     return ProjVel;
 }
 
-bool CEulerVariable::SetPrimVar(CFluidModel *FluidModel) {
+bool CImpactVariable::SetPrimVar(CFluidModel *FluidModel) {
   unsigned short iVar;
   bool check_dens = false, check_press = false, check_sos = false, check_temp = false, RightVol = true;
 
@@ -516,7 +516,7 @@ bool CEulerVariable::SetPrimVar(CFluidModel *FluidModel) {
 
 }
 
-void CEulerVariable::SetSecondaryVar(CFluidModel *FluidModel) {
+void CImpactVariable::SetSecondaryVar(CFluidModel *FluidModel) {
 
    /*--- Compute secondary thermo-physical properties (partial derivatives...) ---*/
 
@@ -525,22 +525,252 @@ void CEulerVariable::SetSecondaryVar(CFluidModel *FluidModel) {
 
 }
 
-void CNSVariable::SetSecondaryVar(CFluidModel *FluidModel) {
+CNSVariable::CNSVariable(void) : CEulerVariable() { }
 
-    /*--- Compute secondary thermodynamic properties (partial derivatives...) ---*/
+CNSVariable::CNSVariable(su2double val_density, su2double *val_velocity, su2double val_energy,
+                         unsigned short val_nDim, unsigned short val_nvar,
+                         CConfig *config) : CEulerVariable(val_density, val_velocity, val_energy, val_nDim, val_nvar, config) {
 
-    SetdPdrho_e( FluidModel->GetdPdrho_e() );
-    SetdPde_rho( FluidModel->GetdPde_rho() );
+    Temperature_Ref = config->GetTemperature_Ref();
+    Viscosity_Ref   = config->GetViscosity_Ref();
+    Viscosity_Inf   = config->GetViscosity_FreeStreamND();
+    Prandtl_Lam     = config->GetPrandtl_Lam();
+    Prandtl_Turb    = config->GetPrandtl_Turb();
 
-    SetdTdrho_e( FluidModel->GetdTdrho_e() );
-    SetdTde_rho( FluidModel->GetdTde_rho() );
+    inv_TimeScale   = config->GetModVel_FreeStream() / config->GetRefLength();
+    Roe_Dissipation = 0.0;
+    Vortex_Tilting  = 0.0;
+}
 
-    /*--- Compute secondary thermo-physical properties (partial derivatives...) ---*/
+CNSVariable::CNSVariable(su2double *val_solution, unsigned short val_nDim,
+                         unsigned short val_nvar, CConfig *config) : CEulerVariable(val_solution, val_nDim, val_nvar, config) {
 
-    Setdmudrho_T( FluidModel->Getdmudrho_T() );
-    SetdmudT_rho( FluidModel->GetdmudT_rho() );
+    Temperature_Ref = config->GetTemperature_Ref();
+    Viscosity_Ref   = config->GetViscosity_Ref();
+    Viscosity_Inf   = config->GetViscosity_FreeStreamND();
+    Prandtl_Lam     = config->GetPrandtl_Lam();
+    Prandtl_Turb    = config->GetPrandtl_Turb();
 
-    Setdktdrho_T( FluidModel->Getdktdrho_T() );
-    SetdktdT_rho( FluidModel->GetdktdT_rho() );
+    inv_TimeScale   = config->GetModVel_FreeStream() / config->GetRefLength();
+    Roe_Dissipation = 0.0;
+    Vortex_Tilting  = 0.0;
+}
+
+CNSVariable::~CNSVariable(void) { }
+
+bool CNSVariable::SetVorticity(void) {
+
+  Vorticity[0] = 0.0; Vorticity[1] = 0.0;
+
+  Vorticity[2] = Gradient_Primitive[2][0]-Gradient_Primitive[1][1];
+
+  if (nDim == 3) {
+    Vorticity[0] = Gradient_Primitive[3][1]-Gradient_Primitive[2][2];
+    Vorticity[1] = -(Gradient_Primitive[3][0]-Gradient_Primitive[1][2]);
+  }
+
+  return false;
+
+}
+
+bool CNSVariable::SetStrainMag(void) {
+
+  su2double Div;
+  unsigned short iDim;
+
+  AD::StartPreacc();
+  AD::SetPreaccIn(Gradient_Primitive, nDim+1, nDim);
+
+  Div = 0.0;
+  for (iDim = 0; iDim < nDim; iDim++) {
+    Div += Gradient_Primitive[iDim+1][iDim];
+  }
+
+  StrainMag = 0.0;
+
+  /*--- Add diagonal part ---*/
+
+  for (iDim = 0; iDim < nDim; iDim++) {
+    StrainMag += pow(Gradient_Primitive[iDim+1][iDim] - 1.0/3.0*Div, 2.0);
+  }
+
+  /*--- Add off diagonals ---*/
+
+  StrainMag += 2.0*pow(0.5*(Gradient_Primitive[1][1] + Gradient_Primitive[2][0]), 2.0);
+
+  if (nDim == 3) {
+    StrainMag += 2.0*pow(0.5*(Gradient_Primitive[1][2] + Gradient_Primitive[3][0]), 2.0);
+    StrainMag += 2.0*pow(0.5*(Gradient_Primitive[2][2] + Gradient_Primitive[3][1]), 2.0);
+  }
+
+  StrainMag = sqrt(2.0*StrainMag);
+
+  AD::SetPreaccOut(StrainMag);
+  AD::EndPreacc();
+
+  return false;
+
+}
+
+void CNSVariable::SetRoe_Dissipation_NTS(su2double val_delta,
+                                         su2double val_const_DES){
+
+  static const su2double cnu = pow(0.09, 1.5),
+                         ch1 = 3.0,
+                         ch2 = 1.0,
+                         ch3 = 2.0,
+                         sigma_max = 1.0;
+
+  unsigned short iDim;
+  su2double Omega, Omega_2 = 0, Baux, Gaux, Lturb, Kaux, Aaux;
+
+  AD::StartPreacc();
+  AD::SetPreaccIn(Vorticity, 3);
+  AD::SetPreaccIn(StrainMag);
+  AD::SetPreaccIn(val_delta);
+  AD::SetPreaccIn(val_const_DES);
+  /*--- Density ---*/
+  AD::SetPreaccIn(Solution[0]);
+  /*--- Laminar viscosity --- */
+  AD::SetPreaccIn(Primitive[nDim+5]);
+  /*--- Eddy viscosity ---*/
+  AD::SetPreaccIn(Primitive[nDim+6]);
+
+  /*--- Central/upwind blending based on:
+   * Zhixiang Xiao, Jian Liu, Jingbo Huang, and Song Fu.  "Numerical
+   * Dissipation Effects on Massive Separation Around Tandem Cylinders",
+   * AIAA Journal, Vol. 50, No. 5 (2012), pp. 1119-1136.
+   * https://doi.org/10.2514/1.J051299
+   * ---*/
+
+  for (iDim = 0; iDim < 3; iDim++){
+    Omega_2 += 2.0*Vorticity[iDim]*Vorticity[iDim];
+  }
+  Omega = sqrt(Omega_2);
+
+  Baux = (ch3 * Omega * max(StrainMag, Omega)) /
+      max((pow(StrainMag,2)+Omega_2)*0.5, 1E-20);
+  Gaux = tanh(pow(Baux,4.0));
+
+  Kaux = max(sqrt((Omega_2 + pow(StrainMag, 2))*0.5), 0.1 * inv_TimeScale);
+
+  const su2double nu = GetLaminarViscosity()/GetDensity();
+  const su2double nu_t = GetEddyViscosity()/GetDensity();
+  Lturb = sqrt((nu + nu_t)/(cnu*Kaux));
+
+  Aaux = ch2*max((val_const_DES*val_delta/Lturb)/Gaux -  0.5, 0.0);
+
+  Roe_Dissipation = sigma_max * tanh(pow(Aaux, ch1));
+
+  AD::SetPreaccOut(Roe_Dissipation);
+  AD::EndPreacc();
+
+}
+
+void CNSVariable::SetRoe_Dissipation_FD(su2double val_wall_dist){
+
+  /*--- Constants for Roe Dissipation ---*/
+
+  static const su2double k2 = pow(0.41,2.0);
+
+  su2double uijuij = 0, r_d;
+  unsigned short iDim, jDim;
+
+  AD::StartPreacc();
+  AD::SetPreaccIn(Gradient_Primitive, nVar, nDim);
+  AD::SetPreaccIn(val_wall_dist);
+  /*--- Eddy viscosity ---*/
+  AD::SetPreaccIn(Primitive[nDim+5]);
+  /*--- Laminar viscosity --- */
+  AD::SetPreaccIn(Primitive[nDim+6]);
+
+  for(iDim=0;iDim<nDim;++iDim){
+    for(jDim=0;jDim<nDim;++jDim){
+      uijuij+= Gradient_Primitive[1+iDim][jDim]*Gradient_Primitive[1+iDim][jDim];
+    }
+  }
+
+  uijuij=sqrt(fabs(uijuij));
+  uijuij=max(uijuij,1e-10);
+
+  r_d = (GetEddyViscosity()+GetLaminarViscosity())/(uijuij*k2*pow(val_wall_dist, 2.0));
+
+  Roe_Dissipation = 1.0-tanh(pow(8.0*r_d,3.0));
+
+  AD::SetPreaccOut(Roe_Dissipation);
+  AD::EndPreacc();
+
+}
+
+bool CNSVariable::SetPrimVar(su2double eddy_visc, su2double turb_ke, CFluidModel *FluidModel) {
+
+    unsigned short iVar;
+  su2double density, staticEnergy;
+  bool check_dens = false, check_press = false, check_sos = false,
+  check_temp = false, RightVol = true;
+
+
+  SetVelocity(); // Computes velocity and velocity^2
+  density = GetDensity();
+  staticEnergy = GetEnergy()-0.5*Velocity2 - turb_ke;
+
+  /*--- Check will be moved inside fluid model plus error description strings ---*/
+
+  FluidModel->SetTDState_rhoe(density, staticEnergy);
+
+  check_dens  = SetDensity();
+  check_press = SetPressure(FluidModel->GetPressure());
+  check_sos   = SetSoundSpeed(FluidModel->GetSoundSpeed2());
+  check_temp  = SetTemperature(FluidModel->GetTemperature());
+
+  /*--- Check that the solution has a physical meaning ---*/
+
+  if (check_dens || check_press || check_sos  || check_temp) {
+
+    /*--- Copy the old solution ---*/
+
+    for (iVar = 0; iVar < nVar; iVar++)
+      Solution[iVar] = Solution_Old[iVar];
+
+    /*--- Recompute the primitive variables ---*/
+
+    SetVelocity(); // Computes velocity and velocity^2
+    density = GetDensity();
+    staticEnergy = GetEnergy()-0.5*Velocity2 - turb_ke;
+
+    /*--- Check will be moved inside fluid model plus error description strings ---*/
+
+    FluidModel->SetTDState_rhoe(density, staticEnergy);
+
+    SetDensity();
+    SetPressure(FluidModel->GetPressure());
+    SetSoundSpeed(FluidModel->GetSoundSpeed2());
+    SetTemperature(FluidModel->GetTemperature());
+
+    RightVol = false;
+
+  }
+
+  /*--- Set enthalpy ---*/
+
+  SetEnthalpy();                                  // Requires pressure computation.
+
+  /*--- Set laminar viscosity ---*/
+
+  SetLaminarViscosity(FluidModel->GetLaminarViscosity());
+
+  /*--- Set eddy viscosity ---*/
+
+  SetEddyViscosity(eddy_visc);
+
+  /*--- Set thermal conductivity ---*/
+
+  SetThermalConductivity(FluidModel->GetThermalConductivity());
+
+  /*--- Set specific heat ---*/
+
+  SetSpecificHeatCp(FluidModel->GetCp());
+
+  return RightVol;
 
 }
