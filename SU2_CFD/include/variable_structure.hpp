@@ -68,6 +68,7 @@ protected:
   su2double *Limiter;        /*!< \brief Limiter of the solution of the problem. */
   su2double *Solution_Max;    /*!< \brief Max solution for limiter computation. */
   su2double *Solution_Min;    /*!< \brief Min solution for limiter computation. */
+  su2double *Solution_Air;  /*!< \brief Air solution for droplet model calculation. */   
   su2double AuxVar;      /*!< \brief Auxiliar variable for gradient computation. */
   su2double *Grad_AuxVar;  /*!< \brief Gradient of the auxiliar variable. */
   su2double Delta_Time;  /*!< \brief Time step. */
@@ -131,6 +132,12 @@ public:
    * \param[in] val_solution - Value of the solution for the index <i>val_var</i>.
    */
   void SetSolution(unsigned short val_var, su2double val_solution);
+  
+  /*!
+   * \brief Set the value of the solution.
+   * \param[in] val_solution - Solution of the problem.
+   */
+  void SetSolution_Air(su2double *val_solution);
 
   /*!
    * \brief Add the value of the solution vector to the previous solution (incremental approach).
@@ -171,6 +178,13 @@ public:
    * \return Pointer to the old solution vector.
    */
   su2double GetSolution_Old_Adj(unsigned short val_var);
+  
+  /*!
+   * \brief Get the air solution of the problem for IMPACT model
+   * \param[in] val_var - Index of the variable.
+   * \return Pointer to the air solution vector.
+   */
+  su2double GetSolution_Air(unsigned short val_var);
 
   /*!
    * \brief Set the value of the old solution.
@@ -219,6 +233,12 @@ public:
    * \brief Set the variable solution at time n-1.
    */
   void Set_Solution_time_n1(su2double* val_sol);
+
+  /*!
+   * \brief Set the air solution for the IMPACT model.
+   */
+  void Set_Solution_Air(su2double* val_sol);  
+  
 
   /*!
    * \brief Set to zero the velocity components of the solution.
@@ -357,6 +377,13 @@ public:
    * \return Pointer to the solution (at time n-1) vector.
    */
   su2double *GetSolution_time_n1(void);
+  
+   /*!
+   * \brief Get the air solution for the IMPACT model
+   * \return Pointer to the solution air.
+   */
+  su2double *GetSolution_Air(void);
+  
 
   /*!
    * \brief Get the fem solution at time n.
@@ -3966,6 +3993,25 @@ public:
    * \return Value of the velocity for the dimension <i>val_dim</i>.
    */
   su2double GetVelocity(unsigned short val_dim);
+  
+  /*!
+   * \brief A virtual member.
+   * \param[in] val_dim - Index of the dimension.
+   * \return Value of the air velocity for the dimension <i>val_dim</i>.
+   */
+  virtual su2double GetVelocity_Air(unsigned short val_dim);
+  
+   /*!
+   * \brief A virtual member.
+   * \return Value of the air density.
+   */
+  virtual su2double GetRho_Air(void);
+  
+   /*!
+   * \brief A virtual member.
+   * \return Value of the air viscosity.
+   */
+  virtual su2double GetMu_Air(unsigned short ndim);
 
   /*!
    * \brief Get the projected velocity in a unitary vector direction (compressible solver).

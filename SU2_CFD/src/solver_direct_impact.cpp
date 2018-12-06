@@ -177,7 +177,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   bool roe_turkel = (config->GetKind_Upwind_Flow() == TURKEL);
   bool rans = ((config->GetKind_Solver() == RANS )|| (config->GetKind_Solver() == DISC_ADJ_RANS));
   unsigned short direct_diff = config->GetDirectDiff();
-  int Unst_RestartIter;
+  int Unst_RestartIter = 0;
   unsigned short iZone = config->GetiZone();
   bool dual_time = ((config->GetUnsteady_Simulation() == DT_STEPPING_1ST) ||
                     (config->GetUnsteady_Simulation() == DT_STEPPING_2ND));
@@ -426,6 +426,10 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   Secondary   = new su2double[nSecondaryVar]; for (iVar = 0; iVar < nSecondaryVar; iVar++) Secondary[iVar]   = 0.0;
   Secondary_i = new su2double[nSecondaryVar]; for (iVar = 0; iVar < nSecondaryVar; iVar++) Secondary_i[iVar] = 0.0;
   Secondary_j = new su2double[nSecondaryVar]; for (iVar = 0; iVar < nSecondaryVar; iVar++) Secondary_j[iVar] = 0.0;
+  
+  /*--- Define some auxiliary vectors related to the air solution ---*/
+
+  Solution_Air   = new su2double[nVar]; for (iVar = 0; iVar < nVar; iVar++) Solution_Air[iVar]   = 0.0;
 
   /*--- Define some auxiliary vectors related to the undivided lapalacian ---*/
 
@@ -784,9 +788,10 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
 
     }
   }
-
+  
+  
   /*--- Initialize the solution to the far-field state everywhere. ---*/
-
+  
   for (iPoint = 0; iPoint < nPoint; iPoint++)
     node[iPoint] = new CImpactVariable(Density_Inf, Velocity_Inf, Energy_Inf, nDim, nVar, config);
 
@@ -4230,6 +4235,18 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
     }
 
   }
+  /*--- If no restart file, read the air solution file and use it to init impact model ---*/
+  if (!restart) {
+    solver_container[MESH_0][FLOW_SOL]->LoadRestart(geometry, solver_container, config, SU2_TYPE::Int(config->GetUnst_RestartIter()-1), true);
+  
+  /*--- Push the solution into the air solution ---*/
+    for (iMesh = 0; iMesh <= config->GetnMGLevels(); iMesh++) {
+      for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
+        solver_container[iMesh][FLOW_SOL]->node[iPoint]->SetSolution_Air(Solution);
+      }
+    }
+  }    
+   
 
   /*--- Make sure that the solution is well initialized for unsteady
    calculations with dual time-stepping (load additional restarts for 2nd-order). ---*/

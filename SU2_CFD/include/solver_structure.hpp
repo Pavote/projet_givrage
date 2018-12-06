@@ -6985,6 +6985,8 @@ protected:
   su2double *Secondary,    /*!< \brief Auxiliary nPrimVar vector. */
   *Secondary_i,        /*!< \brief Auxiliary nPrimVar vector for storing the primitive at point i. */
   *Secondary_j;        /*!< \brief Auxiliary nPrimVar vector for storing the primitive at point j. */
+  
+  su2double *Solution_Air;  /*!< \brief Air solution for droplet model calculation. */   
 
   su2double Cauchy_Value,  /*!< \brief Summed value of the convergence indicator. */
   Cauchy_Func;      /*!< \brief Current value of the convergence indicator at one iteration. */

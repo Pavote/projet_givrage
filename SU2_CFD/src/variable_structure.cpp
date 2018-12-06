@@ -56,6 +56,7 @@ CVariable::CVariable(void) {
   Residual_Old = NULL;
   Residual_Sum = NULL;
   Solution_Adj_Old = NULL;
+  Solution_Air = NULL;
   
 }
 
@@ -76,6 +77,7 @@ CVariable::CVariable(unsigned short val_nvar, CConfig *config) {
   Residual_Old = NULL;
   Residual_Sum = NULL;
   Solution_Adj_Old = NULL;
+  Solution_Air = NULL;
 
   /*--- Initialize the number of solution variables. This version
    of the constructor will be used primarily for converting the
@@ -110,6 +112,7 @@ CVariable::CVariable(unsigned short val_nDim, unsigned short val_nvar, CConfig *
   Residual_Old = NULL;
   Residual_Sum = NULL;
   Solution_Adj_Old = NULL;
+  Solution_Air = NULL;
   
   /*--- Initializate the number of dimension and number of variables ---*/
   nDim = val_nDim;
@@ -160,6 +163,7 @@ CVariable::~CVariable(void) {
   if (Residual_Old        != NULL) delete [] Residual_Old;
   if (Residual_Sum        != NULL) delete [] Residual_Sum;
   if (Solution_Adj_Old    != NULL) delete [] Solution_Adj_Old;
+  if (Solution_Air        != NULL) delete [] Solution_Air;
   
   if (Gradient != NULL) {
     for (iVar = 0; iVar < nVar; iVar++)
@@ -197,6 +201,13 @@ void CVariable::SetUnd_Lapl(unsigned short val_var, su2double val_und_lapl) {
 }
 
 void CVariable::SetSolution(su2double *val_solution) {
+  
+  for (unsigned short iVar = 0; iVar < nVar; iVar++)
+    Solution[iVar] = val_solution[iVar];
+  
+}
+
+void CVariable::SetSolution_Air(su2double *val_solution) {
   
   for (unsigned short iVar = 0; iVar < nVar; iVar++)
     Solution[iVar] = val_solution[iVar];

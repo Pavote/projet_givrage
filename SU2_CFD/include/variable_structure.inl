@@ -885,6 +885,12 @@ inline su2double CImpactVariable::GetVelocity(unsigned short val_dim) { return P
 
 inline su2double CImpactVariable::GetVelocity2(void) { return Velocity2; }
 
+inline su2double CImpactVariable::GetVelocity_Air(unsigned short val_dim) { return Solution_Air[val_dim+1]; }
+
+inline su2double CImpactVariable::GetRho_Air(void) { return Solution_Air[0]; }
+
+inline su2double CImpactVariable::GetMu_Air(unsigned short ndim) { return Solution_Air[ndim+5]; }
+
 inline bool CImpactVariable::SetDensity(void) {
   Primitive[nDim+2] = Solution[0];
   if (Primitive[nDim+2] > 0.0) return false;
