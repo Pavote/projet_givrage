@@ -626,6 +626,9 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   addMathProblemOption("MATH_PROBLEM", ContinuousAdjoint, false, DiscreteAdjoint, false, Restart_Flow, false);
   /*!\brief KIND_TURB_MODEL \n DESCRIPTION: Specify turbulence model \n Options: see \link Turb_Model_Map \endlink \n DEFAULT: NO_TURB_MODEL \ingroup Config*/
   addEnumOption("KIND_TURB_MODEL", Kind_Turb_Model, Turb_Model_Map, NO_TURB_MODEL);
+  
+  /*!\brief KIND_AIR_MODEL \n DESCRIPTION: Specify if air solution is Euler or RANS \n DEFAULT: EULER \ingroup Config*/
+  addEnumOption("KIND_AIR_MODEL", Kind_Air_Model, Air_Model_Map, COMP_EULER);
 
   /*!\brief KIND_TRANS_MODEL \n DESCRIPTION: Specify transition model OPTIONS: see \link Trans_Model_Map \endlink \n DEFAULT: NO_TRANS_MODEL \ingroup Config*/
   addEnumOption("KIND_TRANS_MODEL", Kind_Trans_Model, Trans_Model_Map, NO_TRANS_MODEL);
@@ -1291,7 +1294,6 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   /*!\brief LIMITER_ITER
    *  \n DESCRIPTION: Freeze the value of the limiter after a number of iterations. DEFAULT value 999999. \ingroup Config*/
   addUnsignedLongOption("LIMITER_ITER", LimiterIter, 999999);
-
   /*!\brief CONV_NUM_METHOD_FLOW
    *  \n DESCRIPTION: Convective numerical method \n OPTIONS: See \link Upwind_Map \endlink , \link Centered_Map \endlink. \ingroup Config*/
   addConvectOption("CONV_NUM_METHOD_FLOW", Kind_ConvNumScheme_Flow, Kind_Centered_Flow, Kind_Upwind_Flow);
@@ -1452,6 +1454,8 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   addStringOption("SOLUTION_STRUCTURE_FILENAME", Solution_FEMFileName, string("solution_structure.dat"));
   /*!\brief SOLUTION_FLOW_FILENAME \n DESCRIPTION: Restart structure input file (the file output under the filename set by RESTART_FLOW_FILENAME) \n Default: solution_flow.dat \ingroup Config */
   addStringOption("SOLUTION_ADJ_STRUCTURE_FILENAME", Solution_AdjFEMFileName, string("solution_adjoint_structure.dat"));
+  /*!\brief SOLUTION_AIR_FILENAME \n DESCRIPTION: Impact input file (the file output under the filename set by RESTART_IMPACT_FILENAME by impact solver) \n DEFAULT: impact_flow.dat \ingroup Config */
+  addStringOption("SOLUTION_IMPACT_FILENAME", Solution_ImpactFileName, string("impact_flow.dat"));
   /*!\brief RESTART_FLOW_FILENAME \n DESCRIPTION: Output file restart flow \ingroup Config*/
   addStringOption("RESTART_FLOW_FILENAME", Restart_FlowFileName, string("restart_flow.dat"));
   /*!\brief RESTART_ADJ_FILENAME  \n DESCRIPTION: Output file restart adjoint. Objective function abbreviation will be appended. \ingroup Config*/
@@ -1462,6 +1466,8 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   addStringOption("RESTART_STRUCTURE_FILENAME", Restart_FEMFileName, string("restart_structure.dat"));
   /*!\brief RESTART_ADJ_STRUCTURE_FILENAME \n DESCRIPTION: Output file restart structure \ingroup Config*/
   addStringOption("RESTART_ADJ_STRUCTURE_FILENAME", Restart_AdjFEMFileName, string("restart_adjoint_structure.dat"));
+ /*!\brief RESTART_IMPACT_FILENAME \n DESCRIPTION: Output file restart impact \ingroup Config*/
+  addStringOption("RESTART_IMPACT_FILENAME", Restart_ImpactFileName, string("restart_impact.dat")); 
   /*!\brief VOLUME_FLOW_FILENAME  \n DESCRIPTION: Output file flow (w/o extension) variables \ingroup Config */
   addStringOption("VOLUME_FLOW_FILENAME", Flow_FileName, string("flow"));
   /*!\brief VOLUME_STRUCTURE_FILENAME
@@ -6786,6 +6792,7 @@ unsigned short CConfig::GetContainerPosition(unsigned short val_eqsystem) {
     case RUNTIME_ADJFLOW_SYS:   return ADJFLOW_SOL;
     case RUNTIME_ADJTURB_SYS:   return ADJTURB_SOL;
     case RUNTIME_ADJFEA_SYS:    return ADJFEA_SOL;
+    case RUNTIME_IMPACT_SYS:    return IMPACT_SOL;
     case RUNTIME_MULTIGRID_SYS: return 0;
   }
   return 0;
@@ -6815,7 +6822,7 @@ void CConfig::SetGlobalParam(unsigned short val_solver,
   /*--- Set the solver methods ---*/
 
   switch (val_solver) {
-    case EULER: case IMPACT:
+    case EULER: 
       if (val_system == RUNTIME_FLOW_SYS) {
         SetKind_ConvNumScheme(Kind_ConvNumScheme_Flow, Kind_Centered_Flow,
                               Kind_Upwind_Flow, Kind_SlopeLimit_Flow,
@@ -6859,6 +6866,15 @@ void CConfig::SetGlobalParam(unsigned short val_solver,
         SetKind_TimeIntScheme(Kind_TimeIntScheme_Heat);
       }
       break;
+    case IMPACT:
+      if (val_system == RUNTIME_IMPACT_SYS) {
+        SetKind_ConvNumScheme(Kind_ConvNumScheme_Flow, Kind_Centered_Flow,
+                              Kind_Upwind_Flow, Kind_SlopeLimit_Flow,
+                              MUSCL_Flow);
+        SetKind_TimeIntScheme(Kind_TimeIntScheme_Flow);
+      }
+      break;
+    
     case ADJ_EULER:
       if (val_system == RUNTIME_FLOW_SYS) {
         SetKind_ConvNumScheme(Kind_ConvNumScheme_Flow, Kind_Centered_Flow,

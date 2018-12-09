@@ -205,7 +205,8 @@ public:
   su2double StrainMag_i, StrainMag_j;   /*!< \brief Strain rate magnitude. */
   su2double Dissipation_i, Dissipation_j;
   su2double Dissipation_ij;
-    
+  su2double *Uair_i, /*!< \brief Air solution at point i */
+  *UAir_j; /*!< \brief Air solution at point j */  
   su2double *l, *m;
 
   /*!

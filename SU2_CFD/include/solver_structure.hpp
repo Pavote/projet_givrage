@@ -117,6 +117,7 @@ protected:
   **Jacobian_ij,        /*!< \brief Auxiliary matrices for storing point to point Jacobians. */
   **Jacobian_ji,        /*!< \brief Auxiliary matrices for storing point to point Jacobians. */
   **Jacobian_jj;        /*!< \brief Auxiliary matrices for storing point to point Jacobians. */
+  su2double *Solution_Air;    /*!< \brief Auxiliary nVar vector. */
 
   su2double **Smatrix,  /*!< \brief Auxiliary structure for computing gradients by least-squares */
   **Cvector;       /*!< \brief Auxiliary structure for computing gradients by least-squares */
@@ -6986,7 +6987,7 @@ protected:
   *Secondary_i,        /*!< \brief Auxiliary nPrimVar vector for storing the primitive at point i. */
   *Secondary_j;        /*!< \brief Auxiliary nPrimVar vector for storing the primitive at point j. */
   
-  su2double *Solution_Air;  /*!< \brief Air solution for droplet model calculation. */   
+  /*--- FM su2double *Solution_Air;  ---*/ /*!< \brief Air solution for droplet model calculation. */   
 
   su2double Cauchy_Value,  /*!< \brief Summed value of the convergence indicator. */
   Cauchy_Func;      /*!< \brief Current value of the convergence indicator at one iteration. */
@@ -7425,41 +7426,6 @@ public:
   */
   void BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config);
 
-  /*!
-   * \brief Impose the engine inflow boundary condition.
-    * \param[in] geometry - Geometrical definition of the problem.
-    * \param[in] solver_container - Container vector with all the solutions.
-    * \param[in] conv_numerics - Description of the numerical method.
-    * \param[in] visc_numerics - Description of the numerical method.
-    * \param[in] config - Definition of the particular problem.
-    * \param[in] val_marker - Surface marker where the boundary condition is applied.
-    */
-  void BC_ActDisk_Inlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
-                        CConfig *config, unsigned short val_marker);
-
-  /*!
-   * \brief Impose the engine exhaust boundary condition.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] conv_numerics - Description of the numerical method.
-   * \param[in] visc_numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] val_marker - Surface marker where the boundary condition is applied.
-   */
-  void BC_ActDisk_Outlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
-                         CConfig *config, unsigned short val_marker);
-
-  /*!
-   * \brief Impose the engine inflow boundary condition.
-    * \param[in] geometry - Geometrical definition of the problem.
-    * \param[in] solver_container - Container vector with all the solutions.
-    * \param[in] conv_numerics - Description of the numerical method.
-    * \param[in] visc_numerics - Description of the numerical method.
-    * \param[in] config - Definition of the particular problem.
-    * \param[in] val_marker - Surface marker where the boundary condition is applied.
-    */
-  void BC_ActDisk(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
-                  CConfig *config, unsigned short val_marker, bool val_inlet_surface);
 
   /*!
    * \brief Impose the interface boundary condition using the residual.
@@ -7553,29 +7519,6 @@ public:
   void BC_Inlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                 CConfig *config, unsigned short val_marker);
 
-  /*!
-   * \brief Impose a supersonic inlet boundary condition.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] conv_numerics - Description of the numerical method.
-   * \param[in] visc_numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] val_marker - Surface marker where the boundary condition is applied.
-   */
-  void BC_Supersonic_Inlet(CGeometry *geometry, CSolver **solver_container,
-                           CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker);
-
-  /*!
-   * \brief Impose a supersonic outlet boundary condition.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] conv_numerics - Description of the numerical method.
-   * \param[in] visc_numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] val_marker - Surface marker where the boundary condition is applied.
-   */
-  void BC_Supersonic_Outlet(CGeometry *geometry, CSolver **solver_container,
-                            CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker);
 
   /*!
    * \brief Impose the dirichlet boundary condition.
@@ -7600,30 +7543,7 @@ public:
   void BC_Outlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                  CConfig *config, unsigned short val_marker);
 
-  /*!
-   * \brief Impose the nacelle inflow boundary condition.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] conv_numerics - Description of the numerical method.
-   * \param[in] visc_numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] val_marker - Surface marker where the boundary condition is applied.
-   */
-  void BC_Engine_Inflow(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
-                        CConfig *config, unsigned short val_marker);
-
-  /*!
-   * \brief Impose the ancelle exhaust boundary condition.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] conv_numerics - Description of the numerical method.
-   * \param[in] visc_numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] val_marker - Surface marker where the boundary condition is applied.
-   */
-  void BC_Engine_Exhaust(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
-                         CConfig *config, unsigned short val_marker);
-
+  
   /*!
    * \brief Set the new solution variables to the current solution value for classical RK.
    * \param[in] geometry - Geometrical definition of the problem.
@@ -8879,11 +8799,6 @@ public:
    */
   void InitTurboContainers(CGeometry *geometry, CConfig *config);
 
-  /*!
-   * \brief Set the solution using the Freestream values.
-   * \param[in] config - Definition of the particular problem.
-   */
-  void SetFreeStream_TurboSolution(CConfig *config);
 
   /*!
    * \brief It computes average quantities along the span for turbomachinery analysis.

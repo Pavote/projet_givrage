@@ -67,8 +67,7 @@ protected:
   su2double **Gradient;    /*!< \brief Gradient of the solution of the problem. */
   su2double *Limiter;        /*!< \brief Limiter of the solution of the problem. */
   su2double *Solution_Max;    /*!< \brief Max solution for limiter computation. */
-  su2double *Solution_Min;    /*!< \brief Min solution for limiter computation. */
-  su2double *Solution_Air;  /*!< \brief Air solution for droplet model calculation. */   
+  su2double *Solution_Min;    /*!< \brief Min solution for limiter computation. */ 
   su2double AuxVar;      /*!< \brief Auxiliar variable for gradient computation. */
   su2double *Grad_AuxVar;  /*!< \brief Gradient of the auxiliar variable. */
   su2double Delta_Time;  /*!< \brief Time step. */
@@ -92,6 +91,7 @@ protected:
                                                        note that this variable cannnot be static, it is possible to
                                                        have different number of nVar in the same problem. */
   su2double *Solution_Adj_Old;    /*!< \brief Solution of the problem in the previous AD-BGS iteration. */
+  su2double *Solution_Air; /*!< /brief Primitive variable for the air solution. */
 
 public:
 
@@ -132,12 +132,7 @@ public:
    * \param[in] val_solution - Value of the solution for the index <i>val_var</i>.
    */
   void SetSolution(unsigned short val_var, su2double val_solution);
-  
-  /*!
-   * \brief Set the value of the solution.
-   * \param[in] val_solution - Solution of the problem.
-   */
-  void SetSolution_Air(su2double *val_solution);
+
 
   /*!
    * \brief Add the value of the solution vector to the previous solution (incremental approach).
@@ -184,7 +179,8 @@ public:
    * \param[in] val_var - Index of the variable.
    * \return Pointer to the air solution vector.
    */
-  su2double GetSolution_Air(unsigned short val_var);
+  su2double GetSolutionAir(unsigned short val_var); 
+  
 
   /*!
    * \brief Set the value of the old solution.
@@ -233,11 +229,6 @@ public:
    * \brief Set the variable solution at time n-1.
    */
   void Set_Solution_time_n1(su2double* val_sol);
-
-  /*!
-   * \brief Set the air solution for the IMPACT model.
-   */
-  void Set_Solution_Air(su2double* val_sol);  
   
 
   /*!
@@ -378,11 +369,6 @@ public:
    */
   su2double *GetSolution_time_n1(void);
   
-   /*!
-   * \brief Get the air solution for the IMPACT model
-   * \return Pointer to the solution air.
-   */
-  su2double *GetSolution_Air(void);
   
 
   /*!
@@ -2410,8 +2396,54 @@ public:
   virtual su2double GetSolution_Old_Vel(unsigned short iVar);
 
   virtual su2double GetSolution_Old_Accel(unsigned short iVar);
+  
+  /*!
+   * \brief Set the air velocity vector from the air solution.
+   * \param[in] val_velocity - Pointer to the air velocity.
+   */
+   void SetVelocityAir(su2double *val_velocity);
+  
+  /*!
+   * \brief Set the air velocity vector from the air solution.
+   * \param[in] val_velocity - Pointer to the air velocity.
+   */
+  void SetVelocityAir(unsigned short val_var, su2double val_velocity);
+
+  /*!
+   * \brief Set the air velocity vector from the air solution.
+   * \param[in] val_velocity - Pointer to the air velocity.
+   */
+  void SetTemperatureAir(su2double val_temp);
+  
+  /*!
+   * \brief Set the air density.
+   * \return Value of the air density.
+   */
+  void SetDensityAir(su2double density); 
+  
+   /*!
+   * \brief A virtual member.
+   * \param[in] val_dim - Index of the dimension.
+   * \return Value of the air velocity for the dimension <i>val_dim</i>.
+   */
+  su2double GetVelocityAir(unsigned short val_dim);
+  
+  /*!
+   * \brief A virtual member.
+   * \param[in] val_dim - Index of the dimension.
+   * \return Value of the air velocity for the dimension <i>val_dim</i>.
+   */
+  su2double GetDensityAir(void); 
+  
+  /*!
+   * \brief A virtual member.
+   * \param[in] val_dim - Index of the dimension.
+   * \return Value of the air velocity for the dimension <i>val_dim</i>.
+   */
+  su2double GetTemperatureAir(void); 
 
 };
+
 
 /*!
  * \class CBaselineVariable
@@ -3642,6 +3674,7 @@ protected:
   su2double  Precond_Beta;  /*!< \brief Low Mach number preconditioner value, Beta. */
   su2double *WindGust;      /*! < \brief Wind gust value */
   su2double *WindGustDer;   /*! < \brief Wind gust derivatives value */
+  //su2double *Solution_Air;  /*! < \brief Air Solution for impact model */
 
   /*--- Primitive variable definition ---*/
 
@@ -3661,6 +3694,8 @@ protected:
 
   /*--- Old solution container for BGS iterations ---*/
   su2double* Solution_BGS_k;
+  
+  
 
 public:
 
@@ -3994,24 +4029,6 @@ public:
    */
   su2double GetVelocity(unsigned short val_dim);
   
-  /*!
-   * \brief A virtual member.
-   * \param[in] val_dim - Index of the dimension.
-   * \return Value of the air velocity for the dimension <i>val_dim</i>.
-   */
-  virtual su2double GetVelocity_Air(unsigned short val_dim);
-  
-   /*!
-   * \brief A virtual member.
-   * \return Value of the air density.
-   */
-  virtual su2double GetRho_Air(void);
-  
-   /*!
-   * \brief A virtual member.
-   * \return Value of the air viscosity.
-   */
-  virtual su2double GetMu_Air(unsigned short ndim);
 
   /*!
    * \brief Get the projected velocity in a unitary vector direction (compressible solver).
@@ -4092,6 +4109,7 @@ public:
    * \param[out] val_solution - solution in the previous BGS subiteration.
    */
   su2double Get_BGSSolution_k(unsigned short iDim);
+  
 };
 
 /*!

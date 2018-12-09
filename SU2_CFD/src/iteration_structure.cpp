@@ -473,7 +473,7 @@ void CFluidIteration::Iterate(COutput *output,
 
   switch( config_container[val_iZone]->GetKind_Solver() ) {
     case IMPACT:
-      config_container[val_iZone]->SetGlobalParam(IMPACT, RUNTIME_FLOW_SYS, ExtIter); break;
+      config_container[val_iZone]->SetGlobalParam(IMPACT, RUNTIME_IMPACT_SYS, ExtIter); break;
 
     case EULER: case DISC_ADJ_EULER:
       config_container[val_iZone]->SetGlobalParam(EULER, RUNTIME_FLOW_SYS, ExtIter); break;
@@ -487,10 +487,14 @@ void CFluidIteration::Iterate(COutput *output,
   }
 
   /*--- Solve the Euler, Navier-Stokes or Reynolds-averaged Navier-Stokes (RANS) equations (one iteration) ---*/
-
-  integration_container[val_iZone][FLOW_SOL]->MultiGrid_Iteration(geometry_container, solver_container, numerics_container,
-                                                                  config_container, RUNTIME_FLOW_SYS, IntIter, val_iZone);
-
+  if (config_container[val_iZone]->GetKind_Solver() == IMPACT) {
+    integration_container[val_iZone][IMPACT_SOL]->MultiGrid_Iteration(geometry_container, solver_container, numerics_container,
+                                                                  config_container, RUNTIME_IMPACT_SYS, IntIter, val_iZone);
+  } else {
+    integration_container[val_iZone][FLOW_SOL]->MultiGrid_Iteration(geometry_container, solver_container, numerics_container,
+                                                                 config_container, RUNTIME_FLOW_SYS, IntIter, val_iZone);
+  }
+  
   if ((config_container[val_iZone]->GetKind_Solver() == RANS) ||
       ((config_container[val_iZone]->GetKind_Solver() == DISC_ADJ_RANS) && !frozen_visc)) {
 

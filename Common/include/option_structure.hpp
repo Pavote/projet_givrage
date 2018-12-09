@@ -419,6 +419,7 @@ enum RUNTIME_TYPE {
   RUNTIME_ADJFEA_SYS = 30,		/*!< \brief One-physics case, the code is solving the adjoint FEA equation. */
   RUNTIME_HEAT_SYS = 21,		/*!< \brief One-physics case, the code is solving the heat equation. */
   RUNTIME_TRANS_SYS = 22,			/*!< \brief One-physics case, the code is solving the turbulence model. */
+  RUNTIME_IMPACT_SYS = 25           /*!< \brief One-physics case, the code is solving the impact model. */
 };
 
 const int FLOW_SOL = 0;		/*!< \brief Position of the mean flow solution in the solver container array. */
@@ -431,6 +432,8 @@ const int TRANS_SOL = 4;	/*!< \brief Position of the transition model solution i
 const int POISSON_SOL = 2;		/*!< \brief Position of the electronic potential solution in the solver container array. */
 const int WAVE_SOL = 1;		/*!< \brief Position of the wave equation in the solution solver array. */
 const int HEAT_SOL = 5;		/*!< \brief Position of the heat equation in the solution solver array. */
+
+const int IMPACT_SOL = 6;   /*!< \brief Position of the impact equations in the solution solver array. */
 
 const int FEA_SOL = 0;			/*!< \brief Position of the FEA equation in the solution solver array. */
 const int ADJFEA_SOL = 1;		/*!< \brief Position of the FEA adjoint equation in the solution solver array. */
@@ -763,6 +766,21 @@ static const map<string, ENUM_TRANS_MODEL> Trans_Model_Map = CCreateMap<string, 
 ("NONE", NO_TRANS_MODEL)
 ("LM", LM)
 ("BC", BC); //BAS-CAKMAKCIOGLU
+
+/*!
+ * \brief types of airflow models for impact solver
+ */
+enum ENUM_AIR_MODEL {
+  COMP_EULER = 1,	/*!< \brief Kind of air model for impact solver (Compressible Euler). */
+  INC_EULER = 2, /*!< \brief Kind of air model for impact solver (Incompressible Euler). */
+  COMP_RANS = 3,	/*!< \brief Kind of air model for impact solver (Compressible RANS). */
+  INC_RANS = 4  /*!< \brief Kind of air model for impact solver (Incompressible RANS). */
+};
+static const map<string, ENUM_AIR_MODEL> Air_Model_Map = CCreateMap<string, ENUM_AIR_MODEL>
+("COMP_EULER", COMP_EULER)
+("INC_EULER", INC_EULER)
+("COMP_RANS", COMP_RANS)
+("INC_RANS", INC_RANS); 
 
 /*!
  * \brief types of hybrid RANS/LES models

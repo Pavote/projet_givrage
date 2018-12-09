@@ -91,6 +91,13 @@ CVariable::CVariable(unsigned short val_nvar, CConfig *config) {
   for (unsigned short iVar = 0; iVar < nVar; iVar++)
     Solution[iVar] = 0.0;
   
+  /*--- Allocate the solution array for the air solution impact solver ---*/  
+  if(config->GetKind_Solver() == IMPACT){
+    Solution_Air = new su2double [nVar];
+    for (unsigned short iVar = 0; iVar < nVar; iVar++)
+      Solution[iVar] = 0.0;
+   }
+  
 }
 
 CVariable::CVariable(unsigned short val_nDim, unsigned short val_nvar, CConfig *config) {
@@ -144,6 +151,13 @@ CVariable::CVariable(unsigned short val_nDim, unsigned short val_nvar, CConfig *
 	if (config->GetFSI_Simulation() && config->GetDiscrete_Adjoint()){
 	  Solution_Adj_Old = new su2double [nVar];
 	}
+	
+  /*--- Allocate the solution array for the air solution impact solver ---*/  
+  if(config->GetKind_Solver() == IMPACT){
+    Solution_Air = new su2double [nVar];
+    for (unsigned short iVar = 0; iVar < nVar; iVar++)
+      Solution[iVar] = 0.0;
+  }
   
 }
 
@@ -201,13 +215,6 @@ void CVariable::SetUnd_Lapl(unsigned short val_var, su2double val_und_lapl) {
 }
 
 void CVariable::SetSolution(su2double *val_solution) {
-  
-  for (unsigned short iVar = 0; iVar < nVar; iVar++)
-    Solution[iVar] = val_solution[iVar];
-  
-}
-
-void CVariable::SetSolution_Air(su2double *val_solution) {
   
   for (unsigned short iVar = 0; iVar < nVar; iVar++)
     Solution[iVar] = val_solution[iVar];

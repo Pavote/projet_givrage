@@ -38,6 +38,9 @@
 #include "../include/numerics_structure.hpp"
 #include <limits>
 
+
+
+
 CSourceDropletDrag::CSourceDropletDrag(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) {
 
     /*--- Store the pointer to the constant body force vector. ---*/

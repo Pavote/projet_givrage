@@ -519,6 +519,7 @@ private:
   Kind_DV_FEA;				/*!< \brief Kind of Design Variable for FEA problems.*/
   unsigned short Kind_Turb_Model;			/*!< \brief Turbulent model definition. */
   unsigned short Kind_Trans_Model,			/*!< \brief Transition model definition. */
+  Kind_Air_Model,			/*! \brief Airflow model definition for impact solver. */
   Kind_ActDisk, Kind_Engine_Inflow, Kind_Inlet, *Kind_Inc_Inlet, *Kind_Data_Riemann, *Kind_Data_Giles;           /*!< \brief Kind of inlet boundary treatment. */
   unsigned short nInc_Inlet;  /*!< \brief Number of inlet boundary treatment types listed. */
   bool Inc_Inlet_UseNormal;    /*!< \brief Flag for whether to use the local normal as the flow direction for an incompressible pressure inlet. */
@@ -698,6 +699,7 @@ private:
   Solution_AdjFileName,			/*!< \brief Adjoint solution input file for drag functional. */
   Solution_FEMFileName,			/*!< \brief Solution input file for structural problem. */
   Solution_AdjFEMFileName,     /*!< \brief Adjoint solution input file for structural problem. */
+  Solution_ImpactFileName,        /*!< \brief Flow solution input for droplet flow problem. */
   Flow_FileName,					/*!< \brief Flow variables output file. */
   Structure_FileName,					/*!< \brief Structure variables output file. */
   SurfStructure_FileName,					/*!< \brief Surface structure variables output file. */
@@ -718,6 +720,7 @@ private:
   Restart_AdjFileName,			/*!< \brief Restart file for adjoint variables, drag functional. */
   Restart_FEMFileName,			/*!< \brief Restart file for FEM elasticity. */
   Restart_AdjFEMFileName,      /*!< \brief Restart file for FEM elasticity. */
+  Restart_ImpactFileName,			/*!< \brief Restart file name for impact flow variables. */
   Adj_FileName,					/*!< \brief Output file with the adjoint variables. */
   ObjFunc_Grad_FileName,			/*!< \brief Gradient of the objective function. */
   ObjFunc_Value_FileName,			/*!< \brief Objective function. */
@@ -3999,6 +4002,12 @@ public:
   unsigned short GetKind_Trans_Model(void);
   
   /*!
+   * \brief Get the kind of airflow solution for impact model.
+   * \return Kind of airflow solution.
+   */
+  unsigned short GetKind_Air_Model(void); 
+  
+  /*!
    * \brief Get the kind of adaptation technique.
    * \return Kind of adaptation technique.
    */
@@ -5085,6 +5094,12 @@ public:
    */
   string GetSolution_AdjFEMFileName(void);
   
+   /*!
+   * \brief Get the name of the file with the air solution.
+   * \return Name of the file with the air solution.
+   */
+  string GetSolution_ImpactFileName(void);
+  
   /*!
    * \brief Get the name of the file with the residual of the problem.
    * \return Name of the file with the residual of the problem.
@@ -5198,6 +5213,12 @@ public:
    * \return Name of the restart file for the flow variables.
    */
   string GetRestart_HeatFileName(void);
+  
+  /*!
+   * \brief Get the name of the restart file for the droplet variables.
+   * \return Name of the restart file for the droplet variables.
+   */
+  string GetRestart_ImpactFileName(void);
   
   /*!
    * \brief Append the zone index to the restart or the solution files.

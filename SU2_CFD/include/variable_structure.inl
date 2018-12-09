@@ -885,11 +885,12 @@ inline su2double CImpactVariable::GetVelocity(unsigned short val_dim) { return P
 
 inline su2double CImpactVariable::GetVelocity2(void) { return Velocity2; }
 
-inline su2double CImpactVariable::GetVelocity_Air(unsigned short val_dim) { return Solution_Air[val_dim+1]; }
+inline su2double CVariable::GetVelocityAir(unsigned short val_dim) { return Solution_Air[val_dim+1]; }
 
-inline su2double CImpactVariable::GetRho_Air(void) { return Solution_Air[0]; }
+inline su2double CVariable::GetDensityAir(void) { return Solution_Air[0]; }
 
-inline su2double CImpactVariable::GetMu_Air(unsigned short ndim) { return Solution_Air[ndim+5]; }
+inline su2double CVariable::GetTemperatureAir(void) { return Solution_Air[nDim+1]; }
+
 
 inline bool CImpactVariable::SetDensity(void) {
   Primitive[nDim+2] = Solution[0];
@@ -910,6 +911,12 @@ inline void CImpactVariable::SetVelocity(void) {
     Velocity2 += Primitive[iDim+1]*Primitive[iDim+1];
   }
 }
+
+inline void CVariable::SetVelocityAir(su2double *val_velocity) {
+  for (unsigned short iDim = 0; iDim < nDim; iDim++)
+    Solution_Air[iDim+1] = val_velocity[iDim];
+}
+
 
 inline void CImpactVariable::SetEnthalpy(void) { Primitive[nDim+3] = (Solution[nVar-1] + Primitive[nDim+1]) / Solution[0]; }
 
@@ -1020,6 +1027,18 @@ inline su2double CImpactVariable::Get_BGSSolution_k(unsigned short iDim) { retur
 inline void CImpactVariable::Set_BGSSolution_k(void) {
   for (unsigned short iVar = 0; iVar < nVar; iVar++)
     Solution_BGS_k[iVar] = Solution[iVar];
+}
+
+inline void CVariable::SetVelocityAir(unsigned short iDim, su2double VelAir) {
+  Solution_Air[iDim+1] = VelAir;
+}
+
+inline void CVariable::SetDensityAir(su2double DensAir) {
+  Solution_Air[0] = DensAir;
+}
+
+inline void CVariable::SetTemperatureAir(su2double TempAir) {
+  Solution_Air[nDim+2] = TempAir;
 }
 
 

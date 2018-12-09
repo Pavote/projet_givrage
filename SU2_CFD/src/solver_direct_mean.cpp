@@ -15844,7 +15844,7 @@ CNSSolver::CNSSolver(CGeometry *geometry, CConfig *config, unsigned short iMesh)
   /*--- Check that the initial solution is physical, report any non-physical nodes ---*/
 
   counter_local = 0;
-
+  
   for (iPoint = 0; iPoint < nPoint; iPoint++) {
 
     Density = node[iPoint]->GetSolution(0);

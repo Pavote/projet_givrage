@@ -1428,6 +1428,8 @@ inline string CConfig::GetSolution_FEMFileName(void) { return Solution_FEMFileNa
 
 inline string CConfig::GetSolution_AdjFEMFileName(void) { return Solution_AdjFEMFileName; }
 
+inline string CConfig::GetSolution_ImpactFileName(void) { return Solution_ImpactFileName; }
+
 inline string CConfig::GetFlow_FileName(void) { return Flow_FileName; }
 
 inline string CConfig::GetStructure_FileName(void) { return Structure_FileName; }
@@ -1459,6 +1461,8 @@ inline string CConfig::GetRestart_AdjFileName(void) { return Restart_AdjFileName
 inline string CConfig::GetRestart_FEMFileName(void) { return Restart_FEMFileName; }
 
 inline string CConfig::GetRestart_AdjFEMFileName(void) { return Restart_AdjFEMFileName; }
+
+inline string CConfig::GetRestart_ImpactFileName(void) { return Restart_ImpactFileName; }
 
 inline string CConfig::GetAdj_FileName(void) { return Adj_FileName; }
 
@@ -1587,6 +1591,8 @@ inline void CConfig::SetSmoothNumGrid(bool val_smoothnumgrid) { SmoothNumGrid = 
 inline unsigned short CConfig::GetKind_Turb_Model(void) { return Kind_Turb_Model; }
 
 inline unsigned short CConfig::GetKind_Trans_Model(void) { return Kind_Trans_Model; }
+
+inline unsigned short CConfig::GetKind_Air_Model(void) { return Kind_Air_Model; }
 
 inline bool CConfig::GetFrozen_Visc_Cont(void) { return Frozen_Visc_Cont; }
 
