@@ -115,6 +115,8 @@ inline void CVariable::SetAuxVar(su2double val_auxvar) { AuxVar = val_auxvar; }
 
 inline void CVariable::SetSolution_Old(unsigned short val_var, su2double val_solution_old) { Solution_Old[val_var] = val_solution_old; }
 
+inline void CVariable::SetSolution_Air(unsigned short val_var, su2double val_solution_old) { Solution_Air[val_var] = val_solution_old; }
+
 inline void CVariable::SetLimiter(unsigned short val_var, su2double val_limiter) { Limiter[val_var] = val_limiter; }
 
 inline void CVariable::SetLimiterPrimitive(unsigned short val_species, unsigned short val_var, su2double val_limiter) { }
@@ -133,6 +135,8 @@ inline su2double *CVariable::GetSolution_Old(void) { return Solution_Old; }
 
 inline su2double *CVariable::GetSolution_time_n(void) { return Solution_time_n; }
 
+inline su2double *CVariable::GetSolution_Air(void) { return Solution_Air; }
+
 inline su2double *CVariable::Get_femSolution_time_n(void) { return NULL; }
 
 inline su2double *CVariable::GetSolution_time_n1(void) { return Solution_time_n1; }
@@ -148,6 +152,8 @@ inline su2double CVariable::GetSolution(unsigned short val_var) { return Solutio
 inline su2double CVariable::GetSolution_Old(unsigned short val_var) { return Solution_Old[val_var]; }
 
 inline su2double CVariable::GetSolution_Old_Adj(unsigned short val_var) { return Solution_Adj_Old[val_var]; }
+
+inline su2double CVariable::GetSolution_Air(unsigned short val_var) { return Solution_Air[val_var]; }
 
 inline su2double *CVariable::GetResidual_Sum(void) { return Residual_Sum; }
 
@@ -889,7 +895,7 @@ inline su2double CVariable::GetVelocityAir(unsigned short val_dim) { return Solu
 
 inline su2double CVariable::GetDensityAir(void) { return Solution_Air[0]; }
 
-inline su2double CVariable::GetTemperatureAir(void) { return Solution_Air[nDim+1]; }
+inline su2double CVariable::GetStaticEnergyAir(void) { return Solution_Air[nDim+1]; }
 
 
 inline bool CImpactVariable::SetDensity(void) {
@@ -1037,8 +1043,8 @@ inline void CVariable::SetDensityAir(su2double DensAir) {
   Solution_Air[0] = DensAir;
 }
 
-inline void CVariable::SetTemperatureAir(su2double TempAir) {
-  Solution_Air[nDim+2] = TempAir;
+inline void CVariable::SetStaticEnergyAir(su2double eAir) {
+  Solution_Air[nDim+2] = eAir;
 }
 
 

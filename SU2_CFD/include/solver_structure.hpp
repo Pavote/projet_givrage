@@ -117,7 +117,7 @@ protected:
   **Jacobian_ij,        /*!< \brief Auxiliary matrices for storing point to point Jacobians. */
   **Jacobian_ji,        /*!< \brief Auxiliary matrices for storing point to point Jacobians. */
   **Jacobian_jj;        /*!< \brief Auxiliary matrices for storing point to point Jacobians. */
-  su2double *Solution_Air;    /*!< \brief Auxiliary nVar vector. */
+  //su2double *Solution_Air;    /*!< \brief Auxiliary nVar vector. */
 
   su2double **Smatrix,  /*!< \brief Auxiliary structure for computing gradients by least-squares */
   **Cvector;       /*!< \brief Auxiliary structure for computing gradients by least-squares */
@@ -7090,6 +7090,14 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void Set_MPI_Solution_Old(CGeometry *geometry, CConfig *config);
+  
+  
+  /*!
+   * \brief Impose the send-receive boundary condition.
+   * \param[in] geometry - Geometrical definition of the problem.
+   * \param[in] config - Definition of the particular problem.
+   */
+  void Set_MPI_Solution_Air(CGeometry *geometry, CConfig *config);
 
   /*!
    * \brief Impose the send-receive boundary condition.

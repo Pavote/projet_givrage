@@ -179,7 +179,7 @@ public:
    * \param[in] val_var - Index of the variable.
    * \return Pointer to the air solution vector.
    */
-  su2double GetSolutionAir(unsigned short val_var); 
+  su2double GetSolution_Air(unsigned short val_var); 
   
 
   /*!
@@ -199,6 +199,19 @@ public:
    * \brief Set old variables to the value of the current variables.
    */
   void Set_OldSolution(void);
+  
+  /*!
+   * \brief Set the value of the old solution.
+   * \param[in] val_solution_old - Pointer to the residual vector.
+   */
+  void SetSolution_Air(su2double *val_solution_old);
+  
+  /*!
+   * \overload
+   * \param[in] val_var - Index of the variable.
+   * \param[in] val_solution_old - Value of the old solution for the index <i>val_var</i>.
+   */
+  void SetSolution_Air(unsigned short val_var, su2double val_solution_old);
 
   /*!
    * \brief Set variables to the value of the old variables.
@@ -368,6 +381,12 @@ public:
    * \return Pointer to the solution (at time n-1) vector.
    */
   su2double *GetSolution_time_n1(void);
+  
+  /*!
+   * \brief Get the old solution of the problem (Runge-Kutta method)
+   * \return Pointer to the old solution vector.
+   */
+  su2double *GetSolution_Air(void);
   
   
 
@@ -2413,7 +2432,7 @@ public:
    * \brief Set the air velocity vector from the air solution.
    * \param[in] val_velocity - Pointer to the air velocity.
    */
-  void SetTemperatureAir(su2double val_temp);
+  void SetStaticEnergyAir(su2double val_temp);
   
   /*!
    * \brief Set the air density.
@@ -2440,7 +2459,7 @@ public:
    * \param[in] val_dim - Index of the dimension.
    * \return Value of the air velocity for the dimension <i>val_dim</i>.
    */
-  su2double GetTemperatureAir(void); 
+  su2double GetStaticEnergyAir(void); 
 
 };
 
