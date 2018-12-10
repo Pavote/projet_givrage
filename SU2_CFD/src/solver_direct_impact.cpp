@@ -359,7 +359,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   nVar = nDim+2;
   nPrimVar = nDim+9; nPrimVarGrad = nDim+4;
   /*--- Add air flow variable ---*/
-  nPrimVar = nPrimVar+nDim+3;
+  //FM nPrimVar = nPrimVar+nDim+3;
   nSecondaryVar = 2; nSecondaryVarGrad = 2;
 
 
@@ -4249,7 +4249,8 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
   }
   
   /*--- The primitive air solution variable file information is stored for drag calculation ---*/
-  su2double Velocity2, StaticEnergy, Pressure, Temperature;
+  su2double Viscosity, Velocity2, StaticEnergy, Pressure, Temperature;
+  FluidModel->SetLaminarViscosityModel (config);
   for (iMesh = 0; iMesh <= config->GetnMGLevels(); iMesh++) {
     for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
       AirDensity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(0);
@@ -4262,10 +4263,12 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
       }
       StaticEnergy= solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(nDim+1)/AirDensity - 0.5*Velocity2;
 
-      //FluidModel->SetTDState_rhoe(AirDensity, StaticEnergy);
-      //Pressure= FluidModel->GetPressure();
-      //Temperature= FluidModel->GetTemperature();
-      node[iPoint]->SetStaticEnergyAir(StaticEnergy);
+      FluidModel->SetTDState_rhoe(AirDensity, StaticEnergy);
+      Pressure = FluidModel->GetPressure();
+      Temperature = FluidModel->GetTemperature();
+      node[iPoint]->SetTemperatureAir(Temperature);
+      Viscosity = FluidModel->GetLaminarViscosity();
+      node[iPoint]->SetViscosityAir(Viscosity);
     }    
   }
 
@@ -4983,6 +4986,29 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
   /*--- Initialize the source residual to zero ---*/
 
   for (iVar = 0; iVar < nVar; iVar++) Residual[iVar] = 0.0;
+  
+  /*--- compute the drag force for the droplet equation ---*/
+    /*--- Loop over all points ---*/
+    for (iPoint = 0; iPoint < nPointDomain; iPoint++) {
+
+      /*--- Load the conservative variables ---*/
+      numerics->SetConservative(node[iPoint]->GetSolution(),
+                                node[iPoint]->GetSolution()); 
+                                
+      /*--- Load the air variable ---*/
+      numerics->SetPrimitiveAir(node[iPoint]->GetSolution_Air(),
+                                node[iPoint]->GetSolution_Air()); 
+
+      /*--- Load the volume of the dual mesh cell ---*/
+      numerics->SetVolume(geometry->node[iPoint]->GetVolume());
+
+      /*--- Compute the rotating frame source residual ---*/
+      numerics->ComputeResidual(Residual, config);
+
+      /*--- Add the source residual to the total ---*/
+      LinSysRes.AddBlock(iPoint, Residual);
+
+    }  
 
   if (body_force) {
 
@@ -4991,7 +5017,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
 
       /*--- Load the conservative variables ---*/
       numerics->SetConservative(node[iPoint]->GetSolution(),
-                                node[iPoint]->GetSolution());
+                                node[iPoint]->GetSolution());     
 
       /*--- Load the volume of the dual mesh cell ---*/
       numerics->SetVolume(geometry->node[iPoint]->GetVolume());
@@ -6956,6 +6982,7 @@ void CImpactSolver::SetPreconditioner(CConfig *config, unsigned long iPoint) {
   unsigned short iDim, jDim, iVar, jVar;
   su2double local_Mach, rho, enthalpy, soundspeed, sq_vel;
   su2double *U_i = NULL;
+  //su2double *Uair_i = NULL;
   su2double Beta_max = config->GetmaxTurkelBeta();
   su2double Mach_infty2, Mach_lim2, aux, parameter;
 
@@ -6969,6 +6996,7 @@ void CImpactSolver::SetPreconditioner(CConfig *config, unsigned long iPoint) {
   parameter = min(1.0, max(aux,Beta_max*Mach_infty2));
 
   U_i = node[iPoint]->GetSolution();
+  //Uair_i = node[iPoint]->GetSolutionAir();
 
   rho = U_i[0];
   enthalpy = node[iPoint]->GetEnthalpy();

@@ -109,7 +109,7 @@ CImpactVariable::CImpactVariable(su2double val_density, su2double *val_velocity,
         EddyMu, Cp, etc. that are meaningless for impact. ---*/
   nPrimVar = nDim+9; nPrimVarGrad = nDim+4;
   /*--- Add air flow variable ---*/
-  nPrimVar = nPrimVar+nDim+3;
+  //FMnPrimVar = nPrimVar+nDim+3;
   
   nSecondaryVar = 2; nSecondaryVarGrad = 2;
 

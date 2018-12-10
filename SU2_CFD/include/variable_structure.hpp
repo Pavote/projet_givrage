@@ -2432,13 +2432,19 @@ public:
    * \brief Set the air velocity vector from the air solution.
    * \param[in] val_velocity - Pointer to the air velocity.
    */
-  void SetStaticEnergyAir(su2double val_temp);
+  void SetTemperatureAir(su2double val_temp);
   
   /*!
    * \brief Set the air density.
    * \return Value of the air density.
    */
   void SetDensityAir(su2double density); 
+  
+   /*!
+   * \brief Set the air viscosity.
+   * \return Value of the air density.
+   */
+  void SetViscosityAir(su2double density); 
   
    /*!
    * \brief A virtual member.
@@ -2459,7 +2465,14 @@ public:
    * \param[in] val_dim - Index of the dimension.
    * \return Value of the air velocity for the dimension <i>val_dim</i>.
    */
-  su2double GetStaticEnergyAir(void); 
+  su2double GetViscosityAir(void); 
+  
+  /*!
+   * \brief A virtual member.
+   * \param[in] val_dim - Index of the dimension.
+   * \return Value of the air velocity for the dimension <i>val_dim</i>.
+   */
+  su2double GetTemperatureAir(void); 
 
 };
 

@@ -205,8 +205,8 @@ public:
   su2double StrainMag_i, StrainMag_j;   /*!< \brief Strain rate magnitude. */
   su2double Dissipation_i, Dissipation_j;
   su2double Dissipation_ij;
-  su2double *Uair_i, /*!< \brief Air solution at point i */
-  *UAir_j; /*!< \brief Air solution at point j */  
+  su2double *Vair_i, /*!< \brief Air solution at point i */
+  *Vair_j; /*!< \brief Air solution at point j */  
   su2double *l, *m;
 
   /*!
@@ -303,6 +303,13 @@ public:
    * \param[in] val_v_j - Value of the primitive variable at point j.
    */
   void SetPrimitive(su2double *val_v_i, su2double *val_v_j);
+  
+  /*!
+   * \brief Set the value of the primitive variables.
+   * \param[in] val_v_i - Value of the primitive variable at point i.
+   * \param[in] val_v_j - Value of the primitive variable at point j.
+   */
+  void SetPrimitiveAir(su2double *val_v_i, su2double *val_v_j);
   
   /*!
    * \brief Set the value of the primitive variables.
@@ -1647,6 +1654,52 @@ public:
   
 };
 
+/*!
+ * \class CUpwRoe_Impact
+ * \brief Class for solving an approximate Riemann solver of Roe for the flow equations.
+ * \ingroup ConvDiscr
+ * \author F. Morency adapt/remove?
+ */
+class CUpwRoe_Impact : public CNumerics {
+private:
+  bool implicit, grid_movement, roe_low_dissipation;
+  su2double *Diff_U;
+  su2double *Velocity_i, *Velocity_j, *RoeVelocity;
+  su2double *ProjFlux_i, *ProjFlux_j;
+  su2double *delta_wave, *delta_vel;
+  su2double *Lambda, *Epsilon, MaxLambda, Delta;
+  su2double **P_Tensor, **invP_Tensor;
+  su2double sq_vel, Proj_ModJac_Tensor_ij, Density_i, Energy_i, SoundSpeed_i, Pressure_i, Enthalpy_i,
+  Density_j, Energy_j, SoundSpeed_j, Pressure_j, Enthalpy_j, R, RoeDensity, RoeEnthalpy, RoeSoundSpeed,
+  ProjVelocity, ProjVelocity_i, ProjVelocity_j, RoeSoundSpeed2, kappa;
+  unsigned short iVar, jVar, kVar, iDim;
+  
+public:
+  
+  /*!
+   * \brief Constructor of the class.
+   * \param[in] val_nDim - Number of dimensions of the problem.
+   * \param[in] val_nVar - Number of variables of the problem.
+   * \param[in] config - Definition of the particular problem.
+   */
+  CUpwRoe_Impact(unsigned short val_nDim, unsigned short val_nVar, CConfig *config, bool val_low_dissipation);
+  
+  /*!
+   * \brief Destructor of the class.
+   */
+  ~CUpwRoe_Impact(void);
+  
+  /*!
+   * \brief Compute the Roe's flux between two nodes i and j.
+   * \param[out] val_residual - Pointer to the total residual.
+   * \param[out] val_Jacobian_i - Jacobian of the numerical method at node i (implicit computation).
+   * \param[out] val_Jacobian_j - Jacobian of the numerical method at node j (implicit computation).
+   * \param[in] config - Definition of the particular problem.
+   */
+  void ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j, CConfig *config);
+  
+};
+
 
 /*!
  * \class CUpwGeneralRoe_Flow
@@ -1706,6 +1759,66 @@ public:
   
   void ComputeRoeAverage();
 };
+
+/*!
+ * \class CUpwGeneralRoe_Impact
+ * \brief Class for solving an approximate Riemann solver of Roe for the flow equations for a general fluid model.
+ * \ingroup ConvDiscr
+ * \author S.Vitale, G.Gori, M.Pini
+ */
+class CUpwGeneralRoe_Impact : public CNumerics {
+private:
+
+  bool implicit, grid_movement;
+
+  su2double *Diff_U;
+  su2double *Velocity_i, *Velocity_j, *RoeVelocity;
+  su2double *ProjFlux_i, *ProjFlux_j;
+  su2double *delta_wave, *delta_vel;
+  su2double *Lambda, *Epsilon, MaxLambda, Delta;
+  su2double **P_Tensor, **invP_Tensor;
+  su2double sq_vel, Proj_ModJac_Tensor_ij, Density_i, Energy_i, SoundSpeed_i, Pressure_i, Enthalpy_i,
+
+  Density_j, Energy_j, SoundSpeed_j, Pressure_j, Enthalpy_j, R, RoeDensity, RoeEnthalpy, RoeSoundSpeed, RoeSoundSpeed2,
+  ProjVelocity, ProjVelocity_i, ProjVelocity_j, proj_delta_vel, delta_p, delta_rho, kappa;
+  unsigned short iDim, iVar, jVar, kVar;
+
+
+  su2double StaticEnthalpy_i, StaticEnergy_i, StaticEnthalpy_j, StaticEnergy_j, Kappa_i, Kappa_j, Chi_i, Chi_j, Velocity2_i, Velocity2_j;
+  su2double RoeKappa, RoeChi;
+
+public:
+  
+  /*!
+   * \brief Constructor of the class.
+   * \param[in] val_nDim - Number of dimensions of the problem.
+   * \param[in] val_nVar - Number of variables of the problem.
+   * \param[in] config - Definition of the particular problem.
+   */
+  CUpwGeneralRoe_Impact(unsigned short val_nDim, unsigned short val_nVar, CConfig *config);
+  
+  /*!
+   * \brief Destructor of the class.
+   */
+  ~CUpwGeneralRoe_Impact(void);
+  
+  /*!
+   * \brief Compute the Roe's flux between two nodes i and j.
+   * \param[out] val_residual - Pointer to the total residual.
+   * \param[out] val_Jacobian_i - Jacobian of the numerical method at node i (implicit computation).
+   * \param[out] val_Jacobian_j - Jacobian of the numerical method at node j (implicit computation).
+   * \param[in] config - Definition of the particular problem.
+   */
+  void ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j, CConfig *config);
+  
+  /*!
+   * \brief Compute the Average for a general fluid flux between two nodes i and j.
+   * Using the approach of Vinokur and Montagne'
+   */
+  
+  void ComputeRoeAverage();
+};
+
 
 /*!
  * \class CUpwL2Roe_Flow
@@ -2691,6 +2804,112 @@ public:
 };
 
 /*!
+ * \class CCentJST_Impact
+ * \brief Class for centered scheme - JST.
+ * \ingroup ConvDiscr
+ * \author F. Morency update/remove?
+ */
+class CCentJST_Impact : public CNumerics {
+  
+private:
+  unsigned short iDim, iVar, jVar; /*!< \brief Iteration on dimension and variables. */
+  su2double *Diff_U, *Diff_Lapl, /*!< \brief Diference of conservative variables and undivided laplacians. */
+  *Velocity_i, *Velocity_j, /*!< \brief Velocity at node 0 and 1. */
+  *MeanVelocity, ProjVelocity, ProjVelocity_i, ProjVelocity_j,  /*!< \brief Mean and projected velocities. */
+  Density_i, Density_j, Energy_i, Energy_j,  /*!< \brief Mean Density and energies. */
+  sq_vel_i, sq_vel_j,   /*!< \brief Modulus of the velocity and the normal vector. */
+  MeanDensity, MeanPressure, MeanEnthalpy, MeanEnergy, /*!< \brief Mean values of primitive variables. */
+  Param_p, Param_Kappa_2, Param_Kappa_4, /*!< \brief Artificial dissipation parameters. */
+  Local_Lambda_i, Local_Lambda_j, MeanLambda, /*!< \brief Local eingenvalues. */
+  Phi_i, Phi_j, sc2, sc4, StretchingFactor, /*!< \brief Streching parameters. */
+  *ProjFlux,  /*!< \brief Projected inviscid flux tensor. */
+  Epsilon_2, Epsilon_4, cte_0, cte_1, /*!< \brief Artificial dissipation values. */
+  ProjGridVel;  /*!< \brief Projected grid velocity. */
+  bool implicit, /*!< \brief Implicit calculation. */
+  grid_movement; /*!< \brief Modification for grid movement. */
+  
+  
+public:
+  
+  /*!
+   * \brief Constructor of the class.
+   * \param[in] val_nDim - Number of dimension of the problem.
+   * \param[in] val_nVar - Number of variables of the problem.
+   * \param[in] config - Definition of the particular problem.
+   */
+  CCentJST_Impact(unsigned short val_nDim, unsigned short val_nVar, CConfig *config);
+  
+  /*!
+   * \brief Destructor of the class.
+   */
+  ~CCentJST_Impact(void);
+  
+  /*!
+   * \brief Compute the flow residual using a JST method.
+   * \param[out] val_resconv - Pointer to the convective residual.
+   * \param[out] val_resvisc - Pointer to the artificial viscosity residual.
+   * \param[out] val_Jacobian_i - Jacobian of the numerical method at node i (implicit computation).
+   * \param[out] val_Jacobian_j - Jacobian of the numerical method at node j (implicit computation).
+   * \param[in] config - Definition of the particular problem.
+   */
+  void ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j,
+                       CConfig *config);
+};
+
+/*!
+ * \class CCentJST_Impact
+ * \brief Class for centered shceme - JST.
+ * \ingroup ConvDiscr
+ * \author F. Morency remove/update
+ */
+class CCentJST_KE_Impact : public CNumerics {
+  
+private:
+  unsigned short iDim, iVar, jVar; /*!< \brief Iteration on dimension and variables. */
+  su2double *Diff_U, *Diff_Lapl, /*!< \brief Diference of conservative variables and undivided laplacians. */
+  *Velocity_i, *Velocity_j, /*!< \brief Velocity at node 0 and 1. */
+  *MeanVelocity, ProjVelocity, ProjVelocity_i, ProjVelocity_j,  /*!< \brief Mean and projected velocities. */
+  Density_i, Density_j, Energy_i, Energy_j,  /*!< \brief Mean Density and energies. */
+  sq_vel_i, sq_vel_j,   /*!< \brief Modulus of the velocity and the normal vector. */
+  MeanDensity, MeanPressure, MeanEnthalpy, MeanEnergy, /*!< \brief Mean values of primitive variables. */
+  Param_p, Param_Kappa_2, Param_Kappa_4, /*!< \brief Artificial dissipation parameters. */
+  Local_Lambda_i, Local_Lambda_j, MeanLambda, /*!< \brief Local eingenvalues. */
+  Phi_i, Phi_j, sc2, sc4, StretchingFactor, /*!< \brief Streching parameters. */
+  *ProjFlux,  /*!< \brief Projected inviscid flux tensor. */
+  Epsilon_2, cte_0, cte_1, /*!< \brief Artificial dissipation values. */
+  ProjGridVel;  /*!< \brief Projected grid velocity. */
+  bool implicit, /*!< \brief Implicit calculation. */
+  grid_movement; /*!< \brief Modification for grid movement. */
+  
+  
+public:
+  
+  /*!
+   * \brief Constructor of the class.
+   * \param[in] val_nDim - Number of dimension of the problem.
+   * \param[in] val_nVar - Number of variables of the problem.
+   * \param[in] config - Definition of the particular problem.
+   */
+  CCentJST_KE_Impact(unsigned short val_nDim, unsigned short val_nVar, CConfig *config);
+  
+  /*!
+   * \brief Destructor of the class.
+   */
+  ~CCentJST_KE_Impact(void);
+  
+  /*!
+   * \brief Compute the flow residual using a JST method.
+   * \param[out] val_resconv - Pointer to the convective residual.
+   * \param[out] val_resvisc - Pointer to the artificial viscosity residual.
+   * \param[out] val_Jacobian_i - Jacobian of the numerical method at node i (implicit computation).
+   * \param[out] val_Jacobian_j - Jacobian of the numerical method at node j (implicit computation).
+   * \param[in] config - Definition of the particular problem.
+   */
+  void ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j,
+                       CConfig *config);
+};
+
+/*!
  * \class CCentJSTInc_Flow
  * \brief Class for centered scheme - modified JST with incompressible preconditioning.
  * \ingroup ConvDiscr
@@ -2791,6 +3010,7 @@ public:
                         su2double **val_Jacobian_ii, su2double **val_Jacobian_ij, su2double **val_Jacobian_ji, su2double **val_Jacobian_jj,
                         CConfig *config);
 };
+
 
 /*!
  * \class CCentSca_Heat
@@ -2992,6 +3212,59 @@ public:
                         su2double **val_Jacobian_ii, su2double **val_Jacobian_ij, su2double **val_Jacobian_ji, su2double **val_Jacobian_jj,
                         CConfig *config);
 };
+
+/*!
+ * \class CCentLax_Flow
+ * \brief Class for computing the Lax-Friedrich centered scheme.
+ * \ingroup ConvDiscr
+ * \author F. Morency ---> need to be adapted/removed for impact
+ */
+class CCentLax_Impact : public CNumerics {
+private:
+  unsigned short iDim, iVar, jVar; /*!< \brief Iteration on dimension and variables. */
+  su2double *Diff_U, /*!< \brief Difference of conservative variables. */
+  *Velocity_i, *Velocity_j, /*!< \brief Velocity at node 0 and 1. */
+  *MeanVelocity, ProjVelocity, ProjVelocity_i, ProjVelocity_j,  /*!< \brief Mean and projected velocities. */
+  *ProjFlux,  /*!< \brief Projected inviscid flux tensor. */
+  Density_i, Density_j, Energy_i, Energy_j,  /*!< \brief Mean Density and energies. */
+  sq_vel_i, sq_vel_j,   /*!< \brief Modulus of the velocity and the normal vector. */
+  MeanDensity, MeanPressure, MeanEnthalpy, MeanEnergy, /*!< \brief Mean values of primitive variables. */
+  Param_p, Param_Kappa_0, /*!< \brief Artificial dissipation parameters. */
+  Local_Lambda_i, Local_Lambda_j, MeanLambda, /*!< \brief Local eingenvalues. */
+  Phi_i, Phi_j, sc0, StretchingFactor, /*!< \brief Streching parameters. */
+  Epsilon_0, cte; /*!< \brief Artificial dissipation values. */
+  bool implicit, /*!< \brief Implicit calculation. */
+  grid_movement; /*!< \brief Modification for grid movement. */
+  su2double ProjGridVel;
+  
+public:
+  
+  /*!
+   * \brief Constructor of the class.
+   * \param[in] val_nDim - Number of dimension of the problem.
+   * \param[in] val_nVar - Number of variables of the problem.
+   * \param[in] config - Definition of the particular problem.
+   */
+  CCentLax_Impact(unsigned short val_nDim, unsigned short val_nVar, CConfig *config);
+  
+  /*!
+   * \brief Destructor of the class.
+   */
+  ~CCentLax_Impact(void);
+  
+  /*!
+   * \brief Compute the flow residual using a Lax method.
+   * \param[out] val_resconv - Pointer to the convective residual.
+   * \param[out] val_resvisc - Pointer to the artificial viscosity residual.
+   * \param[out] val_Jacobian_i - Jacobian of the numerical method at node i (implicit computation).
+   * \param[out] val_Jacobian_j - Jacobian of the numerical method at node j (implicit computation).
+   * \param[in] config - Definition of the particular problem.
+   */
+  void ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j,
+                       CConfig *config);
+};
+
+
 
 /*!
  * \class CAvgGrad_Flow

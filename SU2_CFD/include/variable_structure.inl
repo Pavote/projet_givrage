@@ -895,7 +895,9 @@ inline su2double CVariable::GetVelocityAir(unsigned short val_dim) { return Solu
 
 inline su2double CVariable::GetDensityAir(void) { return Solution_Air[0]; }
 
-inline su2double CVariable::GetStaticEnergyAir(void) { return Solution_Air[nDim+1]; }
+inline su2double CVariable::GetTemperatureAir(void) { return Solution_Air[nDim+1]; }
+
+inline su2double CVariable::GetViscosityAir(void) { return Solution_Air[nDim+2]; }
 
 
 inline bool CImpactVariable::SetDensity(void) {
@@ -1043,9 +1045,14 @@ inline void CVariable::SetDensityAir(su2double DensAir) {
   Solution_Air[0] = DensAir;
 }
 
-inline void CVariable::SetStaticEnergyAir(su2double eAir) {
-  Solution_Air[nDim+2] = eAir;
+inline void CVariable::SetTemperatureAir(su2double TAir) {
+  Solution_Air[nDim+1] = TAir;
 }
+
+inline void CVariable::SetViscosityAir(su2double nuAir) {
+  Solution_Air[nDim+2] = nuAir;
+}
+
 
 
 inline su2double CNSVariable::GetEddyViscosity(void) { return Primitive[nDim+6]; }

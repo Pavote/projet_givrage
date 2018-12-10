@@ -1966,18 +1966,18 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
           /*--- Compressible flow ---*/
         switch (config->GetKind_Centered_Flow()) {
           case NO_CENTERED : cout << "No centered scheme." << endl; break;
-          case LAX : numerics_container[MESH_0][IMPACT_SOL][CONV_TERM] = new CCentLax_Flow(nDim, nVar_Flow, config); break;
-          case JST : numerics_container[MESH_0][IMPACT_SOL][CONV_TERM] = new CCentJST_Flow(nDim, nVar_Flow, config); break;
-          case JST_KE : numerics_container[MESH_0][IMPACT_SOL][CONV_TERM] = new CCentJST_KE_Flow(nDim, nVar_Flow, config); break;
+          case LAX : numerics_container[MESH_0][IMPACT_SOL][CONV_TERM] = new CCentLax_Impact(nDim, nVar_Flow, config); break;
+          case JST : numerics_container[MESH_0][IMPACT_SOL][CONV_TERM] = new CCentJST_Impact(nDim, nVar_Flow, config); break;
+          case JST_KE : numerics_container[MESH_0][IMPACT_SOL][CONV_TERM] = new CCentJST_KE_Impact(nDim, nVar_Flow, config); break;
           default : SU2_MPI::Error("Centered scheme not implemented.", CURRENT_FUNCTION); break;
           }
 
         for (iMGlevel = 1; iMGlevel <= config->GetnMGLevels(); iMGlevel++)
-          numerics_container[iMGlevel][IMPACT_SOL][CONV_TERM] = new CCentLax_Flow(nDim, nVar_Flow, config);
+          numerics_container[iMGlevel][IMPACT_SOL][CONV_TERM] = new CCentLax_Impact(nDim, nVar_Flow, config);
 
           /*--- Definition of the boundary condition method ---*/
         for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++)
-          numerics_container[iMGlevel][IMPACT_SOL][CONV_BOUND_TERM] = new CUpwRoe_Flow(nDim, nVar_Flow, config, false);
+          numerics_container[iMGlevel][IMPACT_SOL][CONV_BOUND_TERM] = new CUpwRoe_Impact(nDim, nVar_Flow, config, false);
         break;
         
       case SPACE_UPWIND :
@@ -1988,14 +1988,14 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
             if (ideal_gas) {
 
               for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
-                numerics_container[iMGlevel][IMPACT_SOL][CONV_TERM] = new CUpwRoe_Flow(nDim, nVar_Flow, config, roe_low_dissipation);
-                numerics_container[iMGlevel][IMPACT_SOL][CONV_BOUND_TERM] = new CUpwRoe_Flow(nDim, nVar_Flow, config, false);
+                numerics_container[iMGlevel][IMPACT_SOL][CONV_TERM] = new CUpwRoe_Impact(nDim, nVar_Flow, config, roe_low_dissipation);
+                numerics_container[iMGlevel][IMPACT_SOL][CONV_BOUND_TERM] = new CUpwRoe_Impact(nDim, nVar_Flow, config, false);
               }
             } else {
 
               for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
-                numerics_container[iMGlevel][IMPACT_SOL][CONV_TERM] = new CUpwGeneralRoe_Flow(nDim, nVar_Flow, config);
-                numerics_container[iMGlevel][IMPACT_SOL][CONV_BOUND_TERM] = new CUpwGeneralRoe_Flow(nDim, nVar_Flow, config);
+                numerics_container[iMGlevel][IMPACT_SOL][CONV_TERM] = new CUpwGeneralRoe_Impact(nDim, nVar_Flow, config);
+                numerics_container[iMGlevel][IMPACT_SOL][CONV_BOUND_TERM] = new CUpwGeneralRoe_Impact(nDim, nVar_Flow, config);
               }
             }
             break;
@@ -3898,11 +3898,16 @@ void CFluidDriver::Run() {
     }
 
     /*--- Check convergence in each zone --*/
-
+    
     checkConvergence = 0;
-    for (iZone = 0; iZone < nZone; iZone++)
-    checkConvergence += (int) integration_container[iZone][FLOW_SOL]->GetConvergence();
-
+    for (iZone = 0; iZone < nZone; iZone++){
+      switch (config_container[ZONE_0]->GetKind_Solver()) {
+        case EULER: case NAVIER_STOKES: case RANS:
+          checkConvergence += (int) integration_container[iZone][FLOW_SOL]->GetConvergence(); break;
+        case IMPACT:
+          checkConvergence += (int) integration_container[iZone][IMPACT_SOL]->GetConvergence(); break;
+        }
+      }
     /*--- If convergence was reached in every zone --*/
 
   if (checkConvergence == nZone) break;

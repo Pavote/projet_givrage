@@ -224,6 +224,11 @@ inline void CNumerics::SetPrimitive(su2double *val_v_i, su2double *val_v_j) {
   V_j = val_v_j;
 }
 
+inline void CNumerics::SetPrimitiveAir(su2double *val_v_i, su2double *val_v_j) {
+  Vair_i = val_v_i;
+  Vair_j = val_v_j;
+}
+
 inline void CNumerics::SetSecondary(su2double *val_s_i, su2double *val_s_j) {
     S_i = val_s_i;
     S_j = val_s_j;
