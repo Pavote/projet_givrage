@@ -4850,7 +4850,6 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
       case EULER:                   case NAVIER_STOKES:                   case RANS:
       case ADJ_EULER:               case ADJ_NAVIER_STOKES:               case ADJ_RANS:
       case DISC_ADJ_EULER:          case DISC_ADJ_NAVIER_STOKES:          case DISC_ADJ_RANS:
-      case IMPACT:
 
         /*--- Flow solution coefficients ---*/
 
@@ -5064,6 +5063,20 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
 
         }
 
+        break;
+
+      case IMPACT:
+        
+         /*--- Flow solution coefficients ---*/
+
+        Total_CL             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CL();
+        Total_CD             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CD();
+        
+        /*--- Flow Residuals ---*/
+
+        for (iVar = 0; iVar < nVar_Flow; iVar++)
+          residual_flow[iVar] = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetRes_RMS(iVar);
+        
         break;
 
       case WAVE_EQUATION:
@@ -5480,7 +5493,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
           if (!fem) {
             if (!Unsteady && (config[val_iZone]->GetUnsteady_Simulation() != TIME_STEPPING)) {
               switch (config[val_iZone]->GetKind_Solver()) {
-              case EULER : case NAVIER_STOKES: case RANS: case IMPACT:
+              case EULER : case NAVIER_STOKES: case RANS: 
               case ADJ_EULER : case ADJ_NAVIER_STOKES: case ADJ_RANS:
 
                 cout << endl << "---------------------- Local Time Stepping Summary ----------------------" << endl;
@@ -5546,6 +5559,23 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
                 }
                 break;
 
+              case IMPACT:
+              
+                 cout << endl << "---------------------- Local Time Stepping Summary ----------------------" << endl;
+
+                for (unsigned short iMesh = FinestMesh; iMesh <= config[val_iZone]->GetnMGLevels(); iMesh++)
+                  cout << "MG level: "<< iMesh << " -> Min. DT: " << solver_container[val_iZone][iMesh][IMPACT_SOL]->GetMin_Delta_Time()<<
+                  ". Max. DT: " << solver_container[val_iZone][iMesh][IMPACT_SOL]->GetMax_Delta_Time() <<
+                  ". CFL: " << config[val_iZone]->GetCFL(iMesh)  << "." << endl;
+
+                  if (nZone > 1)
+                    cout << "CFL in zone 2: " << config[1]->GetCFL(MESH_0) << endl;
+
+                cout << "-------------------------------------------------------------------------" << endl;
+                
+                break;
+                 
+
               case DISC_ADJ_EULER: case DISC_ADJ_NAVIER_STOKES: case DISC_ADJ_RANS:
                 cout << endl;
                 cout << "------------------------ Discrete Adjoint Summary -----------------------" << endl;
@@ -5580,7 +5610,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
           }
 
           switch (config[val_iZone]->GetKind_Solver()) {
-          case EULER :                  case NAVIER_STOKES:                 case IMPACT:
+          case EULER :                  case NAVIER_STOKES:                 
 
             /*--- Visualize the maximum residual ---*/
             iPointMaxResid = solver_container[val_iZone][FinestMesh][FLOW_SOL]->GetPoint_Max(0);
@@ -5645,6 +5675,37 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
 
             cout << endl;
 
+            break;
+            
+          case IMPACT:
+          /*--- Visualize the maximum residual ---*/
+            iPointMaxResid = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetPoint_Max(0);
+            Coord = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetPoint_Max_Coord(0);
+
+            cout << endl << "----------------------- Residual Evolution Summary ----------------------" << endl;
+
+            cout << "log10[Maximum residual]: " << log10(solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetRes_Max(0)) << "." << endl;
+
+            if (config[val_iZone]->GetSystemMeasurements() == SI) {
+              cout <<"Maximum residual point " << iPointMaxResid << ", located at (" << Coord[0] << ", " << Coord[1];
+              if (nDim == 3) cout << ", " << Coord[2];
+              cout <<   ")." << endl;
+            }
+            else {
+              cout <<"Maximum residual point " << iPointMaxResid << ", located at (" << Coord[0]*12.0 << ", " << Coord[1]*12.0;
+              if (nDim == 3) cout << ", " << Coord[2]*12.0;
+              cout <<   ")." << endl;
+            }
+
+            /*--- Print out the number of non-physical points and reconstructions ---*/
+
+            if (config[val_iZone]->GetNonphysical_Points() > 0)
+              cout << "There are " << config[val_iZone]->GetNonphysical_Points() << " non-physical points in the solution." << endl;
+            if (config[val_iZone]->GetNonphysical_Reconstr() > 0)
+              cout << "There are " << config[val_iZone]->GetNonphysical_Reconstr() << " non-physical states in the upwind reconstruction." << endl;
+
+            cout << "-------------------------------------------------------------------------" << endl;
+            
             break;
 
           case RANS :

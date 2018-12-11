@@ -82,6 +82,7 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
     for (iDim = 0; iDim < nDim; iDim++) {
         Vel_air = Vair_i[iDim+1];
         val_residual[iDim+1] = -Volume * U_i[0] * Body_Force_Vector[iDim] / Droplet_LWC;
+        val_residual[iDim+1] = 0.0;
     } 
     /*--- Energy contribution ---*/
 

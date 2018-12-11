@@ -4215,7 +4215,7 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
 
 void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_container, CConfig *config, unsigned long ExtIter) {
 
-  cout << "CImpactSolver SetInitialCondition*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetInitialCondition*************************************************************************************" << endl;
   unsigned long iPoint;
   unsigned short iMesh, iDim;
   su2double X0[3] = {0.0,0.0,0.0}, X1[3] = {0.0,0.0,0.0}, X2[3] = {0.0,0.0,0.0},
@@ -4231,47 +4231,51 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
                     (config->GetUnsteady_Simulation() == DT_STEPPING_2ND));
   bool SubsonicEngine = config->GetSubsonicEngine();
 
-
-  /*--- If no restart file, read the air solution file and use it to init impact model ---*/
-  cout << "read air velocity" << endl;
-  if (!restart) {
-    solver_container[MESH_0][FLOW_SOL]->LoadRestart(geometry, solver_container, config, SU2_TYPE::Int(config->GetUnst_RestartIter()-1), true);
+//  /*--- If no restart file, read the air solution file and use it to init impact model ---*/
+  if (dual_time && (ExtIter == 0 || (restart && (long)ExtIter == config->GetUnst_RestartIter()))) {
+    cout << "read air velocity" << endl;
+    if (!restart) {
+      solver_container[MESH_0][FLOW_SOL]->LoadRestart(geometry, solver_container, config, SU2_TYPE::Int(config->GetUnst_RestartIter()-1), true);
   /*--- Get the air velocity solution as initial velocity for impact solution ---*/
-    for (iMesh = 0; iMesh <= config->GetnMGLevels(); iMesh++) {
-      for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
-        AirDensity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(0);
-        for (iDim = 0; iDim < nDim; iDim++) {  
-          AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
-          solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(iDim+1,AirVelocity);
-        }
+      for (iMesh = 0; iMesh <= config->GetnMGLevels(); iMesh++) {
+        for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
+          AirDensity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(0);
+          solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(0,AirDensity);
+          for (iDim = 0; iDim < nDim; iDim++) {  
+            AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
+            solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(iDim+1,AirVelocity);
+          }
+        }    
+      }
+    }
+
+  
+  /*--- The primitive air solution variable file information is stored for drag calculation ---*/
+      su2double Viscosity, Velocity2, StaticEnergy, Pressure, Temperature;
+      FluidModel->SetLaminarViscosityModel(config);
+      for (iMesh = 0; iMesh <= config->GetnMGLevels(); iMesh++) {
+        for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
+          AirDensity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(0);
+//        AirDensity = 1.0;
+          node[iPoint]->SetDensityAir(AirDensity);
+          Velocity2 = 0.0;
+          for (iDim = 0; iDim < nDim; iDim++) {  
+            AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
+//          AirVelocity = 0.0;
+            Velocity2 += AirVelocity*AirVelocity;
+            node[iPoint]->SetVelocityAir(iDim,AirVelocity);
+          }
+        StaticEnergy = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(nDim+1)/AirDensity - 0.5*Velocity2;
+//      StaticEnergy = 200000.0;
+        FluidModel->SetTDState_rhoe(AirDensity, StaticEnergy);
+        Pressure = FluidModel->GetPressure();
+        Temperature = FluidModel->GetTemperature();
+        node[iPoint]->SetTemperatureAir(Temperature);
+        Viscosity = FluidModel->GetLaminarViscosity();
+        node[iPoint]->SetViscosityAir(Viscosity);
       }    
     }
   }
-  
-  /*--- The primitive air solution variable file information is stored for drag calculation ---*/
-  su2double Viscosity, Velocity2, StaticEnergy, Pressure, Temperature;
-  FluidModel->SetLaminarViscosityModel (config);
-  for (iMesh = 0; iMesh <= config->GetnMGLevels(); iMesh++) {
-    for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
-      AirDensity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(0);
-      node[iPoint]->SetDensityAir(AirDensity);
-      Velocity2 = 0.0;
-      for (iDim = 0; iDim < nDim; iDim++) {  
-        AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
-        Velocity2 += AirVelocity*AirVelocity;
-        node[iPoint]->SetVelocityAir(iDim,AirVelocity);
-      }
-      StaticEnergy= solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(nDim+1)/AirDensity - 0.5*Velocity2;
-
-      FluidModel->SetTDState_rhoe(AirDensity, StaticEnergy);
-      Pressure = FluidModel->GetPressure();
-      Temperature = FluidModel->GetTemperature();
-      node[iPoint]->SetTemperatureAir(Temperature);
-      Viscosity = FluidModel->GetLaminarViscosity();
-      node[iPoint]->SetViscosityAir(Viscosity);
-    }    
-  }
-
   /*--- Make sure that the solution is well initialized for unsteady
    calculations with dual time-stepping (load additional restarts for 2nd-order). ---*/
   /*--- TO DO Unsteady calculation for IMPACT need to read additional airflow solution ---*/

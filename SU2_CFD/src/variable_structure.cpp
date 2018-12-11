@@ -92,10 +92,10 @@ CVariable::CVariable(unsigned short val_nvar, CConfig *config) {
     Solution[iVar] = 0.0;
   
   /*--- Allocate the solution array for the air solution impact solver ---*/
-  /*--- We store density, velocity, T, viscosity  ---*/
+  /*--- We store density, velocity, T, and viscosity  ---*/
   if(config->GetKind_Solver() == IMPACT){
     Solution_Air = new su2double [nVar+1];
-    for (unsigned short iVar = 0; iVar < nVar; iVar++)
+    for (unsigned short iVar = 0; iVar < nVar+1; iVar++)
       Solution[iVar] = 0.0;
    }
   

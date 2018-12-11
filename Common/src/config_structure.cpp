@@ -4470,7 +4470,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
         if (Kind_Regime == INCOMPRESSIBLE) cout << "Incompressible Euler equations." << endl;
         break;
       case IMPACT:
-        if (Kind_Regime == COMPRESSIBLE) cout << "Compressible Impact equations." << endl;
+        if (Kind_Regime == COMPRESSIBLE) cout << "Impact equations." << endl;
         break;
       case NAVIER_STOKES: case DISC_ADJ_NAVIER_STOKES:
         if (Kind_Regime == COMPRESSIBLE) cout << "Compressible Laminar Navier-Stokes' equations." << endl;
@@ -4719,6 +4719,9 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
   }
 
   cout << "Input mesh file name: " << Mesh_FileName << endl;
+  
+  if (Kind_Solver == IMPACT)
+    cout <<  "Input air solution file name: " << Solution_FlowFileName << endl;
 
 	if (val_software == SU2_DOT) {
     if (DiscreteAdjoint) {
@@ -5546,7 +5549,11 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
       if (!ContinuousAdjoint && !DiscreteAdjoint) {
         cout << "Surface flow coefficients file name: " << SurfFlowCoeff_FileName << "." << endl;
         cout << "Flow variables file name: " << Flow_FileName << "." << endl;
-        cout << "Restart flow file name: " << Restart_FlowFileName << "." << endl;
+        if (Kind_Solver = IMPACT){
+          cout << "Restart impact flow file name: " << Restart_ImpactFileName << "." << endl;
+        } else {
+          cout << "Restart flow file name: " << Restart_FlowFileName << "." << endl;
+        }   
       }
 
       if (ContinuousAdjoint || DiscreteAdjoint) {

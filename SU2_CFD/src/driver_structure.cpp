@@ -1586,7 +1586,7 @@ void CDriver::Integration_Postprocessing(CIntegration **integration_container,
 void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
                                      CSolver ***solver_container, CGeometry **geometry,
                                      CConfig *config) {
-
+  cout << "FM Numerics Preprocessing" << config->GetKind_Solver() << endl;
   unsigned short iMGlevel, iSol, nDim,
 
   nVar_Template         = 0,
@@ -3595,7 +3595,7 @@ void CDriver::PreprocessExtIter(unsigned long ExtIter) {
 
         solver_container[iZone][MESH_0][FLOW_SOL]->SetInitialCondition(geometry_container[iZone], solver_container[iZone], config_container[iZone], ExtIter);
       } else {
-        if (config_container[iZone]->GetKind_Solver() ==  IMPACT) 
+        if (config_container[iZone]->GetKind_Solver() ==  IMPACT)
         solver_container[iZone][MESH_0][IMPACT_SOL]->SetInitialCondition(geometry_container[iZone], solver_container[iZone], config_container[iZone], ExtIter);  
       } 
     }
@@ -3916,7 +3916,7 @@ void CFluidDriver::Run() {
 }
 
 void CFluidDriver::Transfer_Data(unsigned short donorZone, unsigned short targetZone) {
-
+  cout << "FM: Transfer data======================================" << endl;
   bool MatchingMesh = config_container[targetZone]->GetMatchingMesh();
 
   /*--- Select the transfer method and the appropriate mesh properties (matching or nonmatching mesh) ---*/
