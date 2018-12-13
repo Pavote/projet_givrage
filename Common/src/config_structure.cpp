@@ -4526,6 +4526,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
         break;
 
     }
+    
 
     if ((Kind_Regime == COMPRESSIBLE) && (Kind_Solver != FEM_ELASTICITY) &&
         (Kind_Solver != HEAT_EQUATION) && (Kind_Solver != WAVE_EQUATION)) {
@@ -4541,6 +4542,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
       		cout << "Fixed CM mode, target value:  " << Target_CM << "." << endl;
       		cout << "HTP rotation axis (X,Z): ("<< HTP_Axis[0] <<", "<< HTP_Axis[1] <<")."<< endl;
       }
+
     }
 
     if (EquivArea) {
@@ -4568,11 +4570,14 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
     if (Restart) {
       if (Read_Binary_Restart) cout << "Reading and writing binary SU2 native restart files." << endl;
       else cout << "Reading and writing ASCII SU2 native restart files." << endl;
-      if (!ContinuousAdjoint && Kind_Solver != FEM_ELASTICITY) cout << "Read flow solution from: " << Solution_FlowFileName << "." << endl;
+      if (!ContinuousAdjoint && Kind_Solver != FEM_ELASTICITY && Kind_Solver != IMPACT) cout << "Read flow solution from: " << Solution_FlowFileName << "." << endl;
       if (ContinuousAdjoint) cout << "Read adjoint solution from: " << Solution_AdjFileName << "." << endl;
       if (Kind_Solver == FEM_ELASTICITY) cout << "Read structural solution from: " << Solution_FEMFileName << "." << endl;
       if (Kind_Solver == DISC_ADJ_FEM){
         cout << "Read structural adjoint solution from: " << Solution_AdjFEMFileName << "." << endl;
+      if (Kind_Solver == IMPACT){
+        cout << "Read droplet flow solution from: " << Solution_ImpactFileName << endl;
+        cout << "Read air flow solution from: " << Solution_FlowFileName << "." << endl;
       }
     }
     else {
@@ -4582,7 +4587,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
 
     if (ContinuousAdjoint)
       cout << "Read flow solution from: " << Solution_FlowFileName << "." << endl;
-
+      
     if (!fea){
       if (Kind_Regime == COMPRESSIBLE) {
       if (Ref_NonDim == DIMENSIONAL) { cout << "Dimensional simulation." << endl; }
@@ -4720,8 +4725,8 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
 
   cout << "Input mesh file name: " << Mesh_FileName << endl;
   
-  if (Kind_Solver == IMPACT)
-    cout <<  "Input air solution file name: " << Solution_FlowFileName << endl;
+  //if (Kind_Solver == IMPACT)
+    //cout <<  "Input air solution file name: " << Solution_FlowFileName << endl;
 
 	if (val_software == SU2_DOT) {
     if (DiscreteAdjoint) {
@@ -4996,6 +5001,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
           cout << "First order integration." << endl;
         }
       }
+
 
       if (Kind_ConvNumScheme_Flow == SPACE_UPWIND) {
         if (Kind_Upwind_Flow == ROE)   cout << "Roe (with entropy fix = "<< EntropyFix_Coeff <<") solver for the flow inviscid terms."<< endl;
@@ -5549,10 +5555,11 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
       if (!ContinuousAdjoint && !DiscreteAdjoint) {
         cout << "Surface flow coefficients file name: " << SurfFlowCoeff_FileName << "." << endl;
         cout << "Flow variables file name: " << Flow_FileName << "." << endl;
-        if (Kind_Solver = IMPACT){
+        if (Kind_Solver == IMPACT){
           cout << "Restart impact flow file name: " << Restart_ImpactFileName << "." << endl;
         } else {
           cout << "Restart flow file name: " << Restart_FlowFileName << "." << endl;
+          }
         }   
       }
 

@@ -122,7 +122,7 @@ CDriver::CDriver(char* confFile,
      read and stored. ---*/
 
     config_container[iZone] = new CConfig(config_file_name, SU2_CFD, iZone, nZone, nDim, VERB_HIGH);
-
+    
     /*--- Set the MPI communicator ---*/
 
     config_container[iZone]->SetMPICommunicator(MPICommunicator);
@@ -1503,7 +1503,7 @@ void CDriver::Integration_Preprocessing(CIntegration **integration_container,
 
   /*--- Allocate solution for a template problem ---*/
   if (template_solver) integration_container[TEMPLATE_SOL] = new CSingleGridIntegration(config);
-  cout << "FM: Allocate solution for direct problem" << endl;
+
   /*--- Allocate solution for direct problem ---*/
   if (euler) integration_container[FLOW_SOL] = new CMultiGridIntegration(config);
   if (impact) integration_container[IMPACT_SOL] = new CMultiGridIntegration(config);
@@ -1586,7 +1586,7 @@ void CDriver::Integration_Postprocessing(CIntegration **integration_container,
 void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
                                      CSolver ***solver_container, CGeometry **geometry,
                                      CConfig *config) {
-  cout << "FM Numerics Preprocessing" << config->GetKind_Solver() << endl;
+
   unsigned short iMGlevel, iSol, nDim,
 
   nVar_Template         = 0,
@@ -1955,7 +1955,7 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
 
   /*--- Solver definition for the Impact problems ---*/
   if (impact) {
-    cout << "FM: Definition of the convective scheme for each equation and mesh leve" << endl;
+
     /*--- Definition of the convective scheme for each equation and mesh level ---*/
     switch (config->GetKind_ConvNumScheme_Flow()) {
       case NO_CONVECTIVE :

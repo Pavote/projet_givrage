@@ -5706,6 +5706,12 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
 
             cout << "-------------------------------------------------------------------------" << endl;
             
+            if (!Unsteady) cout << endl << " Iter" << "    Time(s)";
+            else cout << endl << " IntIter" << " ExtIter";
+            
+            cout << "     Res[Rho]" << "     Res[RhoE]" << "      CL(Total)" << "      CD(Total)";
+            
+            
             break;
 
           case RANS :
