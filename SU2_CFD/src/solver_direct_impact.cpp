@@ -429,7 +429,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   Secondary   = new su2double[nSecondaryVar]; for (iVar = 0; iVar < nSecondaryVar; iVar++) Secondary[iVar]   = 0.0;
   Secondary_i = new su2double[nSecondaryVar]; for (iVar = 0; iVar < nSecondaryVar; iVar++) Secondary_i[iVar] = 0.0;
   Secondary_j = new su2double[nSecondaryVar]; for (iVar = 0; iVar < nSecondaryVar; iVar++) Secondary_j[iVar] = 0.0;
-  
+
   /*--- Define some auxiliary vectors related to the air solution ---*/
 
   //Solution_Air   = new su2double[nVar]; for (iVar = 0; iVar < nVar; iVar++) Solution_Air[iVar]   = 0.0;
@@ -791,10 +791,10 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
 
     }
   }
-  
-  
+
+
   /*--- Initialize the solution to the far-field state everywhere. ---*/
-  
+
   for (iPoint = 0; iPoint < nPoint; iPoint++)
     node[iPoint] = new CImpactVariable(Density_Inf, Velocity_Inf, Energy_Inf, nDim, nVar, config);
 
@@ -4241,15 +4241,15 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
         for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
           AirDensity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(0);
           solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(0,AirDensity);
-          for (iDim = 0; iDim < nDim; iDim++) {  
+          for (iDim = 0; iDim < nDim; iDim++) {
             AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
             solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(iDim+1,AirVelocity);
           }
-        }    
+        }
       }
     }
 
-  
+
   /*--- The primitive air solution variable file information is stored for drag calculation ---*/
       su2double Viscosity, Velocity2, StaticEnergy, Pressure, Temperature;
       FluidModel->SetLaminarViscosityModel(config);
@@ -4259,7 +4259,7 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
 //        AirDensity = 1.0;
           node[iPoint]->SetDensityAir(AirDensity);
           Velocity2 = 0.0;
-          for (iDim = 0; iDim < nDim; iDim++) {  
+          for (iDim = 0; iDim < nDim; iDim++) {
             AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
 //          AirVelocity = 0.0;
             Velocity2 += AirVelocity*AirVelocity;
@@ -4273,7 +4273,7 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
         node[iPoint]->SetTemperatureAir(Temperature);
         Viscosity = FluidModel->GetLaminarViscosity();
         node[iPoint]->SetViscosityAir(Viscosity);
-      }    
+      }
     }
   }
   /*--- Make sure that the solution is well initialized for unsteady
@@ -4990,18 +4990,18 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
   /*--- Initialize the source residual to zero ---*/
 
   for (iVar = 0; iVar < nVar; iVar++) Residual[iVar] = 0.0;
-  
+
   /*--- compute the drag force for the droplet equation ---*/
     /*--- Loop over all points ---*/
     for (iPoint = 0; iPoint < nPointDomain; iPoint++) {
 
       /*--- Load the conservative variables ---*/
       numerics->SetConservative(node[iPoint]->GetSolution(),
-                                node[iPoint]->GetSolution()); 
-                                
+                                node[iPoint]->GetSolution());
+
       /*--- Load the air variable ---*/
       numerics->SetPrimitiveAir(node[iPoint]->GetSolution_Air(),
-                                node[iPoint]->GetSolution_Air()); 
+                                node[iPoint]->GetSolution_Air());
 
       /*--- Load the volume of the dual mesh cell ---*/
       numerics->SetVolume(geometry->node[iPoint]->GetVolume());
@@ -5012,7 +5012,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
       /*--- Add the source residual to the total ---*/
       LinSysRes.AddBlock(iPoint, Residual);
 
-    }  
+    }
 
   if (body_force) {
 
@@ -5021,7 +5021,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
 
       /*--- Load the conservative variables ---*/
       numerics->SetConservative(node[iPoint]->GetSolution(),
-                                node[iPoint]->GetSolution());     
+                                node[iPoint]->GetSolution());
 
       /*--- Load the volume of the dual mesh cell ---*/
       numerics->SetVolume(geometry->node[iPoint]->GetVolume());
@@ -8886,121 +8886,7 @@ void CImpactSolver::UpdateCustomBoundaryConditions(CGeometry **geometry_containe
   }
 }
 
-void CImpactSolver::Evaluate_ObjFunc(CConfig *config) {
-  //cout << "CImpactSolver Evaluate_ObjFunc*************************************************************************************" << endl;
-  unsigned short iMarker_Monitoring, Kind_ObjFunc;
-  su2double Weight_ObjFunc;
 
-  Total_ComboObj = 0.0;
-
-  /*--- Loop over all monitored markers, add to the 'combo' objective ---*/
-
-  for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-
-    Weight_ObjFunc = config->GetWeight_ObjFunc(iMarker_Monitoring);
-    Kind_ObjFunc = config->GetKind_ObjFunc(iMarker_Monitoring);
-
-    switch(Kind_ObjFunc) {
-      case DRAG_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*(Surface_CD[iMarker_Monitoring]);
-        if (config->GetFixed_CL_Mode()) Total_ComboObj -= Weight_ObjFunc*config->GetdCD_dCL()*(Surface_CL[iMarker_Monitoring]);
-        if (config->GetFixed_CM_Mode()) Total_ComboObj -= Weight_ObjFunc*config->GetdCD_dCMy()*(Surface_CMy[iMarker_Monitoring]);
-        break;
-      case LIFT_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*(Surface_CL[iMarker_Monitoring]);
-        break;
-      case SIDEFORCE_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*(Surface_CSF[iMarker_Monitoring]);
-        break;
-      case EFFICIENCY:
-        Total_ComboObj+=Weight_ObjFunc*(Surface_CEff[iMarker_Monitoring]);
-        break;
-      case MOMENT_X_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*(Surface_CMx[iMarker_Monitoring]);
-        if (config->GetFixed_CL_Mode()) Total_ComboObj -= Weight_ObjFunc*config->GetdCMx_dCL()*(Surface_CL[iMarker_Monitoring]);
-        break;
-      case MOMENT_Y_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*(Surface_CMy[iMarker_Monitoring]);
-        if (config->GetFixed_CL_Mode()) Total_ComboObj -= Weight_ObjFunc*config->GetdCMy_dCL()*(Surface_CL[iMarker_Monitoring]);
-        break;
-      case MOMENT_Z_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*(Surface_CMz[iMarker_Monitoring]);
-        if (config->GetFixed_CL_Mode()) Total_ComboObj -= Weight_ObjFunc*config->GetdCMz_dCL()*(Surface_CL[iMarker_Monitoring]);
-        break;
-      case FORCE_X_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*Surface_CFx[iMarker_Monitoring];
-        break;
-      case FORCE_Y_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*Surface_CFy[iMarker_Monitoring];
-        break;
-      case FORCE_Z_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*Surface_CFz[iMarker_Monitoring];
-        break;
-      case TOTAL_HEATFLUX:
-        Total_ComboObj+=Weight_ObjFunc*Surface_HF_Visc[iMarker_Monitoring];
-        break;
-      case MAXIMUM_HEATFLUX:
-        Total_ComboObj+=Weight_ObjFunc*Surface_MaxHF_Visc[iMarker_Monitoring];
-        break;
-
-        /*--- The following are not per-surface, and as a result will be
-         double-counted iff multiple surfaces are specified as well as multi-objective ---*/
-
-      case EQUIVALENT_AREA:
-        Total_ComboObj+=Weight_ObjFunc*Total_CEquivArea;
-        break;
-      case NEARFIELD_PRESSURE:
-        Total_ComboObj+=Weight_ObjFunc*Total_CNearFieldOF;
-        break;
-      case INVERSE_DESIGN_PRESSURE:
-        Total_ComboObj+=Weight_ObjFunc*Total_CpDiff;
-        break;
-      case INVERSE_DESIGN_HEATFLUX:
-        Total_ComboObj+=Weight_ObjFunc*Total_HeatFluxDiff;
-        break;
-      case THRUST_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*Total_CT;
-        break;
-      case TORQUE_COEFFICIENT:
-        Total_ComboObj+=Weight_ObjFunc*Total_CQ;
-        break;
-      case FIGURE_OF_MERIT:
-        Total_ComboObj+=Weight_ObjFunc*Total_CMerit;
-        break;
-      case SURFACE_TOTAL_PRESSURE:
-        Total_ComboObj+=Weight_ObjFunc*config->GetSurface_TotalPressure(0);
-        break;
-      case SURFACE_STATIC_PRESSURE:
-        Total_ComboObj+=Weight_ObjFunc*config->GetSurface_Pressure(0);
-        break;
-      case SURFACE_MASSFLOW:
-        Total_ComboObj+=Weight_ObjFunc*config->GetSurface_MassFlow(0);
-        break;
-      case SURFACE_MACH:
-        Total_ComboObj+=Weight_ObjFunc*config->GetSurface_Mach(0);
-        break;
-      case SURFACE_UNIFORMITY:
-        Total_ComboObj+=Weight_ObjFunc*config->GetSurface_Uniformity(0);
-        break;
-      case SURFACE_SECONDARY:
-        Total_ComboObj+=Weight_ObjFunc*config->GetSurface_SecondaryStrength(0);
-        break;
-      case SURFACE_MOM_DISTORTION:
-        Total_ComboObj+=Weight_ObjFunc*config->GetSurface_MomentumDistortion(0);
-        break;
-      case SURFACE_SECOND_OVER_UNIFORM:
-        Total_ComboObj+=Weight_ObjFunc*config->GetSurface_SecondOverUniform(0);
-        break;
-      case CUSTOM_OBJFUNC:
-        Total_ComboObj+=Weight_ObjFunc*Total_Custom_ObjFunc;
-        break;
-      default:
-        break;
-
-    }
-  }
-
-}
 
 void CImpactSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container,
                                  CNumerics *numerics, CConfig *config, unsigned short val_marker) {
@@ -14015,4 +13901,3 @@ void CImpactSolver::GatherInOutAverageValues(CConfig *config, CGeometry *geometr
     }
   }
 }
-

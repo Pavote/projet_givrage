@@ -6986,8 +6986,8 @@ protected:
   su2double *Secondary,    /*!< \brief Auxiliary nPrimVar vector. */
   *Secondary_i,        /*!< \brief Auxiliary nPrimVar vector for storing the primitive at point i. */
   *Secondary_j;        /*!< \brief Auxiliary nPrimVar vector for storing the primitive at point j. */
-  
-  /*--- FM su2double *Solution_Air;  ---*/ /*!< \brief Air solution for droplet model calculation. */   
+
+  /*--- FM su2double *Solution_Air;  ---*/ /*!< \brief Air solution for droplet model calculation. */
 
   su2double Cauchy_Value,  /*!< \brief Summed value of the convergence indicator. */
   Cauchy_Func;      /*!< \brief Current value of the convergence indicator at one iteration. */
@@ -7090,8 +7090,8 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void Set_MPI_Solution_Old(CGeometry *geometry, CConfig *config);
-  
-  
+
+
   /*!
    * \brief Impose the send-receive boundary condition.
    * \param[in] geometry - Geometrical definition of the problem.
@@ -7381,12 +7381,6 @@ public:
    */
   void Set_MPI_Interface(CGeometry *geometry, CConfig *config);
 
-  /*!
-   * \author H. Kline
-   * \brief Compute weighted-sum "combo" objective output
-   * \param[in] config - Definition of the particular problem.
-   */
-  void Evaluate_ObjFunc(CConfig *config);
 
   /*!
    * \author: G.Gori, S.Vitale, M.Pini, A.Guardone, P.Colonna
@@ -7551,7 +7545,7 @@ public:
   void BC_Outlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                  CConfig *config, unsigned short val_marker);
 
-  
+
   /*!
    * \brief Set the new solution variables to the current solution value for classical RK.
    * \param[in] geometry - Geometrical definition of the problem.
