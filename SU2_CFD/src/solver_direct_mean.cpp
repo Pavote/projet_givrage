@@ -5422,7 +5422,7 @@ void CEulerSolver::Pressure_Forces(CGeometry *geometry, CConfig *config) {
    For dynamic meshes, use the motion Mach number as a reference value
    for computing the force coefficients. Otherwise, use the freestream
    values, which is the standard convention. ---*/
-
+  cout << "Pressure force" << endl;
   RefTemp     = Temperature_Inf;
   RefDensity  = Density_Inf;
   RefPressure = Pressure_Inf;
