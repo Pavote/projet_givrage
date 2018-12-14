@@ -3644,7 +3644,6 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
   su2double Mach             = config->GetMach();
   su2double Reynolds         = config->GetReynolds();
   bool unsteady           = (config->GetUnsteady_Simulation() != NO);
-  bool viscous            = config->GetViscous();
   bool grid_movement      = config->GetGrid_Movement();
   bool gravity            = config->GetGravityForce();
   bool turbulent          = (config->GetKind_Solver() == RANS) || (config->GetKind_Solver() == DISC_ADJ_RANS);
@@ -3765,72 +3764,10 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
     ModVel_FreeStream += config->GetVelocity_FreeStream()[iDim]*config->GetVelocity_FreeStream()[iDim];
   ModVel_FreeStream = sqrt(ModVel_FreeStream); config->SetModVel_FreeStream(ModVel_FreeStream);
 
-  /*--- Viscous initialization ---*/
+  /*--- For inviscid flow, energy is calculated from the specified
+  FreeStream quantities using the proper gas law. ---*/
 
-  if (viscous) {
-
-    /*--- The dimensional viscosity is needed to determine the free-stream conditions.
-          To accomplish this, simply set the non-dimensional coefficients to the
-          dimensional ones. This will be overruled later.---*/
-    config->SetMu_RefND(config->GetMu_Ref());
-    config->SetMu_Temperature_RefND(config->GetMu_Temperature_Ref());
-    config->SetMu_SND(config->GetMu_S());
-
-    config->SetMu_ConstantND(config->GetMu_Constant());
-
-    /*--- Reynolds based initialization ---*/
-
-    if (reynolds_init) {
-
-      /*--- First, check if there is mesh motion. If yes, use the Mach
-         number relative to the body to initialize the flow. ---*/
-
-      if (grid_movement) Velocity_Reynolds = config->GetMach_Motion()*Mach2Vel_FreeStream;
-      else Velocity_Reynolds = ModVel_FreeStream;
-
-      /*--- For viscous flows, pressure will be computed from a density
-            that is found from the Reynolds number. The viscosity is computed
-            from the dimensional version of Sutherland's law or the constant
-            viscosity, depending on the input option.---*/
-
-      FluidModel->SetLaminarViscosityModel(config);
-
-      Viscosity_FreeStream = FluidModel->GetLaminarViscosity();
-      config->SetViscosity_FreeStream(Viscosity_FreeStream);
-
-      Density_FreeStream = Reynolds*Viscosity_FreeStream/(Velocity_Reynolds*config->GetLength_Reynolds());
-      config->SetDensity_FreeStream(Density_FreeStream);
-      FluidModel->SetTDState_rhoT(Density_FreeStream, Temperature_FreeStream);
-      Pressure_FreeStream = FluidModel->GetPressure();
-      config->SetPressure_FreeStream(Pressure_FreeStream);
-      Energy_FreeStream = FluidModel->GetStaticEnergy() + 0.5*ModVel_FreeStream*ModVel_FreeStream;
-
-    }
-
-    /*--- Thermodynamics quantities based initialization ---*/
-
-    else {
-
-      FluidModel->SetLaminarViscosityModel(config);
-      Viscosity_FreeStream = FluidModel->GetLaminarViscosity();
-      config->SetViscosity_FreeStream(Viscosity_FreeStream);
-      Energy_FreeStream = FluidModel->GetStaticEnergy() + 0.5*ModVel_FreeStream*ModVel_FreeStream;
-
-    }
-
-    /*--- Turbulence kinetic energy ---*/
-
-    Tke_FreeStream  = 3.0/2.0*(ModVel_FreeStream*ModVel_FreeStream*config->GetTurbulenceIntensity_FreeStream()*config->GetTurbulenceIntensity_FreeStream());
-
-  }
-  else {
-
-    /*--- For inviscid flow, energy is calculated from the specified
-       FreeStream quantities using the proper gas law. ---*/
-
-    Energy_FreeStream = FluidModel->GetStaticEnergy() + 0.5*ModVel_FreeStream*ModVel_FreeStream;
-
-  }
+  Energy_FreeStream = FluidModel->GetStaticEnergy() + 0.5*ModVel_FreeStream*ModVel_FreeStream;
 
   /*-- Compute the freestream energy. ---*/
 
@@ -3939,25 +3876,6 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
 
   Energy_FreeStreamND = FluidModel->GetStaticEnergy() + 0.5*ModVel_FreeStreamND*ModVel_FreeStreamND;
 
-  if (viscous) {
-
-    /*--- Constant viscosity model ---*/
-    config->SetMu_ConstantND(config->GetMu_Constant()/Viscosity_Ref);
-
-    /*--- Sutherland's model ---*/
-
-    config->SetMu_RefND(config->GetMu_Ref()/Viscosity_Ref);
-    config->SetMu_SND(config->GetMu_S()/config->GetTemperature_Ref());
-    config->SetMu_Temperature_RefND(config->GetMu_Temperature_Ref()/config->GetTemperature_Ref());
-
-    /* constant thermal conductivity model */
-    config->SetKt_ConstantND(config->GetKt_Constant()/Conductivity_Ref);
-
-    FluidModel->SetLaminarViscosityModel(config);
-    FluidModel->SetThermalConductivityModel(config);
-
-  }
-
   if (tkeNeeded) { Energy_FreeStreamND += Tke_FreeStreamND; };  config->SetEnergy_FreeStreamND(Energy_FreeStreamND);
 
   Energy_Ref = Energy_FreeStream/Energy_FreeStreamND; config->SetEnergy_Ref(Energy_Ref);
@@ -3971,14 +3889,8 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
 
     cout.precision(6);
 
-    if (viscous) {
-      cout << "Viscous flow: Computing pressure using the ideal gas law" << endl;
-      cout << "based on the free-stream temperature and a density computed" << endl;
-      cout << "from the Reynolds number." << endl;
-    } else {
-      cout << "Inviscid flow: Computing density based on free-stream" << endl;
-      cout << "temperature and pressure using the ideal gas law." << endl;
-    }
+    cout << "Inviscid flow: Computing density based on free-stream" << endl;
+    cout << "temperature and pressure using the ideal gas law." << endl;
 
     if (grid_movement) cout << "Force coefficients computed using MACH_MOTION." << endl;
     else cout << "Force coefficients computed using free-stream values." << endl;
@@ -4026,50 +3938,6 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
         break;
 
     }
-    if (viscous) {
-      switch (config->GetKind_ViscosityModel()) {
-
-        case CONSTANT_VISCOSITY:
-          cout << "Viscosity Model: CONSTANT_VISCOSITY  "<< endl;
-          cout << "Laminar Viscosity: " << config->GetMu_Constant();
-          if (config->GetSystemMeasurements() == SI) cout << " N.s/m^2." << endl;
-          else if (config->GetSystemMeasurements() == US) cout << " lbf.s/ft^2." << endl;
-          cout << "Laminar Viscosity (non-dim): " << config->GetMu_ConstantND()<< endl;
-          break;
-
-        case SUTHERLAND:
-          cout << "Viscosity Model: SUTHERLAND "<< endl;
-          cout << "Ref. Laminar Viscosity: " << config->GetMu_Ref();
-          if (config->GetSystemMeasurements() == SI) cout << " N.s/m^2." << endl;
-          else if (config->GetSystemMeasurements() == US) cout << " lbf.s/ft^2." << endl;
-          cout << "Ref. Temperature: " << config->GetMu_Temperature_Ref();
-          if (config->GetSystemMeasurements() == SI) cout << " K." << endl;
-          else if (config->GetSystemMeasurements() == US) cout << " R." << endl;
-          cout << "Sutherland Constant: "<< config->GetMu_S();
-          if (config->GetSystemMeasurements() == SI) cout << " K." << endl;
-          else if (config->GetSystemMeasurements() == US) cout << " R." << endl;
-          cout << "Laminar Viscosity (non-dim): " << config->GetMu_ConstantND()<< endl;
-          cout << "Ref. Temperature (non-dim): " << config->GetMu_Temperature_RefND()<< endl;
-          cout << "Sutherland constant (non-dim): "<< config->GetMu_SND()<< endl;
-          break;
-
-      }
-      switch (config->GetKind_ConductivityModel()) {
-
-        case CONSTANT_PRANDTL:
-          cout << "Conductivity Model: CONSTANT_PRANDTL  "<< endl;
-          cout << "Prandtl: " << config->GetPrandtl_Lam()<< endl;
-          break;
-
-        case CONSTANT_CONDUCTIVITY:
-          cout << "Conductivity Model: CONSTANT_CONDUCTIVITY "<< endl;
-          cout << "Molecular Conductivity: " << config->GetKt_Constant()<< " W/m^2.K." << endl;
-          cout << "Molecular Conductivity (non-dim): " << config->GetKt_ConstantND()<< endl;
-          break;
-
-      }
-    }
-
 
     cout << "Free-stream static pressure: " << config->GetPressure_FreeStream();
     if (config->GetSystemMeasurements() == SI) cout << " Pa." << endl;
@@ -4106,20 +3974,6 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
     if (config->GetSystemMeasurements() == SI) cout << " m^2/s^2." << endl;
     else if (config->GetSystemMeasurements() == US) cout << " ft^2/s^2." << endl;
 
-    if (viscous) {
-      cout << "Free-stream viscosity: " << config->GetViscosity_FreeStream();
-      if (config->GetSystemMeasurements() == SI) cout << " N.s/m^2." << endl;
-      else if (config->GetSystemMeasurements() == US) cout << " lbf.s/ft^2." << endl;
-      if (turbulent) {
-        cout << "Free-stream turb. kinetic energy per unit mass: " << config->GetTke_FreeStream();
-        if (config->GetSystemMeasurements() == SI) cout << " m^2/s^2." << endl;
-        else if (config->GetSystemMeasurements() == US) cout << " ft^2/s^2." << endl;
-        cout << "Free-stream specific dissipation: " << config->GetOmega_FreeStream();
-        if (config->GetSystemMeasurements() == SI) cout << " 1/s." << endl;
-        else if (config->GetSystemMeasurements() == US) cout << " 1/s." << endl;
-      }
-    }
-
     if (unsteady) { cout << "Total time: " << config->GetTotal_UnstTime() << " s. Time step: " << config->GetDelta_UnstTime() << " s." << endl; }
 
     /*--- Print out reference values. ---*/
@@ -4150,15 +4004,6 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
     if (config->GetSystemMeasurements() == SI) cout << " m^2/s^2." << endl;
     else if (config->GetSystemMeasurements() == US) cout << " ft^2/s^2." << endl;
 
-    if (viscous) {
-      cout << "Reference viscosity: " << config->GetViscosity_Ref();
-      if (config->GetSystemMeasurements() == SI) cout << " N.s/m^2." << endl;
-      else if (config->GetSystemMeasurements() == US) cout << " lbf.s/ft^2." << endl;
-      cout << "Reference conductivity: " << config->GetConductivity_Ref();
-      if (config->GetSystemMeasurements() == SI) cout << " W/m^2.K." << endl;
-      else if (config->GetSystemMeasurements() == US) cout << " lbf/ft.s.R." << endl;
-    }
-
 
     if (unsteady) cout << "Reference time: " << config->GetTime_Ref() <<" s." << endl;
 
@@ -4166,11 +4011,7 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
 
     cout << "-- Resulting non-dimensional state:" << endl;
     cout << "Mach number (non-dim): " << config->GetMach() << endl;
-    if (viscous) {
-      cout << "Reynolds number (non-dim): " << config->GetReynolds() <<". Re length: " << config->GetLength_Reynolds();
-      if (config->GetSystemMeasurements() == SI) cout << " m." << endl;
-      else if (config->GetSystemMeasurements() == US) cout << " ft." << endl;
-    }
+
     if (gravity) {
       cout << "Froude number (non-dim): " << Froude << endl;
       cout << "Lenght of the baseline wave (non-dim): " << 2.0*PI_NUMBER*Froude*Froude << endl;
@@ -4193,14 +4034,6 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
     cout << "Magnitude: "    << config->GetModVel_FreeStreamND() << endl;
 
     cout << "Free-stream total energy per unit mass (non-dim): " << config->GetEnergy_FreeStreamND() << endl;
-
-    if (viscous) {
-      cout << "Free-stream viscosity (non-dim): " << config->GetViscosity_FreeStreamND() << endl;
-      if (turbulent) {
-        cout << "Free-stream turb. kinetic energy (non-dim): " << config->GetTke_FreeStreamND() << endl;
-        cout << "Free-stream specific dissipation (non-dim): " << config->GetOmega_FreeStreamND() << endl;
-      }
-    }
 
     if (unsteady) {
       cout << "Total time (non-dim): " << config->GetTotal_UnstTimeND() << endl;
@@ -9088,7 +8921,6 @@ void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container
 
   bool implicit       = config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT;
   bool grid_movement  = config->GetGrid_Movement();
-  bool viscous        = config->GetViscous();
   bool tkeNeeded = (((config->GetKind_Solver() == RANS ) ||
                      (config->GetKind_Solver() == DISC_ADJ_RANS))
                     && (config->GetKind_Turb_Model() == SST));
@@ -9309,7 +9141,6 @@ void CImpactSolver::BC_Riemann(CGeometry *geometry, CSolver **solver_container,
   bool implicit             = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
   bool grid_movement        = config->GetGrid_Movement();
   string Marker_Tag         = config->GetMarker_All_TagBound(val_marker);
-  bool viscous              = config->GetViscous();
   bool gravity = (config->GetGravityForce());
   bool tkeNeeded = (((config->GetKind_Solver() == RANS )|| (config->GetKind_Solver() == DISC_ADJ_RANS)) &&
                     (config->GetKind_Turb_Model() == SST));
@@ -9699,66 +9530,6 @@ void CImpactSolver::BC_Riemann(CGeometry *geometry, CSolver **solver_container,
       if (config->GetKind_Upwind() == TURKEL)
         node[iPoint]->SetPreconditioner_Beta(conv_numerics->GetPrecond_Beta());
 
-      /*--- Viscous contribution ---*/
-      if (viscous) {
-
-        /*--- Primitive variables, using the derived quantities ---*/
-        V_boundary[0] = Temperature_b;
-        for (iDim = 0; iDim < nDim; iDim++)
-          V_boundary[iDim+1] = Velocity_b[iDim];
-        V_boundary[nDim+1] = Pressure_b;
-        V_boundary[nDim+2] = Density_b;
-        V_boundary[nDim+3] = Enthalpy_b;
-
-        /*--- Set laminar and eddy viscosity at the infinity ---*/
-        V_boundary[nDim+5] = FluidModel->GetLaminarViscosity();
-        V_boundary[nDim+6] = node[iPoint]->GetEddyViscosity();
-        V_boundary[nDim+7] = FluidModel->GetThermalConductivity();
-        V_boundary[nDim+8] = FluidModel->GetCp();
-
-        /*--- Set the normal vector and the coordinates ---*/
-        visc_numerics->SetNormal(Normal);
-        visc_numerics->SetCoord(geometry->node[iPoint]->GetCoord(), geometry->node[Point_Normal]->GetCoord());
-
-        /*--- Primitive variables, and gradient ---*/
-        visc_numerics->SetPrimitive(V_domain, V_boundary);
-        visc_numerics->SetPrimVarGradient(node[iPoint]->GetGradient_Primitive(), node[iPoint]->GetGradient_Primitive());
-
-        /*--- Secondary variables ---*/
-        S_domain = node[iPoint]->GetSecondary();
-
-        /*--- Compute secondary thermodynamic properties (partial derivatives...) ---*/
-
-        S_boundary[0]= FluidModel->GetdPdrho_e();
-        S_boundary[1]= FluidModel->GetdPde_rho();
-
-        S_boundary[2]= FluidModel->GetdTdrho_e();
-        S_boundary[3]= FluidModel->GetdTde_rho();
-
-        /*--- Compute secondary thermo-physical properties (partial derivatives...) ---*/
-
-        S_boundary[4]= FluidModel->Getdmudrho_T();
-        S_boundary[5]= FluidModel->GetdmudT_rho();
-
-        S_boundary[6]= FluidModel->Getdktdrho_T();
-        S_boundary[7]= FluidModel->GetdktdT_rho();
-
-        visc_numerics->SetSecondary(S_domain, S_boundary);
-
-        /*--- Turbulent kinetic energy ---*/
-        if (config->GetKind_Turb_Model() == SST)
-          visc_numerics->SetTurbKineticEnergy(solver_container[TURB_SOL]->node[iPoint]->GetSolution(0), solver_container[TURB_SOL]->node[iPoint]->GetSolution(0));
-
-        /*--- Compute and update residual ---*/
-        visc_numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
-        LinSysRes.SubtractBlock(iPoint, Residual);
-
-        /*--- Jacobian contribution for implicit integration ---*/
-        if (implicit)
-          Jacobian.SubtractBlock(iPoint, iPoint, Jacobian_i);
-
-      }
-
     }
   }
 
@@ -9808,7 +9579,6 @@ void CImpactSolver::BC_TurboRiemann(CGeometry *geometry, CSolver **solver_contai
   bool grid_movement        = config->GetGrid_Movement();
   string Marker_Tag         = config->GetMarker_All_TagBound(val_marker);
   unsigned short nSpanWiseSections = geometry->GetnSpanWiseSections(config->GetMarker_All_TurbomachineryFlag(val_marker));
-  bool viscous              = config->GetViscous();
   bool gravity = (config->GetGravityForce());
   bool tkeNeeded = (((config->GetKind_Solver() == RANS )|| (config->GetKind_Solver() == DISC_ADJ_RANS)) &&
       (config->GetKind_Turb_Model() == SST));
@@ -10195,65 +9965,6 @@ void CImpactSolver::BC_TurboRiemann(CGeometry *geometry, CSolver **solver_contai
         if (config->GetKind_Upwind() == TURKEL)
           node[iPoint]->SetPreconditioner_Beta(conv_numerics->GetPrecond_Beta());
 
-        /*--- Viscous contribution ---*/
-        if (viscous) {
-
-          /*--- Primitive variables, using the derived quantities ---*/
-          V_boundary[0] = Temperature_b;
-          for (iDim = 0; iDim < nDim; iDim++)
-            V_boundary[iDim+1] = Velocity_b[iDim];
-          V_boundary[nDim+1] = Pressure_b;
-          V_boundary[nDim+2] = Density_b;
-          V_boundary[nDim+3] = Enthalpy_b;
-
-          /*--- Set laminar and eddy viscosity at the infinity ---*/
-          V_boundary[nDim+5] = FluidModel->GetLaminarViscosity();
-          V_boundary[nDim+6] = node[iPoint]->GetEddyViscosity();
-          V_boundary[nDim+7] = FluidModel->GetThermalConductivity();
-          V_boundary[nDim+8] = FluidModel->GetCp();
-
-          /*--- Set the normal vector and the coordinates ---*/
-          visc_numerics->SetNormal(Normal);
-          visc_numerics->SetCoord(geometry->node[iPoint]->GetCoord(), geometry->node[Point_Normal]->GetCoord());
-
-          /*--- Primitive variables, and gradient ---*/
-          visc_numerics->SetPrimitive(V_domain, V_boundary);
-          visc_numerics->SetPrimVarGradient(node[iPoint]->GetGradient_Primitive(), node[iPoint]->GetGradient_Primitive());
-
-          /*--- Secondary variables ---*/
-          S_domain = node[iPoint]->GetSecondary();
-
-          /*--- Compute secondary thermodynamic properties (partial derivatives...) ---*/
-
-          S_boundary[0]= FluidModel->GetdPdrho_e();
-          S_boundary[1]= FluidModel->GetdPde_rho();
-
-          S_boundary[2]= FluidModel->GetdTdrho_e();
-          S_boundary[3]= FluidModel->GetdTde_rho();
-
-          /*--- Compute secondary thermo-physical properties (partial derivatives...) ---*/
-
-          S_boundary[4]= FluidModel->Getdmudrho_T();
-          S_boundary[5]= FluidModel->GetdmudT_rho();
-
-          S_boundary[6]= FluidModel->Getdktdrho_T();
-          S_boundary[7]= FluidModel->GetdktdT_rho();
-
-          visc_numerics->SetSecondary(S_domain, S_boundary);
-
-          /*--- Turbulent kinetic energy ---*/
-          if (config->GetKind_Turb_Model() == SST)
-            visc_numerics->SetTurbKineticEnergy(solver_container[TURB_SOL]->node[iPoint]->GetSolution(0), solver_container[TURB_SOL]->node[iPoint]->GetSolution(0));
-
-          /*--- Compute and update residual ---*/
-          visc_numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
-          LinSysRes.SubtractBlock(iPoint, Residual);
-
-          /*--- Jacobian contribution for implicit integration ---*/
-          if (implicit)
-            Jacobian.SubtractBlock(iPoint, iPoint, Jacobian_i);
-
-        }
       }
     }
 }
@@ -10458,7 +10169,6 @@ void CImpactSolver::BC_Giles(CGeometry *geometry, CSolver **solver_container,
   bool implicit             = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
   bool grid_movement        = config->GetGrid_Movement();
   string Marker_Tag         = config->GetMarker_All_TagBound(val_marker);
-  bool viscous              = config->GetViscous();
   unsigned short nSpanWiseSections = geometry->GetnSpanWiseSections(config->GetMarker_All_TurbomachineryFlag(val_marker));
   su2double relfacAvgCfg       = config->GetGiles_RelaxFactorAverage(Marker_Tag);
   su2double relfacFouCfg       = config->GetGiles_RelaxFactorFourier(Marker_Tag);
@@ -11091,56 +10801,6 @@ void CImpactSolver::BC_Giles(CGeometry *geometry, CSolver **solver_container,
       if (config->GetKind_Upwind() == TURKEL)
         node[iPoint]->SetPreconditioner_Beta(conv_numerics->GetPrecond_Beta());
 
-      /*--- Viscous contribution ---*/
-      if (viscous) {
-
-        /*--- Set laminar and eddy viscosity at the infinity ---*/
-        V_boundary[nDim+5] = FluidModel->GetLaminarViscosity();
-        V_boundary[nDim+6] = node[iPoint]->GetEddyViscosity();
-        V_boundary[nDim+7] = FluidModel->GetThermalConductivity();
-        V_boundary[nDim+8] = FluidModel->GetCp();
-
-        /*--- Set the normal vector and the coordinates ---*/
-        visc_numerics->SetNormal(Normal);
-        visc_numerics->SetCoord(geometry->node[iPoint]->GetCoord(), geometry->node[Point_Normal]->GetCoord());
-
-        /*--- Primitive variables, and gradient ---*/
-        visc_numerics->SetPrimitive(V_domain, V_boundary);
-        visc_numerics->SetPrimVarGradient(node[iPoint]->GetGradient_Primitive(), node[iPoint]->GetGradient_Primitive());
-
-
-        /*--- Compute secondary thermodynamic properties (partial derivatives...) ---*/
-
-        S_boundary[0]= FluidModel->GetdPdrho_e();
-        S_boundary[1]= FluidModel->GetdPde_rho();
-
-        S_boundary[2]= FluidModel->GetdTdrho_e();
-        S_boundary[3]= FluidModel->GetdTde_rho();
-
-        /*--- Compute secondary thermo-physical properties (partial derivatives...) ---*/
-
-        S_boundary[4]= FluidModel->Getdmudrho_T();
-        S_boundary[5]= FluidModel->GetdmudT_rho();
-
-        S_boundary[6]= FluidModel->Getdktdrho_T();
-        S_boundary[7]= FluidModel->GetdktdT_rho();
-
-        visc_numerics->SetSecondary(S_domain, S_boundary);
-
-        /*--- Turbulent kinetic energy ---*/
-        if (config->GetKind_Turb_Model() == SST)
-          visc_numerics->SetTurbKineticEnergy(solver_container[TURB_SOL]->node[iPoint]->GetSolution(0), solver_container[TURB_SOL]->node[iPoint]->GetSolution(0));
-
-        /*--- Compute and update residual ---*/
-        visc_numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
-        LinSysRes.SubtractBlock(iPoint, Residual);
-
-        /*--- Jacobian contribution for implicit integration ---*/
-        if (implicit)
-          Jacobian.SubtractBlock(iPoint, iPoint, Jacobian_i);
-
-      }
-
     }
   }
 
@@ -11430,42 +11090,6 @@ void CImpactSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container,
       if (config->GetKind_Upwind() == TURKEL)
         node[iPoint]->SetPreconditioner_Beta(conv_numerics->GetPrecond_Beta());
 
-//      /*--- Viscous contribution, commented out because serious convergence problems ---*/
-//
-//      if (viscous) {
-//
-//        /*--- Set laminar and eddy viscosity at the infinity ---*/
-//
-//        V_inlet[nDim+5] = node[iPoint]->GetLaminarViscosity();
-//        V_inlet[nDim+6] = node[iPoint]->GetEddyViscosity();
-//
-//        /*--- Set the normal vector and the coordinates ---*/
-//
-//        visc_numerics->SetNormal(Normal);
-//        visc_numerics->SetCoord(geometry->node[iPoint]->GetCoord(), geometry->node[Point_Normal]->GetCoord());
-//
-//        /*--- Primitive variables, and gradient ---*/
-//
-//        visc_numerics->SetPrimitive(V_domain, V_inlet);
-//        visc_numerics->SetPrimVarGradient(node[iPoint]->GetGradient_Primitive(), node[iPoint]->GetGradient_Primitive());
-//
-//        /*--- Turbulent kinetic energy ---*/
-//
-//        if (config->GetKind_Turb_Model() == SST)
-//          visc_numerics->SetTurbKineticEnergy(solver_container[TURB_SOL]->node[iPoint]->GetSolution(0), solver_container[TURB_SOL]->node[iPoint]->GetSolution(0));
-//
-//        /*--- Compute and update residual ---*/
-//
-//        visc_numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
-//        LinSysRes.SubtractBlock(iPoint, Residual);
-//
-//        /*--- Jacobian contribution for implicit integration ---*/
-//
-//        if (implicit)
-//          Jacobian.SubtractBlock(iPoint, iPoint, Jacobian_i);
-//
-//      }
-
     }
   }
 
@@ -11607,36 +11231,6 @@ void CImpactSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
       if (config->GetKind_Upwind() == TURKEL)
         node[iPoint]->SetPreconditioner_Beta(conv_numerics->GetPrecond_Beta());
 
-//      /*--- Viscous contribution, commented out because serious convergence problems  ---*/
-//
-//      if (viscous) {
-//
-//        /*--- Set laminar and eddy viscosity at the infinity ---*/
-//        V_outlet[nDim+5] = node[iPoint]->GetLaminarViscosity();
-//        V_outlet[nDim+6] = node[iPoint]->GetEddyViscosity();
-//
-//        /*--- Set the normal vector and the coordinates ---*/
-//        visc_numerics->SetNormal(Normal);
-//        visc_numerics->SetCoord(geometry->node[iPoint]->GetCoord(), geometry->node[Point_Normal]->GetCoord());
-//
-//        /*--- Primitive variables, and gradient ---*/
-//        visc_numerics->SetPrimitive(V_domain, V_outlet);
-//        visc_numerics->SetPrimVarGradient(node[iPoint]->GetGradient_Primitive(), node[iPoint]->GetGradient_Primitive());
-//
-//        /*--- Turbulent kinetic energy ---*/
-//        if (config->GetKind_Turb_Model() == SST)
-//          visc_numerics->SetTurbKineticEnergy(solver_container[TURB_SOL]->node[iPoint]->GetSolution(0), solver_container[TURB_SOL]->node[iPoint]->GetSolution(0));
-//
-//        /*--- Compute and update residual ---*/
-//        visc_numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
-//        LinSysRes.SubtractBlock(iPoint, Residual);
-//
-//        /*--- Jacobian contribution for implicit integration ---*/
-//        if (implicit)
-//         Jacobian.SubtractBlock(iPoint, iPoint, Jacobian_i);
-//
-//      }
-
     }
   }
 
@@ -11665,7 +11259,6 @@ void CImpactSolver::BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_con
 
   bool implicit      = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
   bool grid_movement = config->GetGrid_Movement();
-  bool viscous       = config->GetViscous();
 
   su2double *Normal = new su2double[nDim];
   su2double *PrimVar_i = new su2double[nPrimVar];
@@ -11751,56 +11344,6 @@ void CImpactSolver::BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_con
           if (implicit)
             Jacobian.AddBlock(iPoint, iPoint, Jacobian_i);
 
-          if (viscous) {
-
-            /*--- Initialize Residual, this will serve to accumulate the average ---*/
-
-            for (iVar = 0; iVar < nVar; iVar++)
-              Residual[iVar] = 0.0;
-
-            /*--- Loop over the nDonorVertexes and compute the averaged flux ---*/
-
-            for (jVertex = 0; jVertex < nDonorVertex; jVertex++){
-              PrimVar_j[nDim+5] = GetSlidingState(iMarker, iVertex, nDim+5, jVertex);
-              PrimVar_j[nDim+6] = GetSlidingState(iMarker, iVertex, nDim+6, jVertex);
-
-              /*--- Get the weight computed in the interpolator class for the j-th donor vertex ---*/
-
-              weight = GetSlidingState(iMarker, iVertex, nPrimVar, jVertex);
-
-              /*--- Set the normal vector and the coordinates ---*/
-
-              visc_numerics->SetNormal(Normal);
-              visc_numerics->SetCoord(geometry->node[iPoint]->GetCoord(), geometry->node[Point_Normal]->GetCoord());
-
-              /*--- Primitive variables, and gradient ---*/
-
-              visc_numerics->SetPrimitive(PrimVar_i, PrimVar_j);
-              visc_numerics->SetPrimVarGradient(node[iPoint]->GetGradient_Primitive(), node[iPoint]->GetGradient_Primitive());
-
-              /*--- Turbulent kinetic energy ---*/
-
-              if (config->GetKind_Turb_Model() == SST)
-                visc_numerics->SetTurbKineticEnergy(solver_container[TURB_SOL]->node[iPoint]->GetSolution(0), solver_container[TURB_SOL]->node[iPoint]->GetSolution(0));
-
-              /*--- Compute and update residual ---*/
-
-              visc_numerics->ComputeResidual(tmp_residual, Jacobian_i, Jacobian_j, config);
-
-              /*--- Accumulate the residuals to compute the average ---*/
-
-              for (iVar = 0; iVar < nVar; iVar++)
-                Residual[iVar] += weight*tmp_residual[iVar];
-            }
-
-            LinSysRes.SubtractBlock(iPoint, Residual);
-
-            /*--- Jacobian contribution for implicit integration ---*/
-
-            if (implicit)
-              Jacobian.SubtractBlock(iPoint, iPoint, Jacobian_i);
-
-          }
         }
       }
     }
