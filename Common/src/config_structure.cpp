@@ -331,10 +331,10 @@ void CConfig::SetPointersNull(void) {
   /*--- Marker Pointers ---*/
 
   Marker_Euler                = NULL;    Marker_FarField         = NULL;    Marker_Custom         = NULL;
-  Marker_SymWall              = NULL;    Marker_PerBound       = NULL;
+  Marker_SymWall              = NULL;    Marker_PerBound         = NULL;
   Marker_PerDonor             = NULL;    Marker_NearFieldBound   = NULL;    Marker_InterfaceBound = NULL;
   Marker_Dirichlet            = NULL;    Marker_Inlet            = NULL;
-  Marker_Supersonic_Inlet     = NULL;    Marker_Outlet           = NULL;
+  Marker_Supersonic_Inlet     = NULL;    Marker_Outlet           = NULL;    Marker_Impact         = NULL;
   Marker_Isothermal           = NULL;    Marker_HeatFlux         = NULL;    Marker_EngineInflow   = NULL;
   Marker_Supersonic_Outlet    = NULL;    Marker_Load             = NULL;    Marker_Disp_Dir       = NULL;
   Marker_EngineExhaust        = NULL;    Marker_Displacement     = NULL;    Marker_Load           = NULL;
@@ -343,7 +343,7 @@ void CConfig::SetPointersNull(void) {
   Marker_All_TagBound         = NULL;    Marker_CfgFile_TagBound = NULL;    Marker_All_KindBC     = NULL;
   Marker_CfgFile_KindBC       = NULL;    Marker_All_SendRecv     = NULL;    Marker_All_PerBound   = NULL;
   Marker_ZoneInterface        = NULL;    Marker_All_ZoneInterface= NULL;    Marker_Riemann        = NULL;
-  Marker_Fluid_InterfaceBound = NULL;    Marker_CHTInterface     = NULL;    Marker_Damper           = NULL;
+  Marker_Fluid_InterfaceBound = NULL;    Marker_CHTInterface     = NULL;    Marker_Damper         = NULL;
 
 
     /*--- Boundary Condition settings ---*/
@@ -626,7 +626,7 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   addMathProblemOption("MATH_PROBLEM", ContinuousAdjoint, false, DiscreteAdjoint, false, Restart_Flow, false);
   /*!\brief KIND_TURB_MODEL \n DESCRIPTION: Specify turbulence model \n Options: see \link Turb_Model_Map \endlink \n DEFAULT: NO_TURB_MODEL \ingroup Config*/
   addEnumOption("KIND_TURB_MODEL", Kind_Turb_Model, Turb_Model_Map, NO_TURB_MODEL);
-  
+
   /*!\brief KIND_AIR_MODEL \n DESCRIPTION: Specify if air solution is Euler or RANS \n DEFAULT: EULER \ingroup Config*/
   addEnumOption("KIND_AIR_MODEL", Kind_Air_Model, Air_Model_Map, COMP_EULER);
 
@@ -676,9 +676,9 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   addDoubleOption("THERMAL_EXPANSION_COEFF", Thermal_Expansion_Coeff, 0.00347);
   /*!\brief MOLECULAR_WEIGHT \n DESCRIPTION: Molecular weight for an incompressible ideal gas (28.96 g/mol (air) default) \ingroup Config*/
   addDoubleOption("MOLECULAR_WEIGHT", Molecular_Weight, 28.96);
-    
+
   /*--- Options related to the IMPACT problem---*/
-    
+
   /* DESCRIPTION: Droplet drag coefficient */
   addDoubleOption("DROPLET_LWC", Droplet_LWC, 1);
   /* DESCRIPTION: Density for water */
@@ -878,6 +878,8 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   addStringListOption("GEO_MARKER", nMarker_GeoEval, Marker_GeoEval);
   /*!\brief MARKER_EULER\n DESCRIPTION: Euler wall boundary marker(s) \ingroup Config*/
   addStringListOption("MARKER_EULER", nMarker_Euler, Marker_Euler);
+  /*!\brief MARKER_IMPACT\n DESCRIPTION: Impact wall boundary marker(s) \ingroup Config*/
+  addStringListOption("MARKER_IMPACT", nMarker_Impact, Marker_Impact);
   /*!\brief MARKER_FAR\n DESCRIPTION: Far-field boundary marker(s) \ingroup Config*/
   addStringListOption("MARKER_FAR", nMarker_FarField, Marker_FarField);
   /*!\brief MARKER_SYM\n DESCRIPTION: Symmetry boundary condition \ingroup Config*/
@@ -1467,7 +1469,7 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   /*!\brief RESTART_ADJ_STRUCTURE_FILENAME \n DESCRIPTION: Output file restart structure \ingroup Config*/
   addStringOption("RESTART_ADJ_STRUCTURE_FILENAME", Restart_AdjFEMFileName, string("restart_adjoint_structure.dat"));
  /*!\brief RESTART_IMPACT_FILENAME \n DESCRIPTION: Output file restart impact \ingroup Config*/
-  addStringOption("RESTART_IMPACT_FILENAME", Restart_ImpactFileName, string("restart_impact.dat")); 
+  addStringOption("RESTART_IMPACT_FILENAME", Restart_ImpactFileName, string("restart_impact.dat"));
   /*!\brief VOLUME_FLOW_FILENAME  \n DESCRIPTION: Output file flow (w/o extension) variables \ingroup Config */
   addStringOption("VOLUME_FLOW_FILENAME", Flow_FileName, string("flow"));
   /*!\brief VOLUME_STRUCTURE_FILENAME
@@ -3797,7 +3799,7 @@ void CConfig::SetPostprocessing(unsigned short val_software, unsigned short val_
 void CConfig::SetMarkers(unsigned short val_software) {
 
   unsigned short iMarker_All, iMarker_CfgFile, iMarker_Euler, iMarker_Custom,
-  iMarker_FarField, iMarker_SymWall, iMarker_PerBound,
+  iMarker_FarField, iMarker_SymWall, iMarker_PerBound, iMarker_Impact,
   iMarker_NearFieldBound, iMarker_InterfaceBound, iMarker_Fluid_InterfaceBound, iMarker_Dirichlet,
   iMarker_Inlet, iMarker_Riemann, iMarker_Giles, iMarker_Outlet, iMarker_Isothermal,
   iMarker_HeatFlux, iMarker_EngineInflow, iMarker_EngineExhaust, iMarker_Damper,
@@ -3825,7 +3827,7 @@ void CConfig::SetMarkers(unsigned short val_software) {
   nMarker_Supersonic_Inlet + nMarker_Supersonic_Outlet + nMarker_Displacement + nMarker_Load +
   nMarker_FlowLoad + nMarker_Custom + nMarker_Damper +
   nMarker_Clamped + nMarker_Load_Sine + nMarker_Load_Dir + nMarker_Disp_Dir +
-  nMarker_ActDiskInlet + nMarker_ActDiskOutlet;
+  nMarker_ActDiskInlet + nMarker_ActDiskOutlet + nMarker_Impact;
 
   /*--- Add the possible send/receive domains ---*/
 
@@ -3957,6 +3959,12 @@ void CConfig::SetMarkers(unsigned short val_software) {
   for (iMarker_Euler = 0; iMarker_Euler < nMarker_Euler; iMarker_Euler++) {
     Marker_CfgFile_TagBound[iMarker_CfgFile] = Marker_Euler[iMarker_Euler];
     Marker_CfgFile_KindBC[iMarker_CfgFile] = EULER_WALL;
+    iMarker_CfgFile++;
+  }
+
+  for (iMarker_Impact = 0; iMarker_Impact < nMarker_Impact; iMarker_Impact++) {
+    Marker_CfgFile_TagBound[iMarker_CfgFile] = Marker_Impact[iMarker_Impact];
+    Marker_CfgFile_KindBC[iMarker_CfgFile] = IMPACT_WALL;
     iMarker_CfgFile++;
   }
 
@@ -4390,7 +4398,7 @@ void CConfig::SetMarkers(unsigned short val_software) {
 void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
 
   unsigned short iMarker_Euler, iMarker_Custom, iMarker_FarField,
-  iMarker_SymWall, iMarker_PerBound, iMarker_NearFieldBound,
+  iMarker_SymWall, iMarker_PerBound, iMarker_NearFieldBound, iMarker_Impact,
   iMarker_InterfaceBound, iMarker_Fluid_InterfaceBound, iMarker_Dirichlet, iMarker_Inlet, iMarker_Riemann,
   iMarker_Giles, iMarker_Outlet, iMarker_Isothermal, iMarker_HeatFlux,
   iMarker_EngineInflow, iMarker_EngineExhaust, iMarker_Displacement, iMarker_Damper,
@@ -4526,7 +4534,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
         break;
 
     }
-    
+
 
     if ((Kind_Regime == COMPRESSIBLE) && (Kind_Solver != FEM_ELASTICITY) &&
         (Kind_Solver != HEAT_EQUATION) && (Kind_Solver != WAVE_EQUATION)) {
@@ -4587,7 +4595,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
 
     if (ContinuousAdjoint)
       cout << "Read flow solution from: " << Solution_FlowFileName << "." << endl;
-      
+
     if (!fea){
       if (Kind_Regime == COMPRESSIBLE) {
       if (Ref_NonDim == DIMENSIONAL) { cout << "Dimensional simulation." << endl; }
@@ -4724,7 +4732,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
   }
 
   cout << "Input mesh file name: " << Mesh_FileName << endl;
-  
+
   //if (Kind_Solver == IMPACT)
     //cout <<  "Input air solution file name: " << Solution_FlowFileName << endl;
 
@@ -5560,7 +5568,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
         } else {
           cout << "Restart flow file name: " << Restart_FlowFileName << "." << endl;
           }
-        }   
+        }
       }
 
       if (ContinuousAdjoint || DiscreteAdjoint) {
@@ -5651,6 +5659,15 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
     for (iMarker_Euler = 0; iMarker_Euler < nMarker_Euler; iMarker_Euler++) {
       cout << Marker_Euler[iMarker_Euler];
       if (iMarker_Euler < nMarker_Euler-1) cout << ", ";
+      else cout <<"."<< endl;
+    }
+  }
+
+  if (nMarker_Impact != 0) {
+    cout << "Impact wall boundary marker(s): ";
+    for (iMarker_Impact = 0; iMarker_Impact < nMarker_Impact; iMarker_Impact++) {
+      cout << Marker_Impact[iMarker_Impact];
+      if (iMarker_Impact < nMarker_Impact-1) cout << ", ";
       else cout <<"."<< endl;
     }
   }
@@ -6575,6 +6592,7 @@ CConfig::~CConfig(void) {
   /*--- String markers ---*/
 
   if (Marker_Euler != NULL )              delete[] Marker_Euler;
+  if (Marker_Impact != NULL )             delete[] Marker_Impact;
   if (Marker_FarField != NULL )           delete[] Marker_FarField;
   if (Marker_Custom != NULL )             delete[] Marker_Custom;
   if (Marker_SymWall != NULL )            delete[] Marker_SymWall;
@@ -6836,7 +6854,7 @@ void CConfig::SetGlobalParam(unsigned short val_solver,
   /*--- Set the solver methods ---*/
 
   switch (val_solver) {
-    case EULER: 
+    case EULER:
       if (val_system == RUNTIME_FLOW_SYS) {
         SetKind_ConvNumScheme(Kind_ConvNumScheme_Flow, Kind_Centered_Flow,
                               Kind_Upwind_Flow, Kind_SlopeLimit_Flow,
@@ -6888,7 +6906,7 @@ void CConfig::SetGlobalParam(unsigned short val_solver,
         SetKind_TimeIntScheme(Kind_TimeIntScheme_Flow);
       }
       break;
-    
+
     case ADJ_EULER:
       if (val_system == RUNTIME_FLOW_SYS) {
         SetKind_ConvNumScheme(Kind_ConvNumScheme_Flow, Kind_Centered_Flow,

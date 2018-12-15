@@ -429,7 +429,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   Secondary   = new su2double[nSecondaryVar]; for (iVar = 0; iVar < nSecondaryVar; iVar++) Secondary[iVar]   = 0.0;
   Secondary_i = new su2double[nSecondaryVar]; for (iVar = 0; iVar < nSecondaryVar; iVar++) Secondary_i[iVar] = 0.0;
   Secondary_j = new su2double[nSecondaryVar]; for (iVar = 0; iVar < nSecondaryVar; iVar++) Secondary_j[iVar] = 0.0;
-  
+
   /*--- Define some auxiliary vectors related to the air solution ---*/
 
   //Solution_Air   = new su2double[nVar]; for (iVar = 0; iVar < nVar; iVar++) Solution_Air[iVar]   = 0.0;
@@ -791,10 +791,10 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
 
     }
   }
-  
-  
+
+
   /*--- Initialize the solution to the far-field state everywhere. ---*/
-  
+
   for (iPoint = 0; iPoint < nPoint; iPoint++)
     node[iPoint] = new CImpactVariable(Density_Inf, Velocity_Inf, Energy_Inf, nDim, nVar, config);
 
@@ -4241,15 +4241,15 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
         for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
           AirDensity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(0);
           solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(0,AirDensity);
-          for (iDim = 0; iDim < nDim; iDim++) {  
+          for (iDim = 0; iDim < nDim; iDim++) {
             AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
             solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(iDim+1,AirVelocity);
           }
-        }    
+        }
       }
     }
 
-  
+
   /*--- The primitive air solution variable file information is stored for drag calculation ---*/
       su2double Viscosity, Velocity2, StaticEnergy, Pressure, Temperature;
       FluidModel->SetLaminarViscosityModel(config);
@@ -4259,7 +4259,7 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
 //        AirDensity = 1.0;
           node[iPoint]->SetDensityAir(AirDensity);
           Velocity2 = 0.0;
-          for (iDim = 0; iDim < nDim; iDim++) {  
+          for (iDim = 0; iDim < nDim; iDim++) {
             AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
 //          AirVelocity = 0.0;
             Velocity2 += AirVelocity*AirVelocity;
@@ -4273,7 +4273,7 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
         node[iPoint]->SetTemperatureAir(Temperature);
         Viscosity = FluidModel->GetLaminarViscosity();
         node[iPoint]->SetViscosityAir(Viscosity);
-      }    
+      }
     }
   }
   /*--- Make sure that the solution is well initialized for unsteady
@@ -4990,18 +4990,18 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
   /*--- Initialize the source residual to zero ---*/
 
   for (iVar = 0; iVar < nVar; iVar++) Residual[iVar] = 0.0;
-  
+
   /*--- compute the drag force for the droplet equation ---*/
     /*--- Loop over all points ---*/
     for (iPoint = 0; iPoint < nPointDomain; iPoint++) {
 
       /*--- Load the conservative variables ---*/
       numerics->SetConservative(node[iPoint]->GetSolution(),
-                                node[iPoint]->GetSolution()); 
-                                
+                                node[iPoint]->GetSolution());
+
       /*--- Load the air variable ---*/
       numerics->SetPrimitiveAir(node[iPoint]->GetSolution_Air(),
-                                node[iPoint]->GetSolution_Air()); 
+                                node[iPoint]->GetSolution_Air());
 
       /*--- Load the volume of the dual mesh cell ---*/
       numerics->SetVolume(geometry->node[iPoint]->GetVolume());
@@ -5012,7 +5012,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
       /*--- Add the source residual to the total ---*/
       LinSysRes.AddBlock(iPoint, Residual);
 
-    }  
+    }
 
   if (body_force) {
 
@@ -5021,7 +5021,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
 
       /*--- Load the conservative variables ---*/
       numerics->SetConservative(node[iPoint]->GetSolution(),
-                                node[iPoint]->GetSolution());     
+                                node[iPoint]->GetSolution());
 
       /*--- Load the volume of the dual mesh cell ---*/
       numerics->SetVolume(geometry->node[iPoint]->GetVolume());
@@ -11292,7 +11292,7 @@ void CImpactSolver::BC_Giles(CGeometry *geometry, CSolver **solver_container,
 
 void CImpactSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container,
                             CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Inlet*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Inlet*************************************************************************************" << endl;
   unsigned short iDim;
   unsigned long iVertex, iPoint;
   su2double P_Total, T_Total, Velocity[3], Velocity2, H_Total, Temperature, Riemann,
@@ -11591,7 +11591,7 @@ void CImpactSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container,
 
 void CImpactSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
                              CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Outlet*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Outlet*************************************************************************************" << endl;
   unsigned short iVar, iDim;
   unsigned long iVertex, iPoint;
   su2double Pressure, P_Exit, Velocity[3],
@@ -14015,4 +14015,3 @@ void CImpactSolver::GatherInOutAverageValues(CConfig *config, CGeometry *geometr
     }
   }
 }
-
