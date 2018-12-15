@@ -5066,17 +5066,17 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
         break;
 
       case IMPACT:
-        
+
          /*--- Flow solution coefficients ---*/
 
         Total_CL             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CL();
         Total_CD             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CD();
-        
+
         /*--- Flow Residuals ---*/
 
         for (iVar = 0; iVar < nVar_Flow; iVar++)
           residual_flow[iVar] = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetRes_RMS(iVar);
-        
+
         break;
 
       case WAVE_EQUATION:
@@ -5493,7 +5493,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
           if (!fem) {
             if (!Unsteady && (config[val_iZone]->GetUnsteady_Simulation() != TIME_STEPPING)) {
               switch (config[val_iZone]->GetKind_Solver()) {
-              case EULER : case NAVIER_STOKES: case RANS: 
+              case EULER : case NAVIER_STOKES: case RANS:
               case ADJ_EULER : case ADJ_NAVIER_STOKES: case ADJ_RANS:
 
                 cout << endl << "---------------------- Local Time Stepping Summary ----------------------" << endl;
@@ -5560,7 +5560,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
                 break;
 
               case IMPACT:
-              
+
                  cout << endl << "---------------------- Local Time Stepping Summary ----------------------" << endl;
 
                 for (unsigned short iMesh = FinestMesh; iMesh <= config[val_iZone]->GetnMGLevels(); iMesh++)
@@ -5572,9 +5572,9 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
                     cout << "CFL in zone 2: " << config[1]->GetCFL(MESH_0) << endl;
 
                 cout << "-------------------------------------------------------------------------" << endl;
-                
+
                 break;
-                 
+
 
               case DISC_ADJ_EULER: case DISC_ADJ_NAVIER_STOKES: case DISC_ADJ_RANS:
                 cout << endl;
@@ -5610,7 +5610,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
           }
 
           switch (config[val_iZone]->GetKind_Solver()) {
-          case EULER :                  case NAVIER_STOKES:                 
+          case EULER :                  case NAVIER_STOKES:
 
             /*--- Visualize the maximum residual ---*/
             iPointMaxResid = solver_container[val_iZone][FinestMesh][FLOW_SOL]->GetPoint_Max(0);
@@ -5676,7 +5676,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
             cout << endl;
 
             break;
-            
+
           case IMPACT:
           /*--- Visualize the maximum residual ---*/
             iPointMaxResid = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetPoint_Max(0);
@@ -5705,13 +5705,15 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
               cout << "There are " << config[val_iZone]->GetNonphysical_Reconstr() << " non-physical states in the upwind reconstruction." << endl;
 
             cout << "-------------------------------------------------------------------------" << endl;
-            
+
             if (!Unsteady) cout << endl << " Iter" << "    Time(s)";
             else cout << endl << " IntIter" << " ExtIter";
-            
-            cout << "     Res[Rho]" << "     Res[RhoE]" << "      CL(Total)" << "      CD(Total)";
-            
-            
+
+            cout << "     Res[Alpha]" << "     Res[AlphaE]" << "      CL(Total)" << "      CD(Total)";
+
+            cout << endl;
+
+
             break;
 
           case RANS :
@@ -12538,7 +12540,11 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
 
   nVar_Par += nVar_Consv_Par;
 
-  Variable_Names.push_back("Density");
+  if (Kind_Solver == IMPACT)
+    Variable_Names.push_back("DROPLET_LWC");
+  else
+    Variable_Names.push_back("Density");
+
   Variable_Names.push_back("X-Momentum");
   Variable_Names.push_back("Y-Momentum");
   if (geometry->GetnDim() == 3) Variable_Names.push_back("Z-Momentum");
@@ -13009,7 +13015,7 @@ void COutput::LoadLocalData_IncFlow(CConfig *config, CGeometry *geometry, CSolve
    in this zone for output. ---*/
 
   switch (config->GetKind_Solver()) {
-    case EULER : case NAVIER_STOKES: case IMPACT : FirstIndex = FLOW_SOL; SecondIndex = NONE; break;
+    case EULER : case NAVIER_STOKES : FirstIndex = FLOW_SOL; SecondIndex = NONE; break;
     case RANS : FirstIndex = FLOW_SOL; SecondIndex = TURB_SOL; break;
     default: SecondIndex = NONE; break;
   }

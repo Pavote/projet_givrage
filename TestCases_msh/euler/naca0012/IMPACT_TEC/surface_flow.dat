@@ -1,5 +1,5 @@
 TITLE = "Visualization of the surface solution"
-VARIABLES = "x","y","DROPLET_LWC","X-Momentum","Y-Momentum","Energy","Pressure","Temperature","Mach","C<sub>p</sub>"
+VARIABLES = "x","y","Density","X-Momentum","Y-Momentum","Energy","Pressure","Temperature","Mach","C<sub>p</sub>"
 ZONE NODES= 200, ELEMENTS= 200, DATAPACKING=POINT, ZONETYPE=FELINESEG
 9.997500e-01	-3.632897e-05	1.224978e+00	8.335144e+01	1.818735e+00	2.561496e+05	1.013250e+05	2.881500e+02	2.000000e-01	0.000000e+00	
 9.990000e-01	-1.452538e-04	1.224978e+00	8.335144e+01	1.818735e+00	2.561496e+05	1.013250e+05	2.881500e+02	2.000000e-01	0.000000e+00	
