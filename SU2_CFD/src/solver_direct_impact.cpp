@@ -39,7 +39,7 @@
 
 CImpactSolver::CImpactSolver(void) : CSolver() {
 
-  //cout << "CImpactSolver*************************************************************************************" << endl;
+  cout << "CImpactSolver*************************************************************************************" << endl;
   /*--- Basic array initialization ---*/
 
   CD_Inv = NULL; CL_Inv = NULL; CSF_Inv = NULL;  CEff_Inv = NULL;
@@ -168,7 +168,7 @@ CImpactSolver::CImpactSolver(void) : CSolver() {
 
 CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned short iMesh) : CSolver() {
 
-  //cout << "CImpactSolver*************************************************************************************" << endl;
+  cout << "CImpactSolver*************************************************************************************" << endl;
   unsigned long iPoint, counter_local = 0, counter_global = 0, iVertex;
   unsigned short iVar, iDim, iMarker, nLineLets;
   su2double StaticEnergy, Density, Velocity2, Pressure, Temperature;
@@ -1350,7 +1350,7 @@ void CImpactSolver::InitTurboContainers(CGeometry *geometry, CConfig *config){
   unsigned short iMarker, iSpan, iDim, iVar;
   nSpanMax    = config->GetnSpanMaxAllZones();
 
-  //cout << "CImpactSolver InitTurboContainers*************************************************************************************" << endl;
+  cout << "CImpactSolver InitTurboContainers*************************************************************************************" << endl;
   /*--- Initialize quantities for the average process for internal flow ---*/
 
   nSpanWiseSections = config->GetnSpanWiseSections();
@@ -1525,7 +1525,7 @@ void CImpactSolver::Set_MPI_Solution(CGeometry *geometry, CConfig *config) {
   unsigned long iVertex, iPoint, nVertexS, nVertexR, nBufferS_Vector, nBufferR_Vector;
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi, *Buffer_Receive_U = NULL, *Buffer_Send_U = NULL;
 
-  //cout << "CImpactSolver Set_MPI_Solution*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Solution*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1643,7 +1643,7 @@ void CImpactSolver::Set_MPI_Solution_Old(CGeometry *geometry, CConfig *config) {
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_U = NULL, *Buffer_Send_U = NULL;
 
-  //cout << "CImpactSolver Set_MPI_Solution_Old*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Solution_Old*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1760,7 +1760,7 @@ void CImpactSolver::Set_MPI_Solution_Air(CGeometry *geometry, CConfig *config) {
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_U = NULL, *Buffer_Send_U = NULL;
 
-  //cout << "CImpactSolver Set_MPI_Solution_Old*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Solution_Air*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1877,7 +1877,7 @@ void CImpactSolver::Set_MPI_Undivided_Laplacian(CGeometry *geometry, CConfig *co
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_Undivided_Laplacian = NULL, *Buffer_Send_Undivided_Laplacian = NULL;
 
-  //cout << "CImpactSolver Set_MPI_Undivided_Laplacian*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Undivided_Laplacian*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1994,7 +1994,7 @@ void CImpactSolver::Set_MPI_MaxEigenvalue(CGeometry *geometry, CConfig *config) 
   unsigned long iVertex, iPoint, nVertexS, nVertexR, nBufferS_Vector, nBufferR_Vector;
   su2double *Buffer_Receive_Lambda = NULL, *Buffer_Send_Lambda = NULL;
 
-//cout << "CImpactSolver Set_MPI_MaxEigenvalue*************************************************************************************" << endl;
+cout << "CImpactSolver Set_MPI_MaxEigenvalue*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -2074,7 +2074,7 @@ void CImpactSolver::Set_MPI_Sensor(CGeometry *geometry, CConfig *config) {
   unsigned long iVertex, iPoint, nVertexS, nVertexR, nBufferS_Vector, nBufferR_Vector;
   su2double *Buffer_Receive_Lambda = NULL, *Buffer_Send_Lambda = NULL;
 
-  //cout << "CImpactSolver Set_MPI_Sensor*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Sensor*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -2146,7 +2146,7 @@ void CImpactSolver::Set_MPI_Solution_Gradient(CGeometry *geometry, CConfig *conf
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_Gradient = NULL, *Buffer_Send_Gradient = NULL;
 
-  //cout << "CImpactSolver Set_MPI_Solution_Gradient*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Solution_Gradient*************************************************************************************" << endl;
   su2double **Gradient = new su2double* [nVar];
   for (iVar = 0; iVar < nVar; iVar++)
     Gradient[iVar] = new su2double[nDim];
@@ -2272,7 +2272,7 @@ void CImpactSolver::Set_MPI_Solution_Limiter(CGeometry *geometry, CConfig *confi
 
   su2double *Limiter = new su2double [nVar];
 
-  //cout << "CImpactSolver Set_MPI_Solution_Limiter*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Solution_Limiter*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -2392,7 +2392,7 @@ void CImpactSolver::Set_MPI_Primitive_Gradient(CGeometry *geometry, CConfig *con
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_Gradient = NULL, *Buffer_Send_Gradient = NULL;
 
-  //cout << "CImpactSolver Set_MPI_Primitive_Gradient*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Primitive_Gradient*************************************************************************************" << endl;
   su2double **Gradient = new su2double* [nPrimVarGrad];
   for (iVar = 0; iVar < nPrimVarGrad; iVar++)
     Gradient[iVar] = new su2double[nDim];
@@ -2518,7 +2518,7 @@ void CImpactSolver::Set_MPI_Primitive_Limiter(CGeometry *geometry, CConfig *conf
 
   su2double *Limiter = new su2double [nPrimVarGrad];
 
-  //cout << "CImpactSolver Set_MPI_Primitive_Limiter*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Primitive_Limiter*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -2634,7 +2634,7 @@ void CImpactSolver::Set_MPI_Primitive_Limiter(CGeometry *geometry, CConfig *conf
 
 void CImpactSolver::Set_MPI_ActDisk(CSolver **solver_container, CGeometry *geometry, CConfig *config) {
 
-  //cout << "CImpactSolver Set_MPI_ActDisk*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_ActDisk*************************************************************************************" << endl;
   unsigned long iter,  iPoint, iVertex, jVertex, iPointTotal,
   Buffer_Send_nPointTotal = 0;
   long iGlobalIndex, iGlobal;
@@ -2984,7 +2984,7 @@ void CImpactSolver::Set_MPI_ActDisk(CSolver **solver_container, CGeometry *geome
 
 void CImpactSolver::Set_MPI_Nearfield(CGeometry *geometry, CConfig *config) {
 
-  //cout << "CImpactSolver Set_MPI_Nearfield*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Nearfield*************************************************************************************" << endl;
   unsigned long iter,  iPoint, iVertex, jVertex, iPointTotal,
   Buffer_Send_nPointTotal = 0;
   long iGlobalIndex, iGlobal;
@@ -3304,7 +3304,7 @@ void CImpactSolver::Set_MPI_Nearfield(CGeometry *geometry, CConfig *config) {
 
 void CImpactSolver::Set_MPI_Interface(CGeometry *geometry, CConfig *config) {
 
-  //cout << "CImpactSolver Set_MPI_Interface*************************************************************************************" << endl;
+  cout << "CImpactSolver Set_MPI_Interface*************************************************************************************" << endl;
   unsigned long iter,  iPoint, iVertex, jVertex, iPointTotal,
   Buffer_Send_nPointTotal = 0, iGlobalIndex, iGlobal;
   unsigned short iVar, iMarker, jMarker;
@@ -3621,7 +3621,7 @@ void CImpactSolver::Set_MPI_Interface(CGeometry *geometry, CConfig *config) {
 
 void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config, unsigned short iMesh) {
 
-  //cout << "CImpactSolver SetNondimensionalization*************************************************************************************" << endl;
+  cout << "CImpactSolver SetNondimensionalization*************************************************************************************" << endl;
   su2double Temperature_FreeStream = 0.0, Mach2Vel_FreeStream = 0.0, ModVel_FreeStream = 0.0,
   Energy_FreeStream = 0.0, ModVel_FreeStreamND = 0.0, Velocity_Reynolds = 0.0,
   Omega_FreeStream = 0.0, Omega_FreeStreamND = 0.0, Viscosity_FreeStream = 0.0,
@@ -4048,7 +4048,7 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
 
 void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_container, CConfig *config, unsigned long ExtIter) {
 
-  //cout << "CImpactSolver SetInitialCondition*************************************************************************************" << endl;
+  cout << "CImpactSolver SetInitialCondition*************************************************************************************" << endl;
   unsigned long iPoint;
   unsigned short iMesh, iDim;
   su2double X0[3] = {0.0,0.0,0.0}, X1[3] = {0.0,0.0,0.0}, X2[3] = {0.0,0.0,0.0},
@@ -4145,7 +4145,7 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
 
 void CImpactSolver::Preprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config, unsigned short iMesh, unsigned short iRKStep, unsigned short RunTime_EqSystem, bool Output) {
 
-  //cout << endl <<"CImpactSolver Preprocessing*************************************************************************************" << endl;
+  cout << endl <<"CImpactSolver Preprocessing*************************************************************************************" << endl;
   unsigned long ErrorCounter = 0;
 
   unsigned long ExtIter = config->GetExtIter();
@@ -4164,10 +4164,6 @@ void CImpactSolver::Preprocessing(CGeometry *geometry, CSolver **solver_containe
   bool van_albada       = config->GetKind_SlopeLimit_Flow() == VAN_ALBADA_EDGE;
   unsigned short kind_row_dissipation = config->GetKind_RoeLowDiss();
   bool roe_low_dissipation  = (kind_row_dissipation != NO_ROELOWDISS) && (config->GetKind_Upwind_Flow() == ROE);
-
-  /*--- Update the angle of attack at the far-field for fixed CL calculations. ---*/
-
-  if (fixed_cl) { SetFarfield_AoA(geometry, solver_container, config, iMesh, Output); }
 
   /*--- Set the primitive variables ---*/
 
@@ -4239,12 +4235,11 @@ void CImpactSolver::Preprocessing(CGeometry *geometry, CSolver **solver_containe
 }
 
 void CImpactSolver::Postprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config,
-                                  unsigned short iMesh) {}
-//cout << "CImpactSolver Postprocessing*************************************************************************************" << endl; }
+                                  unsigned short iMesh) {cout << "CImpactSolver Postprocessing*************************************************************************************" << endl; }
 
 unsigned long CImpactSolver::SetPrimitive_Variables(CSolver **solver_container, CConfig *config, bool Output) {
 
-  //cout << "CImpactSolver SetPrimitive_Variables*************************************************************************************" << endl;
+  cout << "CImpactSolver SetPrimitive_Variables*************************************************************************************" << endl;
   unsigned long iPoint, ErrorCounter = 0;
   bool RightSol = true;
 
@@ -4274,7 +4269,7 @@ unsigned long CImpactSolver::SetPrimitive_Variables(CSolver **solver_container, 
 void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container, CConfig *config,
                                 unsigned short iMesh, unsigned long Iteration) {
 
-  //cout << "CImpactSolver SetTime_Step*************************************************************************************" << endl;
+  cout << "CImpactSolver SetTime_Step*************************************************************************************" << endl;
   su2double *Normal, Area, Vol, Mean_SoundSpeed = 0.0, Mean_ProjVel = 0.0, Lambda, Local_Delta_Time,
   Global_Delta_Time = 1E6, Global_Delta_UnstTimeND, ProjVel, ProjVel_i, ProjVel_j;
   unsigned long iEdge, iVertex, iPoint, jPoint;
@@ -4460,7 +4455,7 @@ void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container
 void CImpactSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                      CConfig *config, unsigned short iMesh, unsigned short iRKStep) {
 
-  //cout << "CImpactSolver Centered_Residual*************************************************************************************" << endl;
+  cout << "CImpactSolver Centered_Residual*************************************************************************************" << endl;
   unsigned long iEdge, iPoint, jPoint;
 
   bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
@@ -4519,7 +4514,7 @@ void CImpactSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_cont
 void CImpactSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                    CConfig *config, unsigned short iMesh) {
 
-  //cout << "CImpactSolver Upwind_Residual*************************************************************************************" << endl;
+  cout << "CImpactSolver Upwind_Residual*************************************************************************************" << endl;
   su2double **Gradient_i, **Gradient_j, Project_Grad_i, Project_Grad_j, RoeVelocity[3] = {0.0,0.0,0.0}, R, sq_vel, RoeEnthalpy,
   *V_i, *V_j, *S_i, *S_j, *Limiter_i = NULL, *Limiter_j = NULL, sqvel, Non_Physical = 1.0, Sensor_i, Sensor_j, Dissipation_i, Dissipation_j, *Coord_i, *Coord_j;
 
@@ -4770,7 +4765,7 @@ void CImpactSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_contai
 
 void CImpactSolver::ComputeConsExtrapolation(CConfig *config) {
 
-  //cout << "CImpactSolver ComputeConsExtrapolation*************************************************************************************" << endl;
+  cout << "CImpactSolver ComputeConsExtrapolation*************************************************************************************" << endl;
   unsigned short iDim;
 
   su2double density_i = Primitive_i[nDim+2];
@@ -4809,7 +4804,7 @@ void CImpactSolver::ComputeConsExtrapolation(CConfig *config) {
 void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CNumerics *second_numerics,
                                    CConfig *config, unsigned short iMesh) {
 
-  //cout << "CImpactSolver Source_Residual*************************************************************************************" << endl;
+  cout << "CImpactSolver Source_Residual*************************************************************************************" << endl;
   unsigned short iVar;
   unsigned long iPoint;
   bool implicit         = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
@@ -5002,7 +4997,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
 void CImpactSolver::Source_Template(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                    CConfig *config, unsigned short iMesh) {
 
-  //cout << "CImpactSolver Source_Template*************************************************************************************" << endl;
+  cout << "CImpactSolver Source_Template*************************************************************************************" << endl;
   /* This method should be used to call any new source terms for a particular problem*/
   /* This method calls the new child class in CNumerics, where the new source term should be implemented.  */
 
@@ -5016,7 +5011,7 @@ void CImpactSolver::Source_Template(CGeometry *geometry, CSolver **solver_contai
 
 void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
 
-  //cout << "CImpactSolver SetMax_Eigenvalue*************************************************************************************" << endl;
+  cout << "CImpactSolver SetMax_Eigenvalue*************************************************************************************" << endl;
   su2double *Normal, Area, Mean_SoundSpeed = 0.0, Mean_ProjVel = 0.0, Lambda,
   ProjVel, ProjVel_i, ProjVel_j, *GridVel, *GridVel_i, *GridVel_j;
   unsigned long iEdge, iVertex, iPoint, jPoint;
@@ -5113,7 +5108,7 @@ void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
 
 void CImpactSolver::SetUndivided_Laplacian(CGeometry *geometry, CConfig *config) {
 
-  //cout << "CImpactSolver SetUndivided_Laplacian*************************************************************************************" << endl;
+  cout << "CImpactSolver SetUndivided_Laplacian*************************************************************************************" << endl;
   unsigned long iPoint, jPoint, iEdge;
   su2double Pressure_i = 0, Pressure_j = 0, *Diff;
   unsigned short iVar;
@@ -5172,7 +5167,7 @@ void CImpactSolver::SetUndivided_Laplacian(CGeometry *geometry, CConfig *config)
 
 void CImpactSolver::SetCentered_Dissipation_Sensor(CGeometry *geometry, CConfig *config) {
 
-  //cout << "CImpactSolver SetCentered_Dissipation_Sensor*************************************************************************************" << endl;
+  cout << "CImpactSolver SetCentered_Dissipation_Sensor*************************************************************************************" << endl;
   unsigned long iEdge, iPoint, jPoint;
   su2double Pressure_i = 0.0, Pressure_j = 0.0;
   bool boundary_i, boundary_j;
@@ -5229,7 +5224,7 @@ void CImpactSolver::SetCentered_Dissipation_Sensor(CGeometry *geometry, CConfig 
 
 void CImpactSolver::SetUpwind_Ducros_Sensor(CGeometry *geometry, CConfig *config){
 
-  //cout << "CImpactSolver SetUpwind_Ducros_Sensor*************************************************************************************" << endl;
+  cout << "CImpactSolver SetUpwind_Ducros_Sensor*************************************************************************************" << endl;
   unsigned long iPoint, jPoint;
   unsigned short iNeigh, iDim;
 
@@ -5301,779 +5296,10 @@ void CImpactSolver::SetUpwind_Ducros_Sensor(CGeometry *geometry, CConfig *config
 
 }
 
-void CImpactSolver::Pressure_Forces(CGeometry *geometry, CConfig *config) {
-
-  //cout << "CImpactSolver Pressure_Forces*************************************************************************************" << endl;
-  unsigned long iVertex, iPoint;
-  unsigned short iDim, iMarker, Boundary, Monitoring, iMarker_Monitoring;
-  su2double Pressure = 0.0, *Normal = NULL, MomentDist[3] = {0.0,0.0,0.0}, *Coord,
-  factor, NFPressOF, RefVel2, RefTemp, RefDensity, RefPressure, Mach2Vel, Mach_Motion,
-  Force[3] = {0.0,0.0,0.0};
-  string Marker_Tag, Monitoring_Tag;
-  su2double MomentX_Force[3] = {0.0,0.0,0.0}, MomentY_Force[3] = {0.0,0.0,0.0}, MomentZ_Force[3] = {0.0,0.0,0.0};
-  su2double AxiFactor;
-
-#ifdef HAVE_MPI
-  su2double MyAllBound_CD_Inv, MyAllBound_CL_Inv, MyAllBound_CSF_Inv, MyAllBound_CMx_Inv, MyAllBound_CMy_Inv, MyAllBound_CMz_Inv, MyAllBound_CoPx_Inv, MyAllBound_CoPy_Inv, MyAllBound_CoPz_Inv, MyAllBound_CFx_Inv, MyAllBound_CFy_Inv, MyAllBound_CFz_Inv, MyAllBound_CT_Inv, MyAllBound_CQ_Inv, MyAllBound_CNearFieldOF_Inv, *MySurface_CL_Inv = NULL, *MySurface_CD_Inv = NULL, *MySurface_CSF_Inv = NULL, *MySurface_CEff_Inv = NULL, *MySurface_CFx_Inv = NULL, *MySurface_CFy_Inv = NULL, *MySurface_CFz_Inv = NULL, *MySurface_CMx_Inv = NULL, *MySurface_CMy_Inv = NULL, *MySurface_CMz_Inv = NULL;
-#endif
-
-  su2double Alpha           = config->GetAoA()*PI_NUMBER/180.0;
-  su2double Beta            = config->GetAoS()*PI_NUMBER/180.0;
-  su2double RefArea    = config->GetRefArea();
-  su2double RefLength = config->GetRefLength();
-  su2double Gas_Constant    = config->GetGas_ConstantND();
-  su2double *Origin = NULL;
-  if (config->GetnMarker_Monitoring() != 0){
-    Origin = config->GetRefOriginMoment(0);
-  }
-  bool grid_movement        = config->GetGrid_Movement();
-  bool axisymmetric         = config->GetAxisymmetric();
-
-  /*--- Evaluate reference values for non-dimensionalization.
-   For dynamic meshes, use the motion Mach number as a reference value
-   for computing the force coefficients. Otherwise, use the freestream
-   values, which is the standard convention. ---*/
-
-  RefTemp     = Temperature_Inf;
-  RefDensity  = Density_Inf;
-  RefPressure = Pressure_Inf;
-  if (grid_movement) {
-    Mach2Vel = sqrt(Gamma*Gas_Constant*RefTemp);
-    Mach_Motion = config->GetMach_Motion();
-    RefVel2 = (Mach_Motion*Mach2Vel)*(Mach_Motion*Mach2Vel);
-  }
-  else {
-    RefVel2 = 0.0;
-    for (iDim = 0; iDim < nDim; iDim++)
-      RefVel2  += Velocity_Inf[iDim]*Velocity_Inf[iDim];
-  }
-
-  factor = 1.0 / (0.5*RefDensity*RefArea*RefVel2);
-
-  /*-- Variables initialization ---*/
-
-  Total_CD = 0.0;           Total_CL = 0.0;    Total_CSF = 0.0;     Total_CEff = 0.0;
-  Total_CMx = 0.0;          Total_CMy = 0.0;   Total_CMz = 0.0;
-  Total_CoPx = 0.0;         Total_CoPy = 0.0;  Total_CoPz = 0.0;
-  Total_CFx = 0.0;          Total_CFy = 0.0;   Total_CFz = 0.0;
-  Total_CT = 0.0;           Total_CQ = 0.0;    Total_CMerit = 0.0;
-  Total_CNearFieldOF = 0.0; Total_Heat = 0.0;  Total_MaxHeat = 0.0;
-
-  AllBound_CD_Inv = 0.0;        AllBound_CL_Inv = 0.0; AllBound_CSF_Inv = 0.0;
-  AllBound_CMx_Inv = 0.0;          AllBound_CMy_Inv = 0.0;   AllBound_CMz_Inv = 0.0;
-  AllBound_CoPx_Inv = 0.0;         AllBound_CoPy_Inv = 0.0;  AllBound_CoPz_Inv = 0.0;
-  AllBound_CFx_Inv = 0.0;          AllBound_CFy_Inv = 0.0;   AllBound_CFz_Inv = 0.0;
-  AllBound_CT_Inv = 0.0;           AllBound_CQ_Inv = 0.0;    AllBound_CMerit_Inv = 0.0;
-  AllBound_CNearFieldOF_Inv = 0.0; AllBound_CEff_Inv = 0.0;
-
-  for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-    Surface_CL_Inv[iMarker_Monitoring]      = 0.0; Surface_CD_Inv[iMarker_Monitoring]      = 0.0;
-    Surface_CSF_Inv[iMarker_Monitoring] = 0.0; Surface_CEff_Inv[iMarker_Monitoring]       = 0.0;
-    Surface_CFx_Inv[iMarker_Monitoring]        = 0.0; Surface_CFy_Inv[iMarker_Monitoring]        = 0.0;
-    Surface_CFz_Inv[iMarker_Monitoring]        = 0.0; Surface_CMx_Inv[iMarker_Monitoring]        = 0.0;
-    Surface_CMy_Inv[iMarker_Monitoring]        = 0.0; Surface_CMz_Inv[iMarker_Monitoring]        = 0.0;
-    Surface_CL[iMarker_Monitoring]          = 0.0; Surface_CD[iMarker_Monitoring]          = 0.0;
-    Surface_CSF[iMarker_Monitoring]     = 0.0; Surface_CEff[iMarker_Monitoring]           = 0.0;
-    Surface_CFx[iMarker_Monitoring]            = 0.0; Surface_CFy[iMarker_Monitoring]            = 0.0;
-    Surface_CFz[iMarker_Monitoring]            = 0.0; Surface_CMx[iMarker_Monitoring]            = 0.0;
-    Surface_CMy[iMarker_Monitoring]            = 0.0; Surface_CMz[iMarker_Monitoring]            = 0.0;
-  }
-
-  /*--- Loop over the Euler and Navier-Stokes markers ---*/
-
-  for (iMarker = 0; iMarker < nMarker; iMarker++) {
-
-    Boundary   = config->GetMarker_All_KindBC(iMarker);
-    Monitoring = config->GetMarker_All_Monitoring(iMarker);
-
-    /*--- Obtain the origin for the moment computation for a particular marker ---*/
-
-    if (Monitoring == YES) {
-      for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-        Monitoring_Tag = config->GetMarker_Monitoring_TagBound(iMarker_Monitoring);
-        Marker_Tag = config->GetMarker_All_TagBound(iMarker);
-        if (Marker_Tag == Monitoring_Tag)
-          Origin = config->GetRefOriginMoment(iMarker_Monitoring);
-      }
-    }
-
-    if ((Boundary == EULER_WALL) || (Boundary == HEAT_FLUX) ||
-        (Boundary == ISOTHERMAL) || (Boundary == NEARFIELD_BOUNDARY) ||
-        (Boundary == INLET_FLOW) || (Boundary == OUTLET_FLOW) ||
-        (Boundary == ACTDISK_INLET) || (Boundary == ACTDISK_OUTLET)||
-        (Boundary == ENGINE_INFLOW) || (Boundary == ENGINE_EXHAUST)) {
-
-      /*--- Forces initialization at each Marker ---*/
-
-      CD_Inv[iMarker] = 0.0;        CL_Inv[iMarker] = 0.0; CSF_Inv[iMarker] = 0.0;
-      CMx_Inv[iMarker] = 0.0;          CMy_Inv[iMarker] = 0.0;   CMz_Inv[iMarker] = 0.0;
-      CoPx_Inv[iMarker] = 0.0;          CoPy_Inv[iMarker] = 0.0;   CoPz_Inv[iMarker] = 0.0;
-      CFx_Inv[iMarker] = 0.0;          CFy_Inv[iMarker] = 0.0;   CFz_Inv[iMarker] = 0.0;
-      CT_Inv[iMarker] = 0.0;           CQ_Inv[iMarker] = 0.0;    CMerit_Inv[iMarker] = 0.0;
-      CNearFieldOF_Inv[iMarker] = 0.0; CEff_Inv[iMarker] = 0.0;
-
-      for (iDim = 0; iDim < nDim; iDim++) ForceInviscid[iDim] = 0.0;
-      MomentInviscid[0] = 0.0; MomentInviscid[1] = 0.0; MomentInviscid[2] = 0.0;
-      MomentX_Force[0] = 0.0; MomentX_Force[1] = 0.0; MomentX_Force[2] = 0.0;
-      MomentY_Force[0] = 0.0; MomentY_Force[1] = 0.0; MomentY_Force[2] = 0.0;
-      MomentZ_Force[0] = 0.0; MomentZ_Force[1] = 0.0; MomentZ_Force[2] = 0.0;
-
-      NFPressOF = 0.0;
-
-      /*--- Loop over the vertices to compute the forces ---*/
-
-      for (iVertex = 0; iVertex < geometry->GetnVertex(iMarker); iVertex++) {
-
-        iPoint = geometry->vertex[iMarker][iVertex]->GetNode();
-
-        Pressure = node[iPoint]->GetPressure();
-
-        CPressure[iMarker][iVertex] = (Pressure - RefPressure)*factor*RefArea;
-
-        /*--- Note that the pressure coefficient is computed at the
-         halo cells (for visualization purposes), but not the forces ---*/
-
-        if ( (geometry->node[iPoint]->GetDomain()) && (Monitoring == YES) ) {
-
-          Normal = geometry->vertex[iMarker][iVertex]->GetNormal();
-          Coord = geometry->node[iPoint]->GetCoord();
-
-          /*--- Quadratic objective function for the near-field.
-           This uses the infinity pressure regardless of Mach number. ---*/
-
-          NFPressOF += 0.5*(Pressure - Pressure_Inf)*(Pressure - Pressure_Inf)*Normal[nDim-1];
-
-          for (iDim = 0; iDim < nDim; iDim++) {
-            MomentDist[iDim] = Coord[iDim] - Origin[iDim];
-          }
-
-          /*--- Axisymmetric simulations ---*/
-
-          if (axisymmetric) AxiFactor = 2.0*PI_NUMBER*geometry->node[iPoint]->GetCoord(1);
-          else AxiFactor = 1.0;
-
-          /*--- Force computation, note the minus sign due to the
-           orientation of the normal (outward) ---*/
-
-          for (iDim = 0; iDim < nDim; iDim++) {
-            Force[iDim] = -(Pressure - Pressure_Inf) * Normal[iDim] * factor * AxiFactor;
-            ForceInviscid[iDim] += Force[iDim];
-          }
-
-          /*--- Moment with respect to the reference axis ---*/
-
-          if (nDim == 3) {
-            MomentInviscid[0] += (Force[2]*MomentDist[1]-Force[1]*MomentDist[2])/RefLength;
-            MomentX_Force[1]  += (-Force[1]*Coord[2]);
-            MomentX_Force[2]  += (Force[2]*Coord[1]);
-
-            MomentInviscid[1] += (Force[0]*MomentDist[2]-Force[2]*MomentDist[0])/RefLength;
-            MomentY_Force[2]  += (-Force[2]*Coord[0]);
-            MomentY_Force[0]  += (Force[0]*Coord[2]);
-          }
-          MomentInviscid[2] += (Force[1]*MomentDist[0]-Force[0]*MomentDist[1])/RefLength;
-          MomentZ_Force[0]  += (-Force[0]*Coord[1]);
-          MomentZ_Force[1]  += (Force[1]*Coord[0]);
-        }
-
-      }
-
-      /*--- Project forces and store the non-dimensional coefficients ---*/
-
-      if (Monitoring == YES) {
-
-        if (Boundary != NEARFIELD_BOUNDARY) {
-          if (nDim == 2) {
-            CD_Inv[iMarker]     =  ForceInviscid[0]*cos(Alpha) + ForceInviscid[1]*sin(Alpha);
-            CL_Inv[iMarker]     = -ForceInviscid[0]*sin(Alpha) + ForceInviscid[1]*cos(Alpha);
-            CEff_Inv[iMarker]   = CL_Inv[iMarker] / (CD_Inv[iMarker]+EPS);
-            CMz_Inv[iMarker]    = MomentInviscid[2];
-            CoPx_Inv[iMarker]   = MomentZ_Force[1];
-            CoPy_Inv[iMarker]   = -MomentZ_Force[0];
-            CFx_Inv[iMarker]    = ForceInviscid[0];
-            CFy_Inv[iMarker]    = ForceInviscid[1];
-            CT_Inv[iMarker]     = -CFx_Inv[iMarker];
-            CQ_Inv[iMarker]     = -CMz_Inv[iMarker];
-            CMerit_Inv[iMarker] = CT_Inv[iMarker] / (CQ_Inv[iMarker] + EPS);
-          }
-          if (nDim == 3) {
-            CD_Inv[iMarker]      =  ForceInviscid[0]*cos(Alpha)*cos(Beta) + ForceInviscid[1]*sin(Beta) + ForceInviscid[2]*sin(Alpha)*cos(Beta);
-            CL_Inv[iMarker]      = -ForceInviscid[0]*sin(Alpha) + ForceInviscid[2]*cos(Alpha);
-            CSF_Inv[iMarker]     = -ForceInviscid[0]*sin(Beta)*cos(Alpha) + ForceInviscid[1]*cos(Beta) - ForceInviscid[2]*sin(Beta)*sin(Alpha);
-            CEff_Inv[iMarker]    = CL_Inv[iMarker] / (CD_Inv[iMarker] + EPS);
-            CMx_Inv[iMarker]     = MomentInviscid[0];
-            CMy_Inv[iMarker]     = MomentInviscid[1];
-            CMz_Inv[iMarker]     = MomentInviscid[2];
-            CoPx_Inv[iMarker]    = -MomentY_Force[0];
-            CoPz_Inv[iMarker]    = MomentY_Force[2];
-            CFx_Inv[iMarker]     = ForceInviscid[0];
-            CFy_Inv[iMarker]     = ForceInviscid[1];
-            CFz_Inv[iMarker]     = ForceInviscid[2];
-            CT_Inv[iMarker]      = -CFz_Inv[iMarker];
-            CQ_Inv[iMarker]      = -CMz_Inv[iMarker];
-            CMerit_Inv[iMarker]  = CT_Inv[iMarker] / (CQ_Inv[iMarker] + EPS);
-          }
-
-          AllBound_CD_Inv           += CD_Inv[iMarker];
-          AllBound_CL_Inv           += CL_Inv[iMarker];
-          AllBound_CSF_Inv          += CSF_Inv[iMarker];
-          AllBound_CEff_Inv          = AllBound_CL_Inv / (AllBound_CD_Inv + EPS);
-          AllBound_CMx_Inv          += CMx_Inv[iMarker];
-          AllBound_CMy_Inv          += CMy_Inv[iMarker];
-          AllBound_CMz_Inv          += CMz_Inv[iMarker];
-          AllBound_CoPx_Inv         += CoPx_Inv[iMarker];
-          AllBound_CoPy_Inv         += CoPy_Inv[iMarker];
-          AllBound_CoPz_Inv         += CoPz_Inv[iMarker];
-          AllBound_CFx_Inv          += CFx_Inv[iMarker];
-          AllBound_CFy_Inv          += CFy_Inv[iMarker];
-          AllBound_CFz_Inv          += CFz_Inv[iMarker];
-          AllBound_CT_Inv           += CT_Inv[iMarker];
-          AllBound_CQ_Inv           += CQ_Inv[iMarker];
-          AllBound_CMerit_Inv        = AllBound_CT_Inv / (AllBound_CQ_Inv + EPS);
-
-          /*--- Compute the coefficients per surface ---*/
-
-          for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-            Monitoring_Tag = config->GetMarker_Monitoring_TagBound(iMarker_Monitoring);
-            Marker_Tag = config->GetMarker_All_TagBound(iMarker);
-            if (Marker_Tag == Monitoring_Tag) {
-              Surface_CL_Inv[iMarker_Monitoring]      += CL_Inv[iMarker];
-              Surface_CD_Inv[iMarker_Monitoring]      += CD_Inv[iMarker];
-              Surface_CSF_Inv[iMarker_Monitoring]     += CSF_Inv[iMarker];
-              Surface_CEff_Inv[iMarker_Monitoring]     = CL_Inv[iMarker] / (CD_Inv[iMarker] + EPS);
-              Surface_CFx_Inv[iMarker_Monitoring]     += CFx_Inv[iMarker];
-              Surface_CFy_Inv[iMarker_Monitoring]     += CFy_Inv[iMarker];
-              Surface_CFz_Inv[iMarker_Monitoring]     += CFz_Inv[iMarker];
-              Surface_CMx_Inv[iMarker_Monitoring]     += CMx_Inv[iMarker];
-              Surface_CMy_Inv[iMarker_Monitoring]     += CMy_Inv[iMarker];
-              Surface_CMz_Inv[iMarker_Monitoring]     += CMz_Inv[iMarker];
-            }
-          }
-
-        }
-
-        /*--- At the Nearfield SU2 only cares about the pressure coeffient ---*/
-
-        else {
-          CNearFieldOF_Inv[iMarker] = NFPressOF;
-          AllBound_CNearFieldOF_Inv += CNearFieldOF_Inv[iMarker];
-        }
-
-      }
-
-
-    }
-  }
-
-#ifdef HAVE_MPI
-
-  /*--- Add AllBound information using all the nodes ---*/
-
-  MyAllBound_CD_Inv        = AllBound_CD_Inv;        AllBound_CD_Inv = 0.0;
-  MyAllBound_CL_Inv        = AllBound_CL_Inv;        AllBound_CL_Inv = 0.0;
-  MyAllBound_CSF_Inv   = AllBound_CSF_Inv;   AllBound_CSF_Inv = 0.0;
-  AllBound_CEff_Inv = 0.0;
-  MyAllBound_CMx_Inv          = AllBound_CMx_Inv;          AllBound_CMx_Inv = 0.0;
-  MyAllBound_CMy_Inv          = AllBound_CMy_Inv;          AllBound_CMy_Inv = 0.0;
-  MyAllBound_CMz_Inv          = AllBound_CMz_Inv;          AllBound_CMz_Inv = 0.0;
-  MyAllBound_CoPx_Inv          = AllBound_CoPx_Inv;          AllBound_CoPx_Inv = 0.0;
-  MyAllBound_CoPy_Inv          = AllBound_CoPy_Inv;          AllBound_CoPy_Inv = 0.0;
-  MyAllBound_CoPz_Inv          = AllBound_CoPz_Inv;          AllBound_CoPz_Inv = 0.0;
-  MyAllBound_CFx_Inv          = AllBound_CFx_Inv;          AllBound_CFx_Inv = 0.0;
-  MyAllBound_CFy_Inv          = AllBound_CFy_Inv;          AllBound_CFy_Inv = 0.0;
-  MyAllBound_CFz_Inv          = AllBound_CFz_Inv;          AllBound_CFz_Inv = 0.0;
-  MyAllBound_CT_Inv           = AllBound_CT_Inv;           AllBound_CT_Inv = 0.0;
-  MyAllBound_CQ_Inv           = AllBound_CQ_Inv;           AllBound_CQ_Inv = 0.0;
-  AllBound_CMerit_Inv = 0.0;
-  MyAllBound_CNearFieldOF_Inv = AllBound_CNearFieldOF_Inv; AllBound_CNearFieldOF_Inv = 0.0;
-
-  SU2_MPI::Allreduce(&MyAllBound_CD_Inv, &AllBound_CD_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CL_Inv, &AllBound_CL_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CSF_Inv, &AllBound_CSF_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  AllBound_CEff_Inv = AllBound_CL_Inv / (AllBound_CD_Inv + EPS);
-  SU2_MPI::Allreduce(&MyAllBound_CMx_Inv, &AllBound_CMx_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CMy_Inv, &AllBound_CMy_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CMz_Inv, &AllBound_CMz_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CoPx_Inv, &AllBound_CoPx_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CoPy_Inv, &AllBound_CoPy_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CoPz_Inv, &AllBound_CoPz_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CFx_Inv, &AllBound_CFx_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CFy_Inv, &AllBound_CFy_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CFz_Inv, &AllBound_CFz_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CT_Inv, &AllBound_CT_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CQ_Inv, &AllBound_CQ_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  AllBound_CMerit_Inv = AllBound_CT_Inv / (AllBound_CQ_Inv + EPS);
-  SU2_MPI::Allreduce(&MyAllBound_CNearFieldOF_Inv, &AllBound_CNearFieldOF_Inv, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-
-  /*--- Add the forces on the surfaces using all the nodes ---*/
-
-  MySurface_CL_Inv      = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CD_Inv      = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CSF_Inv = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CEff_Inv       = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CFx_Inv        = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CFy_Inv        = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CFz_Inv        = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CMx_Inv        = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CMy_Inv        = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CMz_Inv        = new su2double[config->GetnMarker_Monitoring()];
-
-  for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-    MySurface_CL_Inv[iMarker_Monitoring]      = Surface_CL_Inv[iMarker_Monitoring];
-    MySurface_CD_Inv[iMarker_Monitoring]      = Surface_CD_Inv[iMarker_Monitoring];
-    MySurface_CSF_Inv[iMarker_Monitoring] = Surface_CSF_Inv[iMarker_Monitoring];
-    MySurface_CEff_Inv[iMarker_Monitoring]       = Surface_CEff_Inv[iMarker_Monitoring];
-    MySurface_CFx_Inv[iMarker_Monitoring]        = Surface_CFx_Inv[iMarker_Monitoring];
-    MySurface_CFy_Inv[iMarker_Monitoring]        = Surface_CFy_Inv[iMarker_Monitoring];
-    MySurface_CFz_Inv[iMarker_Monitoring]        = Surface_CFz_Inv[iMarker_Monitoring];
-    MySurface_CMx_Inv[iMarker_Monitoring]        = Surface_CMx_Inv[iMarker_Monitoring];
-    MySurface_CMy_Inv[iMarker_Monitoring]        = Surface_CMy_Inv[iMarker_Monitoring];
-    MySurface_CMz_Inv[iMarker_Monitoring]        = Surface_CMz_Inv[iMarker_Monitoring];
-
-    Surface_CL_Inv[iMarker_Monitoring]         = 0.0;
-    Surface_CD_Inv[iMarker_Monitoring]         = 0.0;
-    Surface_CSF_Inv[iMarker_Monitoring]        = 0.0;
-    Surface_CEff_Inv[iMarker_Monitoring]       = 0.0;
-    Surface_CFx_Inv[iMarker_Monitoring]        = 0.0;
-    Surface_CFy_Inv[iMarker_Monitoring]        = 0.0;
-    Surface_CFz_Inv[iMarker_Monitoring]        = 0.0;
-    Surface_CMx_Inv[iMarker_Monitoring]        = 0.0;
-    Surface_CMy_Inv[iMarker_Monitoring]        = 0.0;
-    Surface_CMz_Inv[iMarker_Monitoring]        = 0.0;
-  }
-
-  SU2_MPI::Allreduce(MySurface_CL_Inv, Surface_CL_Inv, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CD_Inv, Surface_CD_Inv, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CSF_Inv, Surface_CSF_Inv, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++)
-    Surface_CEff_Inv[iMarker_Monitoring] = Surface_CL_Inv[iMarker_Monitoring] / (Surface_CD_Inv[iMarker_Monitoring] + EPS);
-  SU2_MPI::Allreduce(MySurface_CFx_Inv, Surface_CFx_Inv, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CFy_Inv, Surface_CFy_Inv, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CFz_Inv, Surface_CFz_Inv, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CMx_Inv, Surface_CMx_Inv, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CMy_Inv, Surface_CMy_Inv, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CMz_Inv, Surface_CMz_Inv, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-
-  delete [] MySurface_CL_Inv; delete [] MySurface_CD_Inv; delete [] MySurface_CSF_Inv;
-  delete [] MySurface_CEff_Inv;  delete [] MySurface_CFx_Inv;   delete [] MySurface_CFy_Inv;
-  delete [] MySurface_CFz_Inv;   delete [] MySurface_CMx_Inv;   delete [] MySurface_CMy_Inv;
-  delete [] MySurface_CMz_Inv;
-
-#endif
-
-  /*--- Update the total coefficients (note that all the nodes have the same value) ---*/
-
-  Total_CD            = AllBound_CD_Inv;
-  Total_CL            = AllBound_CL_Inv;
-  Total_CSF           = AllBound_CSF_Inv;
-  Total_CEff          = Total_CL / (Total_CD + EPS);
-  Total_CFx           = AllBound_CFx_Inv;
-  Total_CFy           = AllBound_CFy_Inv;
-  Total_CFz           = AllBound_CFz_Inv;
-  Total_CMx           = AllBound_CMx_Inv;
-  Total_CMy           = AllBound_CMy_Inv;
-  Total_CMz           = AllBound_CMz_Inv;
-  Total_CoPx          = AllBound_CoPx_Inv;
-  Total_CoPy          = AllBound_CoPy_Inv;
-  Total_CoPz          = AllBound_CoPz_Inv;
-  Total_CT            = AllBound_CT_Inv;
-  Total_CQ            = AllBound_CQ_Inv;
-  Total_CMerit        = Total_CT / (Total_CQ + EPS);
-  Total_CNearFieldOF  = AllBound_CNearFieldOF_Inv;
-
-  /*--- Update the total coefficients per surface (note that all the nodes have the same value)---*/
-
-  for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-    Surface_CL[iMarker_Monitoring]      = Surface_CL_Inv[iMarker_Monitoring];
-    Surface_CD[iMarker_Monitoring]      = Surface_CD_Inv[iMarker_Monitoring];
-    Surface_CSF[iMarker_Monitoring] = Surface_CSF_Inv[iMarker_Monitoring];
-    Surface_CEff[iMarker_Monitoring]       = Surface_CL_Inv[iMarker_Monitoring] / (Surface_CD_Inv[iMarker_Monitoring] + EPS);
-    Surface_CFx[iMarker_Monitoring]        = Surface_CFx_Inv[iMarker_Monitoring];
-    Surface_CFy[iMarker_Monitoring]        = Surface_CFy_Inv[iMarker_Monitoring];
-    Surface_CFz[iMarker_Monitoring]        = Surface_CFz_Inv[iMarker_Monitoring];
-    Surface_CMx[iMarker_Monitoring]        = Surface_CMx_Inv[iMarker_Monitoring];
-    Surface_CMy[iMarker_Monitoring]        = Surface_CMy_Inv[iMarker_Monitoring];
-    Surface_CMz[iMarker_Monitoring]        = Surface_CMz_Inv[iMarker_Monitoring];
-  }
-
-}
-
-void CImpactSolver::Momentum_Forces(CGeometry *geometry, CConfig *config) {
-
-  //cout << "CImpactSolver Momentum_Forces*************************************************************************************" << endl;
-  unsigned long iVertex, iPoint;
-  unsigned short iDim, iMarker, Boundary, Monitoring, iMarker_Monitoring;
-  su2double *Normal = NULL, MomentDist[3] = {0.0,0.0,0.0}, *Coord, Area,
-  factor, RefVel2, RefTemp, RefDensity,  Mach2Vel, Mach_Motion,
-  Force[3] = {0.0,0.0,0.0}, Velocity[3], MassFlow, Density;
-  string Marker_Tag, Monitoring_Tag;
-  su2double MomentX_Force[3] = {0.0,0.0,0.0}, MomentY_Force[3] = {0.0,0.0,0.0}, MomentZ_Force[3] = {0.0,0.0,0.0};
-  su2double AxiFactor;
-
-#ifdef HAVE_MPI
-  su2double MyAllBound_CD_Mnt, MyAllBound_CL_Mnt, MyAllBound_CSF_Mnt,
-  MyAllBound_CMx_Mnt, MyAllBound_CMy_Mnt, MyAllBound_CMz_Mnt,
-  MyAllBound_CoPx_Mnt, MyAllBound_CoPy_Mnt, MyAllBound_CoPz_Mnt,
-  MyAllBound_CFx_Mnt, MyAllBound_CFy_Mnt, MyAllBound_CFz_Mnt, MyAllBound_CT_Mnt,
-  MyAllBound_CQ_Mnt,
-  *MySurface_CL_Mnt = NULL, *MySurface_CD_Mnt = NULL, *MySurface_CSF_Mnt = NULL,
-  *MySurface_CEff_Mnt = NULL, *MySurface_CFx_Mnt = NULL, *MySurface_CFy_Mnt = NULL,
-  *MySurface_CFz_Mnt = NULL,
-  *MySurface_CMx_Mnt = NULL, *MySurface_CMy_Mnt = NULL,  *MySurface_CMz_Mnt = NULL;
-#endif
-
-  su2double Alpha            = config->GetAoA()*PI_NUMBER/180.0;
-  su2double Beta             = config->GetAoS()*PI_NUMBER/180.0;
-  su2double RefArea     = config->GetRefArea();
-  su2double RefLength  = config->GetRefLength();
-  su2double Gas_Constant     = config->GetGas_ConstantND();
-  su2double *Origin = NULL;
-  if (config->GetnMarker_Monitoring() != 0){
-    Origin = config->GetRefOriginMoment(0);
-  }
-  bool grid_movement         = config->GetGrid_Movement();
-  bool axisymmetric          = config->GetAxisymmetric();
-
-  /*--- Evaluate reference values for non-dimensionalization.
-   For dynamic meshes, use the motion Mach number as a reference value
-   for computing the force coefficients. Otherwise, use the freestream values,
-   which is the standard convention. ---*/
-
-  RefTemp     = Temperature_Inf;
-  RefDensity  = Density_Inf;
-  if (grid_movement) {
-    Mach2Vel = sqrt(Gamma*Gas_Constant*RefTemp);
-    Mach_Motion = config->GetMach_Motion();
-    RefVel2 = (Mach_Motion*Mach2Vel)*(Mach_Motion*Mach2Vel);
-  }
-  else {
-    RefVel2 = 0.0;
-    for (iDim = 0; iDim < nDim; iDim++)
-      RefVel2  += Velocity_Inf[iDim]*Velocity_Inf[iDim];
-  }
-
-  factor = 1.0 / (0.5*RefDensity*RefArea*RefVel2);
-
-  /*-- Variables initialization ---*/
-
-  AllBound_CD_Mnt = 0.0;        AllBound_CL_Mnt = 0.0; AllBound_CSF_Mnt = 0.0;
-  AllBound_CMx_Mnt = 0.0;          AllBound_CMy_Mnt = 0.0;   AllBound_CMz_Mnt = 0.0;
-  AllBound_CoPx_Mnt = 0.0;          AllBound_CoPy_Mnt = 0.0;   AllBound_CoPz_Mnt = 0.0;
-  AllBound_CFx_Mnt = 0.0;          AllBound_CFy_Mnt = 0.0;   AllBound_CFz_Mnt = 0.0;
-  AllBound_CT_Mnt = 0.0;           AllBound_CQ_Mnt = 0.0;    AllBound_CMerit_Mnt = 0.0;
-  AllBound_CEff_Mnt = 0.0;
-
-  for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-    Surface_CL_Mnt[iMarker_Monitoring]      = 0.0; Surface_CD_Mnt[iMarker_Monitoring]      = 0.0;
-    Surface_CSF_Mnt[iMarker_Monitoring] = 0.0; Surface_CEff_Mnt[iMarker_Monitoring]       = 0.0;
-    Surface_CFx_Mnt[iMarker_Monitoring]        = 0.0; Surface_CFy_Mnt[iMarker_Monitoring]        = 0.0;
-    Surface_CFz_Mnt[iMarker_Monitoring]        = 0.0;
-    Surface_CMx_Mnt[iMarker_Monitoring]        = 0.0; Surface_CMy_Mnt[iMarker_Monitoring]        = 0.0; Surface_CMz_Mnt[iMarker_Monitoring]        = 0.0;
-  }
-
-  /*--- Loop over the Inlet -Outlet Markers  ---*/
-
-  for (iMarker = 0; iMarker < nMarker; iMarker++) {
-
-    Boundary   = config->GetMarker_All_KindBC(iMarker);
-    Monitoring = config->GetMarker_All_Monitoring(iMarker);
-
-    /*--- Obtain the origin for the moment computation for a particular marker ---*/
-
-    if (Monitoring == YES) {
-      for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-        Monitoring_Tag = config->GetMarker_Monitoring_TagBound(iMarker_Monitoring);
-        Marker_Tag = config->GetMarker_All_TagBound(iMarker);
-        if (Marker_Tag == Monitoring_Tag)
-          Origin = config->GetRefOriginMoment(iMarker_Monitoring);
-      }
-    }
-
-    if ((Boundary == INLET_FLOW) || (Boundary == OUTLET_FLOW) ||
-        (Boundary == ACTDISK_INLET) || (Boundary == ACTDISK_OUTLET)||
-        (Boundary == ENGINE_INFLOW) || (Boundary == ENGINE_EXHAUST)) {
-
-      /*--- Forces initialization at each Marker ---*/
-
-      CD_Mnt[iMarker] = 0.0;           CL_Mnt[iMarker] = 0.0;    CSF_Mnt[iMarker] = 0.0;
-      CFx_Mnt[iMarker] = 0.0;          CFy_Mnt[iMarker] = 0.0;   CFz_Mnt[iMarker] = 0.0;
-      CMx_Mnt[iMarker] = 0.0;          CMy_Mnt[iMarker] = 0.0;   CMz_Mnt[iMarker] = 0.0;
-      CoPx_Mnt[iMarker] = 0.0;         CoPy_Mnt[iMarker] = 0.0;  CoPz_Mnt[iMarker] = 0.0;
-      CT_Mnt[iMarker] = 0.0;           CQ_Mnt[iMarker] = 0.0;    CMerit_Mnt[iMarker] = 0.0;
-      CEff_Mnt[iMarker] = 0.0;
-
-      for (iDim = 0; iDim < nDim; iDim++) ForceMomentum[iDim] = 0.0;
-      MomentMomentum[0] = 0.0; MomentMomentum[1] = 0.0; MomentMomentum[2] = 0.0;
-      MomentX_Force[0] = 0.0;  MomentX_Force[1] = 0.0;  MomentX_Force[2] = 0.0;
-      MomentY_Force[0] = 0.0;  MomentY_Force[1] = 0.0;  MomentY_Force[2] = 0.0;
-      MomentZ_Force[0] = 0.0;  MomentZ_Force[1] = 0.0;  MomentZ_Force[2] = 0.0;
-
-      /*--- Loop over the vertices to compute the forces ---*/
-
-      for (iVertex = 0; iVertex < geometry->GetnVertex(iMarker); iVertex++) {
-
-        iPoint = geometry->vertex[iMarker][iVertex]->GetNode();
-
-        /*--- Note that the pressure coefficient is computed at the
-         halo cells (for visualization purposes), but not the forces ---*/
-
-        if ( (geometry->node[iPoint]->GetDomain()) && (Monitoring == YES) ) {
-
-          Normal = geometry->vertex[iMarker][iVertex]->GetNormal();
-          Coord = geometry->node[iPoint]->GetCoord();
-          Density   = node[iPoint]->GetDensity();
-
-          /*--- Quadratic objective function for the near-field.
-           This uses the infinity pressure regardless of Mach number. ---*/
-
-          Area = 0.0; for (iDim = 0; iDim < nDim; iDim++) Area += Normal[iDim]*Normal[iDim]; Area = sqrt(Area);
-
-          MassFlow = 0.0;
-          for (iDim = 0; iDim < nDim; iDim++) {
-            Velocity[iDim]  = node[iPoint]->GetVelocity(iDim);
-            MomentDist[iDim] = Coord[iDim] - Origin[iDim];
-            MassFlow -= Normal[iDim]*Velocity[iDim]*Density;
-          }
-
-          /*--- Axisymmetric simulations ---*/
-
-          if (axisymmetric) AxiFactor = 2.0*PI_NUMBER*geometry->node[iPoint]->GetCoord(1);
-          else AxiFactor = 1.0;
-
-          /*--- Force computation, note the minus sign due to the
-           orientation of the normal (outward) ---*/
-
-          for (iDim = 0; iDim < nDim; iDim++) {
-            Force[iDim] = MassFlow * Velocity[iDim] * factor * AxiFactor;
-            ForceMomentum[iDim] += Force[iDim];
-          }
-
-          /*--- Moment with respect to the reference axis ---*/
-
-          if (iDim == 3) {
-            MomentMomentum[0] += (Force[2]*MomentDist[1]-Force[1]*MomentDist[2])/RefLength;
-            MomentX_Force[1]  += (-Force[1]*Coord[2]);
-            MomentX_Force[2]  += (Force[2]*Coord[1]);
-
-            MomentMomentum[1] += (Force[0]*MomentDist[2]-Force[2]*MomentDist[0])/RefLength;
-            MomentY_Force[2]  += (-Force[2]*Coord[0]);
-            MomentY_Force[0]  += (Force[0]*Coord[2]);
-          }
-          MomentMomentum[2] += (Force[1]*MomentDist[0]-Force[0]*MomentDist[1])/RefLength;
-          MomentZ_Force[0]  += (-Force[0]*Coord[1]);
-          MomentZ_Force[1]  += (Force[1]*Coord[0]);
-
-        }
-
-      }
-
-      /*--- Project forces and store the non-dimensional coefficients ---*/
-
-      if (Monitoring == YES) {
-
-        if (nDim == 2) {
-          CD_Mnt[iMarker]     =  ForceMomentum[0]*cos(Alpha) + ForceMomentum[1]*sin(Alpha);
-          CL_Mnt[iMarker]     = -ForceMomentum[0]*sin(Alpha) + ForceMomentum[1]*cos(Alpha);
-          CEff_Mnt[iMarker]   = CL_Mnt[iMarker] / (CD_Mnt[iMarker]+EPS);
-          CFx_Mnt[iMarker]    = ForceMomentum[0];
-          CFy_Mnt[iMarker]    = ForceMomentum[1];
-          CMz_Mnt[iMarker]    = MomentMomentum[2];
-          CoPx_Mnt[iMarker]   = MomentZ_Force[1];
-          CoPy_Mnt[iMarker]   = -MomentZ_Force[0];
-          CT_Mnt[iMarker]     = -CFx_Mnt[iMarker];
-          CQ_Mnt[iMarker]     = -CMz_Mnt[iMarker];
-          CMerit_Mnt[iMarker] = CT_Mnt[iMarker] / (CQ_Mnt[iMarker] + EPS);
-        }
-        if (nDim == 3) {
-          CD_Mnt[iMarker]         =  ForceMomentum[0]*cos(Alpha)*cos(Beta) + ForceMomentum[1]*sin(Beta) + ForceMomentum[2]*sin(Alpha)*cos(Beta);
-          CL_Mnt[iMarker]         = -ForceMomentum[0]*sin(Alpha) + ForceMomentum[2]*cos(Alpha);
-          CSF_Mnt[iMarker]        = -ForceMomentum[0]*sin(Beta)*cos(Alpha) + ForceMomentum[1]*cos(Beta) - ForceMomentum[2]*sin(Beta)*sin(Alpha);
-          CEff_Mnt[iMarker]       = CL_Mnt[iMarker] / (CD_Mnt[iMarker] + EPS);
-          CFx_Mnt[iMarker]        = ForceMomentum[0];
-          CFy_Mnt[iMarker]        = ForceMomentum[1];
-          CFz_Mnt[iMarker]        = ForceMomentum[2];
-          CMx_Mnt[iMarker]        = MomentMomentum[0];
-          CMy_Mnt[iMarker]        = MomentMomentum[1];
-          CMz_Mnt[iMarker]        = MomentMomentum[2];
-          CoPx_Mnt[iMarker]       = -MomentY_Force[0];
-          CoPz_Mnt[iMarker]       =  MomentY_Force[2];
-          CT_Mnt[iMarker]         = -CFz_Mnt[iMarker];
-          CQ_Mnt[iMarker]         = -CMz_Mnt[iMarker];
-          CMerit_Mnt[iMarker]     = CT_Mnt[iMarker] / (CQ_Mnt[iMarker] + EPS);
-        }
-
-        AllBound_CD_Mnt           += CD_Mnt[iMarker];
-        AllBound_CL_Mnt           += CL_Mnt[iMarker];
-        AllBound_CSF_Mnt          += CSF_Mnt[iMarker];
-        AllBound_CEff_Mnt          = AllBound_CL_Mnt / (AllBound_CD_Mnt + EPS);
-        AllBound_CFx_Mnt          += CFx_Mnt[iMarker];
-        AllBound_CFy_Mnt          += CFy_Mnt[iMarker];
-        AllBound_CFz_Mnt          += CFz_Mnt[iMarker];
-        AllBound_CMx_Mnt          += CMx_Mnt[iMarker];
-        AllBound_CMy_Mnt          += CMy_Mnt[iMarker];
-        AllBound_CMz_Mnt          += CMz_Mnt[iMarker];
-        AllBound_CoPy_Mnt         += CoPy_Mnt[iMarker];
-        AllBound_CoPz_Mnt         += CoPz_Mnt[iMarker];
-        AllBound_CT_Mnt           += CT_Mnt[iMarker];
-        AllBound_CQ_Mnt           += CQ_Mnt[iMarker];
-        AllBound_CMerit_Mnt       += AllBound_CT_Mnt / (AllBound_CQ_Mnt + EPS);
-
-        /*--- Compute the coefficients per surface ---*/
-
-        for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-          Monitoring_Tag = config->GetMarker_Monitoring_TagBound(iMarker_Monitoring);
-          Marker_Tag = config->GetMarker_All_TagBound(iMarker);
-          if (Marker_Tag == Monitoring_Tag) {
-            Surface_CL_Mnt[iMarker_Monitoring]      += CL_Mnt[iMarker];
-            Surface_CD_Mnt[iMarker_Monitoring]      += CD_Mnt[iMarker];
-            Surface_CSF_Mnt[iMarker_Monitoring]     += CSF_Mnt[iMarker];
-            Surface_CEff_Mnt[iMarker_Monitoring]     = CL_Mnt[iMarker] / (CD_Mnt[iMarker] + EPS);
-            Surface_CFx_Mnt[iMarker_Monitoring]     += CFx_Mnt[iMarker];
-            Surface_CFy_Mnt[iMarker_Monitoring]     += CFy_Mnt[iMarker];
-            Surface_CFz_Mnt[iMarker_Monitoring]     += CFz_Mnt[iMarker];
-            Surface_CMx_Mnt[iMarker_Monitoring]     += CMx_Mnt[iMarker];
-            Surface_CMy_Mnt[iMarker_Monitoring]     += CMy_Mnt[iMarker];
-            Surface_CMz_Mnt[iMarker_Monitoring]     += CMz_Mnt[iMarker];
-          }
-        }
-
-      }
-
-
-    }
-  }
-
-#ifdef HAVE_MPI
-
-  /*--- Add AllBound information using all the nodes ---*/
-
-  MyAllBound_CD_Mnt           = AllBound_CD_Mnt;           AllBound_CD_Mnt = 0.0;
-  MyAllBound_CL_Mnt           = AllBound_CL_Mnt;           AllBound_CL_Mnt = 0.0;
-  MyAllBound_CSF_Mnt          = AllBound_CSF_Mnt;          AllBound_CSF_Mnt = 0.0;
-  MyAllBound_CFx_Mnt          = AllBound_CFx_Mnt;          AllBound_CFx_Mnt = 0.0;
-  MyAllBound_CFy_Mnt          = AllBound_CFy_Mnt;          AllBound_CFy_Mnt = 0.0;
-  MyAllBound_CFz_Mnt          = AllBound_CFz_Mnt;          AllBound_CFz_Mnt = 0.0;
-  MyAllBound_CMx_Mnt          = AllBound_CMx_Mnt;          AllBound_CMx_Mnt = 0.0;
-  MyAllBound_CMy_Mnt          = AllBound_CMy_Mnt;          AllBound_CMy_Mnt = 0.0;
-  MyAllBound_CMz_Mnt          = AllBound_CMz_Mnt;          AllBound_CMz_Mnt = 0.0;
-  MyAllBound_CoPx_Mnt         = AllBound_CoPx_Mnt;         AllBound_CoPx_Mnt = 0.0;
-  MyAllBound_CoPy_Mnt         = AllBound_CoPy_Mnt;         AllBound_CoPy_Mnt = 0.0;
-  MyAllBound_CoPz_Mnt         = AllBound_CoPz_Mnt;         AllBound_CoPz_Mnt = 0.0;
-  MyAllBound_CT_Mnt           = AllBound_CT_Mnt;           AllBound_CT_Mnt = 0.0;
-  MyAllBound_CQ_Mnt           = AllBound_CQ_Mnt;           AllBound_CQ_Mnt = 0.0;
-
-  SU2_MPI::Allreduce(&MyAllBound_CD_Mnt, &AllBound_CD_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CL_Mnt, &AllBound_CL_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CSF_Mnt, &AllBound_CSF_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  AllBound_CEff_Mnt = AllBound_CL_Mnt / (AllBound_CD_Mnt + EPS);
-  SU2_MPI::Allreduce(&MyAllBound_CFx_Mnt, &AllBound_CFx_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CFy_Mnt, &AllBound_CFy_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CFz_Mnt, &AllBound_CFz_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CMx_Mnt, &AllBound_CMx_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CMy_Mnt, &AllBound_CMy_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CMz_Mnt, &AllBound_CMz_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CoPx_Mnt, &AllBound_CoPx_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CoPy_Mnt, &AllBound_CoPy_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CoPz_Mnt, &AllBound_CoPz_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CT_Mnt, &AllBound_CT_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(&MyAllBound_CQ_Mnt, &AllBound_CQ_Mnt, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  AllBound_CMerit_Mnt = AllBound_CT_Mnt / (AllBound_CQ_Mnt + EPS);
-
-  /*--- Add the forces on the surfaces using all the nodes ---*/
-
-  MySurface_CL_Mnt      = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CD_Mnt      = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CSF_Mnt = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CEff_Mnt       = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CFx_Mnt        = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CFy_Mnt        = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CFz_Mnt        = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CMx_Mnt        = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CMy_Mnt        = new su2double[config->GetnMarker_Monitoring()];
-  MySurface_CMz_Mnt        = new su2double[config->GetnMarker_Monitoring()];
-
-  for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-    MySurface_CL_Mnt[iMarker_Monitoring]      = Surface_CL_Mnt[iMarker_Monitoring];
-    MySurface_CD_Mnt[iMarker_Monitoring]      = Surface_CD_Mnt[iMarker_Monitoring];
-    MySurface_CSF_Mnt[iMarker_Monitoring] = Surface_CSF_Mnt[iMarker_Monitoring];
-    MySurface_CEff_Mnt[iMarker_Monitoring]       = Surface_CEff_Mnt[iMarker_Monitoring];
-    MySurface_CFx_Mnt[iMarker_Monitoring]        = Surface_CFx_Mnt[iMarker_Monitoring];
-    MySurface_CFy_Mnt[iMarker_Monitoring]        = Surface_CFy_Mnt[iMarker_Monitoring];
-    MySurface_CFz_Mnt[iMarker_Monitoring]        = Surface_CFz_Mnt[iMarker_Monitoring];
-    MySurface_CMx_Mnt[iMarker_Monitoring]        = Surface_CMx_Mnt[iMarker_Monitoring];
-    MySurface_CMy_Mnt[iMarker_Monitoring]        = Surface_CMy_Mnt[iMarker_Monitoring];
-    MySurface_CMz_Mnt[iMarker_Monitoring]        = Surface_CMz_Mnt[iMarker_Monitoring];
-
-    Surface_CL_Mnt[iMarker_Monitoring]         = 0.0;
-    Surface_CD_Mnt[iMarker_Monitoring]         = 0.0;
-    Surface_CSF_Mnt[iMarker_Monitoring]        = 0.0;
-    Surface_CEff_Mnt[iMarker_Monitoring]       = 0.0;
-    Surface_CFx_Mnt[iMarker_Monitoring]        = 0.0;
-    Surface_CFy_Mnt[iMarker_Monitoring]        = 0.0;
-    Surface_CFz_Mnt[iMarker_Monitoring]        = 0.0;
-    Surface_CMx_Mnt[iMarker_Monitoring]        = 0.0;
-    Surface_CMy_Mnt[iMarker_Monitoring]        = 0.0;
-    Surface_CMz_Mnt[iMarker_Monitoring]        = 0.0;
-  }
-
-  SU2_MPI::Allreduce(MySurface_CL_Mnt, Surface_CL_Mnt, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CD_Mnt, Surface_CD_Mnt, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CSF_Mnt, Surface_CSF_Mnt, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++)
-    Surface_CEff_Mnt[iMarker_Monitoring] = Surface_CL_Mnt[iMarker_Monitoring] / (Surface_CD_Mnt[iMarker_Monitoring] + EPS);
-  SU2_MPI::Allreduce(MySurface_CFx_Mnt, Surface_CFx_Mnt, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CFy_Mnt, Surface_CFy_Mnt, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CFz_Mnt, Surface_CFz_Mnt, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CMx_Mnt, Surface_CMx_Mnt, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CMy_Mnt, Surface_CMy_Mnt, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  SU2_MPI::Allreduce(MySurface_CMz_Mnt, Surface_CMz_Mnt, config->GetnMarker_Monitoring(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-
-  delete [] MySurface_CL_Mnt; delete [] MySurface_CD_Mnt; delete [] MySurface_CSF_Mnt;
-  delete [] MySurface_CEff_Mnt;  delete [] MySurface_CFx_Mnt;   delete [] MySurface_CFy_Mnt;
-  delete [] MySurface_CFz_Mnt;
-  delete [] MySurface_CMx_Mnt;   delete [] MySurface_CMy_Mnt;  delete [] MySurface_CMz_Mnt;
-
-#endif
-
-  /*--- Update the total coefficients (note that all the nodes have the same value) ---*/
-
-  Total_CD            += AllBound_CD_Mnt;
-  Total_CL            += AllBound_CL_Mnt;
-  Total_CSF           += AllBound_CSF_Mnt;
-  Total_CEff          = Total_CL / (Total_CD + EPS);
-  Total_CFx           += AllBound_CFx_Mnt;
-  Total_CFy           += AllBound_CFy_Mnt;
-  Total_CFz           += AllBound_CFz_Mnt;
-  Total_CMx           += AllBound_CMx_Mnt;
-  Total_CMy           += AllBound_CMy_Mnt;
-  Total_CMz           += AllBound_CMz_Mnt;
-  Total_CoPx          += AllBound_CoPx_Mnt;
-  Total_CoPy          += AllBound_CoPy_Mnt;
-  Total_CoPz          += AllBound_CoPz_Mnt;
-  Total_CT            += AllBound_CT_Mnt;
-  Total_CQ            += AllBound_CQ_Mnt;
-  Total_CMerit        = Total_CT / (Total_CQ + EPS);
-
-  /*--- Update the total coefficients per surface (note that all the nodes have the same value)---*/
-
-  for (iMarker_Monitoring = 0; iMarker_Monitoring < config->GetnMarker_Monitoring(); iMarker_Monitoring++) {
-    Surface_CL[iMarker_Monitoring]         += Surface_CL_Mnt[iMarker_Monitoring];
-    Surface_CD[iMarker_Monitoring]         += Surface_CD_Mnt[iMarker_Monitoring];
-    Surface_CSF[iMarker_Monitoring]        += Surface_CSF_Mnt[iMarker_Monitoring];
-    Surface_CEff[iMarker_Monitoring]       += Surface_CL_Mnt[iMarker_Monitoring] / (Surface_CD_Mnt[iMarker_Monitoring] + EPS);
-    Surface_CFx[iMarker_Monitoring]        += Surface_CFx_Mnt[iMarker_Monitoring];
-    Surface_CFy[iMarker_Monitoring]        += Surface_CFy_Mnt[iMarker_Monitoring];
-    Surface_CFz[iMarker_Monitoring]        += Surface_CFz_Mnt[iMarker_Monitoring];
-    Surface_CMx[iMarker_Monitoring]        += Surface_CMx_Mnt[iMarker_Monitoring];
-    Surface_CMy[iMarker_Monitoring]        += Surface_CMy_Mnt[iMarker_Monitoring];
-    Surface_CMz[iMarker_Monitoring]        += Surface_CMz_Mnt[iMarker_Monitoring];
-  }
-
-}
 
 void CImpactSolver::ExplicitRK_Iteration(CGeometry *geometry, CSolver **solver_container,
                                         CConfig *config, unsigned short iRKStep) {
-  //cout << "CImpactSolver ExplicitRK_Iteration*************************************************************************************" << endl;
+  cout << "CImpactSolver ExplicitRK_Iteration*************************************************************************************" << endl;
   su2double *Residual, *Res_TruncError, Vol, Delta, Res;
   unsigned short iVar;
   unsigned long iPoint;
@@ -6119,7 +5345,7 @@ void CImpactSolver::ExplicitRK_Iteration(CGeometry *geometry, CSolver **solver_c
 
 void CImpactSolver::ClassicalRK4_Iteration(CGeometry *geometry, CSolver **solver_container,
                                         CConfig *config, unsigned short iRKStep) {
-  //cout << "CImpactSolver ClassicalRK4_Iteration*************************************************************************************" << endl;
+  cout << "CImpactSolver ClassicalRK4_Iteration*************************************************************************************" << endl;
   su2double *Residual, *Res_TruncError, Vol, Delta, Res, tmp_time, tmp_func;
   unsigned short iVar;
   unsigned long iPoint;
@@ -6179,7 +5405,7 @@ void CImpactSolver::ClassicalRK4_Iteration(CGeometry *geometry, CSolver **solver
 }
 
 void CImpactSolver::ExplicitEuler_Iteration(CGeometry *geometry, CSolver **solver_container, CConfig *config) {
-  //cout << "CImpactSolver ExplicitEuler_Iteration*************************************************************************************" << endl;
+  cout << "CImpactSolver ExplicitEuler_Iteration*************************************************************************************" << endl;
   su2double *local_Residual, *local_Res_TruncError, Vol, Delta, Res;
   unsigned short iVar;
   unsigned long iPoint;
@@ -6222,7 +5448,7 @@ void CImpactSolver::ExplicitEuler_Iteration(CGeometry *geometry, CSolver **solve
 }
 
 void CImpactSolver::ImplicitEuler_Iteration(CGeometry *geometry, CSolver **solver_container, CConfig *config) {
-  //cout << "CImpactSolver ImplicitEuler_Iteration*************************************************************************************" << endl;
+  cout << "CImpactSolver ImplicitEuler_Iteration*************************************************************************************" << endl;
   unsigned short iVar, jVar;
   unsigned long iPoint, total_index, IterLinSol = 0;
   su2double Delta, *local_Res_TruncError, Vol;
@@ -6326,7 +5552,7 @@ void CImpactSolver::ImplicitEuler_Iteration(CGeometry *geometry, CSolver **solve
 }
 
 void CImpactSolver::SetPrimitive_Gradient_GG(CGeometry *geometry, CConfig *config) {
-  //cout << "CImpactSolver SetPrimitive_Gradient_GG*************************************************************************************" << endl;
+  cout << "CImpactSolver SetPrimitive_Gradient_GG*************************************************************************************" << endl;
   unsigned long iPoint, jPoint, iEdge, iVertex;
   unsigned short iDim, iVar, iMarker;
   su2double *PrimVar_Vertex, *PrimVar_i, *PrimVar_j, PrimVar_Average,
@@ -6409,7 +5635,7 @@ void CImpactSolver::SetPrimitive_Gradient_GG(CGeometry *geometry, CConfig *confi
 }
 
 void CImpactSolver::SetPrimitive_Gradient_LS(CGeometry *geometry, CConfig *config) {
-  //cout << "CImpactSolver SetPrimitive_Gradient_LS*************************************************************************************" << endl;
+  cout << "CImpactSolver SetPrimitive_Gradient_LS*************************************************************************************" << endl;
   unsigned short iVar, iDim, jDim, iNeigh;
   unsigned long iPoint, jPoint;
   su2double *PrimVar_i, *PrimVar_j, *Coord_i, *Coord_j, r11, r12, r13, r22, r23, r23_a,
@@ -6553,7 +5779,7 @@ void CImpactSolver::SetPrimitive_Gradient_LS(CGeometry *geometry, CConfig *confi
 }
 
 void CImpactSolver::SetPrimitive_Limiter(CGeometry *geometry, CConfig *config) {
-  //cout << "CImpactSolver SetPrimitive_Limiter*************************************************************************************" << endl;
+  cout << "CImpactSolver SetPrimitive_Limiter*************************************************************************************" << endl;
   unsigned long iEdge, iPoint, jPoint;
   unsigned short iVar, iDim;
   su2double **Gradient_i, **Gradient_j, *Coord_i, *Coord_j,
@@ -6815,7 +6041,7 @@ void CImpactSolver::SetPrimitive_Limiter(CGeometry *geometry, CConfig *config) {
 }
 
 void CImpactSolver::SetPreconditioner(CConfig *config, unsigned long iPoint) {
-  //cout << "CImpactSolver SetPreconditioner*************************************************************************************" << endl;
+  cout << "CImpactSolver SetPreconditioner*************************************************************************************" << endl;
   unsigned short iDim, jDim, iVar, jVar;
   su2double local_Mach, rho, enthalpy, soundspeed, sq_vel;
   su2double *U_i = NULL;
@@ -6871,7 +6097,7 @@ void CImpactSolver::SetPreconditioner(CConfig *config, unsigned long iPoint) {
 }
 
 void CImpactSolver::GetPower_Properties(CGeometry *geometry, CConfig *config, unsigned short iMesh, bool Output) {
-  //cout << "CImpactSolver GetPower_Properties*************************************************************************************" << endl;
+  cout << "CImpactSolver GetPower_Properties*************************************************************************************" << endl;
   unsigned short iDim, iMarker, jMarker;
   unsigned long iVertex, iPoint;
   su2double  *V_inlet = NULL, *V_outlet = NULL, Pressure, Temperature, Velocity[3], Vn,
@@ -7875,697 +7101,11 @@ void CImpactSolver::GetPower_Properties(CGeometry *geometry, CConfig *config, un
 
 }
 
-void CImpactSolver::SetActDisk_BCThrust(CGeometry *geometry, CSolver **solver_container,
-                                       CConfig *config, unsigned short iMesh, bool Output) {
-  //cout << "CImpactSolver SetActDisk_BCThrust*************************************************************************************" << endl;
-  su2double Massflow = 0.0 , Target_Massflow = 0.0, DragMinusThrust = 0.0 , Target_DragMinusThrust = 0.0, Target_NetThrust = 0.0, BCThrust = 0.0, BCThrust_inc = 0.0;
-  unsigned short iDim, iMarker;
-  unsigned long iVertex, iPoint;
-  su2double  *V_inlet = NULL, Pressure,
-  Density, T0_Ti, ATerm, BTerm, LHS, RHS, RHS_PDelta, RHS_MDelta, F, DF_DLa, CTerm_, DTerm_,
-  ETerm, La, La_old, TotalArea, To_Ti, DeltaT, Po_Pi, DeltaP, Area, Velocity_Normal,
-  SoundSpeed2, Force_Normal,
-  RefDensity, RefArea, RefVel2, Factor, Ref;
-  unsigned short iter;
-  string Marker_Tag;
-  su2double Target_Force, Force, Target_Power, Power, NetThrust, BCThrust_old, Initial_BCThrust;
-  bool ActDisk_Info;
-  su2double MyBCThrust, BCThrust_Init;
-
-  su2double dNetThrust_dBCThrust        = config->GetdNetThrust_dBCThrust();
-  unsigned short Kind_ActDisk           = config->GetKind_ActDisk();
-  bool ratio                            = (config->GetActDisk_Jump() == RATIO);
-  unsigned long Update_BCThrust         = config->GetUpdate_BCThrust();
-  unsigned long Iter_Fixed_NetThrust    = config->GetIter_Fixed_NetThrust();
-  unsigned long ExtIter                 = config->GetExtIter();
-  bool Update_BCThrust_Bool             = false;
-  bool restart                          = (config->GetRestart() || config->GetRestart_Flow());
-  su2double Fan_Poly_Eff                = config->GetFan_Poly_Eff();
-  su2double PolyCoeff                   = 1.0/(1.0-((Gamma-1.0)/Gamma)/Fan_Poly_Eff);
-
-  RefDensity   = Density_Inf;
-  RefArea = config->GetRefArea();
-  RefVel2 = 0.0;  for (iDim = 0; iDim < nDim; iDim++) RefVel2  += Velocity_Inf[iDim]*Velocity_Inf[iDim];
-
-  Factor = (0.5*RefDensity*RefArea*RefVel2);
-  Ref = config->GetDensity_Ref() * config->GetVelocity_Ref() * config->GetVelocity_Ref() * 1.0 * 1.0;
-
-  /*--- Delta P and delta T are inputs ---*/
-
-  if (Kind_ActDisk == VARIABLES_JUMP) {
-    for (iMarker = 0; iMarker < config->GetnMarker_All(); iMarker++) {
-
-      if ((config->GetMarker_All_KindBC(iMarker) == ACTDISK_INLET) ||
-          (config->GetMarker_All_KindBC(iMarker) == ACTDISK_OUTLET)) {
-
-        Marker_Tag = config->GetMarker_All_TagBound(iMarker);
-
-        if (ratio) {
-          if (config->GetMach()  < 0.5) {
-            DeltaP       = config->GetActDisk_PressJump(Marker_Tag, 0);
-            DeltaT       = config->GetActDisk_TempJump(Marker_Tag, 0);
-          }
-          else {
-            DeltaP       = config->GetActDisk_PressJump(Marker_Tag, 1);
-            DeltaT       = config->GetActDisk_TempJump(Marker_Tag, 1);
-          }
-        }
-        else {
-          if (config->GetMach()  < 0.5) {
-            DeltaP       = max(0.0, config->GetActDisk_PressJump(Marker_Tag, 0) / config->GetPressure_Ref());
-            DeltaT       = max(0.0, config->GetActDisk_TempJump(Marker_Tag, 0) / config->GetTemperature_Ref());
-          }
-          else {
-            DeltaP       = max(0.0, config->GetActDisk_PressJump(Marker_Tag, 1) / config->GetPressure_Ref());
-            DeltaT       = max(0.0, config->GetActDisk_TempJump(Marker_Tag, 1) / config->GetTemperature_Ref());
-          }
-        }
-
-        /*--- Set the Delta P, Delta T values at each discrete point (uniform distribution)  ---*/
-
-        for (iVertex = 0; iVertex < geometry->nVertex[iMarker]; iVertex++) {
-          iPoint = geometry->vertex[iMarker][iVertex]->GetNode();
-          SetActDisk_DeltaP(iMarker, iVertex, DeltaP);
-          SetActDisk_DeltaT(iMarker, iVertex, DeltaT);
-        }
-
-      }
-    }
-  }
-
-  /*--- Iteration using BCThrust ---*/
-
-  else {
-
-    if (ExtIter == 0) BCThrust_Counter = 0;
-
-    /*--- Only the fine mesh level should check the convergence criteria ---*/
-
-    if ((iMesh == MESH_0) && Output) {
-
-      /*--- Initialize the update flag to false ---*/
-
-      Update_BCThrust_Bool = false;
-
-      /*--- Reevaluate BCThrust at a fix number of iterations ---*/
-
-      if ((ExtIter % Iter_Fixed_NetThrust == 0) && (ExtIter != 0)) {
-        BCThrust_Counter++;
-        if ((BCThrust_Counter != 0) &&
-            (BCThrust_Counter != 1) &&
-            (BCThrust_Counter != Update_BCThrust) &&
-            (BCThrust_Counter != Update_BCThrust + 2) &&
-            (BCThrust_Counter != Update_BCThrust + 4) ) Update_BCThrust_Bool = true;
-        else Update_BCThrust_Bool = false;
-      }
-
-      /*--- Store the update boolean for use on other mesh levels in the MG ---*/
-
-      config->SetUpdate_BCThrust_Bool(Update_BCThrust_Bool);
-
-    }
-
-    else {
-      Update_BCThrust_Bool = config->GetUpdate_BCThrust_Bool();
-    }
-
-
-    /*--- If it is the first iteration, set the BCThrust to a meaning full target value,
-     * this can be done at an initialization level, for the time being it is OK here ---*/
-
-    if (ExtIter == 0) {
-      for (iMarker = 0; iMarker < config->GetnMarker_All(); iMarker++) {
-        if ((config->GetMarker_All_KindBC(iMarker) == ACTDISK_INLET) ||
-            (config->GetMarker_All_KindBC(iMarker) == ACTDISK_OUTLET)) {
-          Marker_Tag = config->GetMarker_All_TagBound(iMarker);
-
-          if (Kind_ActDisk == NET_THRUST) {
-            if (restart)
-              Initial_BCThrust = config->GetInitial_BCThrust() / Ref;
-            else {
-              if (config->GetMach() < 0.5) Initial_BCThrust = fabs( config->GetActDisk_PressJump(Marker_Tag, 0) / Ref);
-              else Initial_BCThrust = fabs( config->GetActDisk_PressJump(Marker_Tag, 1) / Ref);
-            }
-            config->SetActDisk_BCThrust(Marker_Tag, Initial_BCThrust);
-            config->SetActDisk_BCThrust_Old(Marker_Tag, Initial_BCThrust);
-          }
-
-          if (Kind_ActDisk == BC_THRUST) {
-            if (restart)
-              Initial_BCThrust = config->GetInitial_BCThrust() / Ref;
-            else {
-              if (config->GetMach() < 0.5) Initial_BCThrust = fabs( config->GetActDisk_PressJump(Marker_Tag, 0) / Ref);
-              else Initial_BCThrust = fabs( config->GetActDisk_PressJump(Marker_Tag, 1) / Ref);
-            }
-            config->SetActDisk_BCThrust(Marker_Tag, Initial_BCThrust);
-            config->SetActDisk_BCThrust_Old(Marker_Tag, Initial_BCThrust);
-          }
-
-          if (Kind_ActDisk == POWER) {
-            Initial_BCThrust = config->GetInitial_BCThrust() / Ref;
-            config->SetActDisk_BCThrust(Marker_Tag, Initial_BCThrust);
-            config->SetActDisk_BCThrust_Old(Marker_Tag, Initial_BCThrust);
-          }
-
-          if (Kind_ActDisk == DRAG_MINUS_THRUST) {
-            Initial_BCThrust = config->GetInitial_BCThrust() / Ref;
-            config->SetActDisk_BCThrust(Marker_Tag, Initial_BCThrust);
-            config->SetActDisk_BCThrust_Old(Marker_Tag, Initial_BCThrust);
-          }
-
-          if (Kind_ActDisk == MASSFLOW) {
-            Initial_BCThrust = config->GetInitial_BCThrust() / Ref;
-            config->SetActDisk_BCThrust(Marker_Tag, Initial_BCThrust);
-            config->SetActDisk_BCThrust_Old(Marker_Tag, Initial_BCThrust);
-          }
-
-        }
-      }
-    }
-
-    /*--- Typical iteration to set the value of BC Thrust at each actuator disk ---*/
-
-    if (Update_BCThrust_Bool && Output) {
-
-      for (iMarker = 0; iMarker < config->GetnMarker_All(); iMarker++) {
-
-        if ((config->GetMarker_All_KindBC(iMarker) == ACTDISK_INLET) ||
-            (config->GetMarker_All_KindBC(iMarker) == ACTDISK_OUTLET)) {
-
-          Marker_Tag = config->GetMarker_All_TagBound(iMarker);
-
-          if (Kind_ActDisk == NET_THRUST) {
-
-            if (config->GetMach() < 0.5) Target_NetThrust = fabs( config->GetActDisk_PressJump(Marker_Tag, 0) / Ref);
-            else Target_NetThrust = fabs( config->GetActDisk_PressJump(Marker_Tag, 1) / Ref);
-            NetThrust    = config->GetActDisk_NetThrust(Marker_Tag);
-            BCThrust_old = config->GetActDisk_BCThrust_Old(Marker_Tag);
-            BCThrust_inc = (1.0/dNetThrust_dBCThrust)*(Target_NetThrust - NetThrust);
-
-            if (iMesh == MESH_0) BCThrust = max(0.0,(BCThrust_old + BCThrust_inc));
-            else BCThrust = config->GetActDisk_BCThrust(Marker_Tag);
-
-            if (iMesh == MESH_0) {
-              config->SetActDisk_BCThrust(Marker_Tag, BCThrust);
-              BCThrust_Init = BCThrust*Ref;
-              config->SetInitial_BCThrust(BCThrust_Init);
-            }
-
-          }
-
-          if (Kind_ActDisk == BC_THRUST) {
-
-            if (config->GetMach() < 0.5) Target_Force =  fabs( config->GetActDisk_PressJump(Marker_Tag, 0) / Ref);
-            else Target_Force =  fabs( config->GetActDisk_PressJump(Marker_Tag, 1) / Ref);
-            Force        = -config->GetActDisk_Force(Marker_Tag);
-            BCThrust_old = config->GetActDisk_BCThrust_Old(Marker_Tag);
-            BCThrust_inc = (1.0/dNetThrust_dBCThrust)*(Target_Force - Force);
-
-            if (iMesh == MESH_0) BCThrust = max(0.0,(BCThrust_old + BCThrust_inc));
-            else BCThrust = config->GetActDisk_BCThrust(Marker_Tag);
-
-            if (iMesh == MESH_0) {
-              config->SetActDisk_BCThrust(Marker_Tag, BCThrust);
-              BCThrust_Init = BCThrust*Ref;
-              config->SetInitial_BCThrust(BCThrust_Init);
-            }
-
-          }
-
-          if (Kind_ActDisk == POWER) {
-
-            if (config->GetMach() < 0.5) Target_Power =  fabs( config->GetActDisk_PressJump(Marker_Tag, 0) / (Ref * config->GetVelocity_Ref() /  550.0));
-            else Target_Power =  fabs( config->GetActDisk_PressJump(Marker_Tag, 1) / (Ref * config->GetVelocity_Ref() /  550.0));
-            Power        = config->GetActDisk_Power(Marker_Tag);
-            BCThrust_old = config->GetActDisk_BCThrust_Old(Marker_Tag);
-            BCThrust_inc = (1.0/dNetThrust_dBCThrust)*(Target_Power - Power);
-
-            if (iMesh == MESH_0) BCThrust = max(0.0,(BCThrust_old + BCThrust_inc));
-            else BCThrust = config->GetActDisk_BCThrust(Marker_Tag);
-
-            if (iMesh == MESH_0) {
-              config->SetActDisk_BCThrust(Marker_Tag, BCThrust);
-              BCThrust_Init = BCThrust*Ref;
-              config->SetInitial_BCThrust(BCThrust_Init);
-            }
-
-          }
-
-          if (Kind_ActDisk == DRAG_MINUS_THRUST) {
-
-            if (config->GetMach() < 0.5) Target_DragMinusThrust  =  -fabs(config->GetActDisk_PressJump(Marker_Tag, 0)) * Factor;
-            else Target_DragMinusThrust  =  -fabs(config->GetActDisk_PressJump(Marker_Tag, 1)) * Factor;
-            DragMinusThrust = GetTotal_CD() * Factor;
-            BCThrust_old    = config->GetActDisk_BCThrust_Old(Marker_Tag);
-            BCThrust_inc    = -(1.0/dNetThrust_dBCThrust)*(Target_DragMinusThrust - DragMinusThrust);
-
-            if (iMesh == MESH_0) BCThrust = max(0.0,(BCThrust_old + BCThrust_inc));
-            else BCThrust = config->GetActDisk_BCThrust(Marker_Tag);
-
-            if (iMesh == MESH_0) {
-              config->SetActDisk_BCThrust(Marker_Tag, BCThrust);
-              BCThrust_Init = BCThrust*Ref;
-              config->SetInitial_BCThrust(BCThrust_Init);
-            }
-
-          }
-
-          if (Kind_ActDisk == MASSFLOW) {
-
-            if (config->GetMach() < 0.5) {
-              Target_Massflow  =  fabs(config->GetActDisk_PressJump(Marker_Tag, 0) / (config->GetDensity_Ref() * config->GetVelocity_Ref()));
-              if (config->GetSystemMeasurements() == US) Target_Massflow /= 32.174;
-            }
-            else {
-              Target_Massflow  =  fabs(config->GetActDisk_PressJump(Marker_Tag, 1) / (config->GetDensity_Ref() * config->GetVelocity_Ref()));
-              if (config->GetSystemMeasurements() == US) Target_Massflow /= 32.174;
-            }
-
-            Massflow = config->GetActDisk_MassFlow(Marker_Tag);
-            BCThrust_old    = config->GetActDisk_BCThrust_Old(Marker_Tag);
-            BCThrust_inc    = (1.0/dNetThrust_dBCThrust)*(Target_Massflow - Massflow);
-            if (iMesh == MESH_0) BCThrust = max(0.0,(BCThrust_old + BCThrust_inc));
-            else BCThrust = config->GetActDisk_BCThrust(Marker_Tag);
-            if (iMesh == MESH_0) {
-              config->SetActDisk_BCThrust(Marker_Tag, BCThrust);
-              BCThrust_Init = BCThrust*Ref;
-              config->SetInitial_BCThrust(BCThrust_Init);
-            }
-
-          }
-
-        }
-
-      }
-
-      /*--- After a complete update of BC_Thrust
-       update the value of BC Thrust (old) for future iterations ---*/
-
-      for (iMarker = 0; iMarker < config->GetnMarker_All(); iMarker++) {
-        if ((config->GetMarker_All_KindBC(iMarker) == ACTDISK_INLET) ||
-            (config->GetMarker_All_KindBC(iMarker) == ACTDISK_OUTLET)) {
-          Marker_Tag = config->GetMarker_All_TagBound(iMarker);
-          if ((Kind_ActDisk == NET_THRUST) || (Kind_ActDisk == BC_THRUST) ||
-              (Kind_ActDisk == POWER) || (Kind_ActDisk == DRAG_MINUS_THRUST) ||
-              (Kind_ActDisk == MASSFLOW)) {
-            BCThrust = config->GetActDisk_BCThrust(Marker_Tag);
-            config->SetActDisk_BCThrust_Old(Marker_Tag, BCThrust);
-          }
-        }
-      }
-
-    }
-
-    /*--- Evaluate the pressure jump at each node using the total thrust ---*/
-
-    if ((Update_BCThrust_Bool && Output) || (ExtIter == 0)) {
-
-      for (iMarker = 0; iMarker < config->GetnMarker_All(); iMarker++) {
-
-        if ((config->GetMarker_All_KindBC(iMarker) == ACTDISK_INLET) ||
-            (config->GetMarker_All_KindBC(iMarker) == ACTDISK_OUTLET)) {
-
-          Marker_Tag = config->GetMarker_All_TagBound(iMarker);
-          RefDensity  = Density_Inf;
-          RefArea = config->GetRefArea();
-          RefVel2 = 0.0; for (iDim = 0; iDim < nDim; iDim++) RefVel2  += Velocity_Inf[iDim]*Velocity_Inf[iDim];
-
-          Factor = (0.5*RefDensity*RefArea*RefVel2);
-          Ref = config->GetDensity_Ref() * config->GetVelocity_Ref() * config->GetVelocity_Ref() * 1.0 * 1.0;
-          BCThrust = config->GetActDisk_BCThrust(Marker_Tag);
-
-          for (iVertex = 0; iVertex < geometry->nVertex[iMarker]; iVertex++) {
-
-            iPoint = geometry->vertex[iMarker][iVertex]->GetNode();
-
-            if (geometry->node[iPoint]->GetDomain()) {
-
-              geometry->vertex[iMarker][iVertex]->GetNormal(Vector);
-
-              if (config->GetMarker_All_KindBC(iMarker) == ACTDISK_INLET) {
-                for (iDim = 0; iDim < nDim; iDim++) { Vector[iDim] = -Vector[iDim]; }
-              }
-
-              Area = 0.0;
-              for (iDim = 0; iDim < nDim; iDim++) { Area += Vector[iDim]*Vector[iDim]; }
-              Area = sqrt (Area);
-
-              /*--- Use the inlet state to compute the Pressure and Temperature jumps ---*/
-
-              if (config->GetMarker_All_KindBC(iMarker) == ACTDISK_INLET)
-                V_inlet = node[iPoint]->GetPrimitive();
-              if (config->GetMarker_All_KindBC(iMarker) == ACTDISK_OUTLET)
-                V_inlet = GetDonorPrimVar(iMarker, iVertex);
-
-              Density       = V_inlet[nDim+2];
-              Pressure      = V_inlet[nDim+1];
-              SoundSpeed2   = Pressure*Gamma/Density;
-              TotalArea     = config->GetActDisk_Area(Marker_Tag);
-              Force_Normal  = Area*(BCThrust/TotalArea);
-
-
-              Velocity_Normal = 0.0;
-              for (iDim = 0; iDim < nDim; iDim++) {
-                Velocity_Normal += V_inlet[iDim+1]*Vector[iDim]/Area;
-              }
-
-
-              if (Velocity_Normal > EPS) {
-
-                /*--- Ratio of the total temperature to the temperature at the inflow ---*/
-
-                T0_Ti = 1.0 + ((Gamma-1.0)/SoundSpeed2)*(0.5*Velocity_Normal*Velocity_Normal + Force_Normal/(Density*Area));
-
-
-                ATerm = 2.0*T0_Ti/(Gamma+1.0);
-                BTerm = 0.5*(Gamma+1.0)/(Gamma-1.0);
-                LHS = fabs(Velocity_Normal)/(sqrt(SoundSpeed2)*pow(ATerm,BTerm));
-
-                CTerm_ = (PolyCoeff-1.0)/(PolyCoeff+1.0);
-                DTerm_ = 1.0/(PolyCoeff-1.0);
-
-                La = EPS; La_old = EPS;
-
-                for (iter = 0; iter < 100; iter++) {
-
-                  ETerm = ((1.0-CTerm_*La*La)/(1.0-CTerm_+EPS));
-
-                  RHS = La*pow(ETerm, DTerm_);
-
-                  ETerm = ((1.0-CTerm_*(La+1E-6)*(La+1E-6))/(1.0-CTerm_+EPS));
-                  RHS_PDelta = (La+1E-6)*pow(ETerm, DTerm_);
-
-                  ETerm = ((1.0-CTerm_*(La-1E-6)*(La-1E-6))/(1.0-CTerm_+EPS));
-                  RHS_MDelta = (La-1E-6)*pow(ETerm, DTerm_);
-
-                  /*--- Objective function and finitte differences derivative ---*/
-
-                  F = RHS - LHS;
-                  DF_DLa = (RHS_PDelta - RHS_MDelta)/2E-6;
-
-                  /*--- Newton's step ---*/
-
-                  La_old = La;
-                  La = La_old - 0.75*(F/DF_DLa);
-
-                  if (fabs(F) < 1E-10) break;
-
-                }
-
-                if (iter == 99) cout << "The laval number evaluation is not converging." << endl;
-
-                /*--- Laval is bounded ---*/
-
-                La = min(La, sqrt(6.0));  La = max(La, 0.0);
-
-                To_Ti = max(1.0, T0_Ti*(1.0-CTerm_*La*La));
-                SetActDisk_DeltaT(iMarker, iVertex, To_Ti);
-
-                Po_Pi = max(1.0, pow(To_Ti, PolyCoeff*DTerm_));
-                SetActDisk_DeltaP(iMarker, iVertex, Po_Pi);
-
-              }
-              else {
-                SetActDisk_DeltaT(iMarker, iVertex, 1.0);
-                SetActDisk_DeltaP(iMarker, iVertex, 1.0);
-              }
-
-            }
-
-          }
-        }
-
-      }
-    }
-  }
-
-  /*--- Broadcast some information to the master node ---*/
-
-  ActDisk_Info = false;
-  for (iMarker = 0; iMarker < config->GetnMarker_All(); iMarker++) {
-    if ((config->GetMarker_All_KindBC(iMarker) == ACTDISK_INLET) ||
-        (config->GetMarker_All_KindBC(iMarker) == ACTDISK_OUTLET)) {
-      ActDisk_Info = true;
-    }
-  }
-  if (!ActDisk_Info) config->SetInitial_BCThrust(0.0);
-
-  MyBCThrust = config->GetInitial_BCThrust();
-#ifdef HAVE_MPI
-  SU2_MPI::Allreduce(&MyBCThrust, &BCThrust, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
-#else
-  BCThrust = MyBCThrust;
-#endif
-  config->SetInitial_BCThrust(BCThrust);
-
-}
-
-void CImpactSolver::SetFarfield_AoA(CGeometry *geometry, CSolver **solver_container,
-                                   CConfig *config, unsigned short iMesh, bool Output) {
-  //cout << "CImpactSolver SetFarfield_AoA*************************************************************************************" << endl;
-  su2double Target_CL = 0.0, AoA = 0.0, Vel_Infty[3], AoA_inc = 0.0, Vel_Infty_Mag, Old_AoA,
-  dCL_dAlpha_, dCD_dCL_, dCMx_dCL_, dCMy_dCL_, dCMz_dCL_;
-  unsigned long Wrt_Con_Freq;
-  unsigned short iDim;
-
-  unsigned long Iter_Fixed_CL = config->GetIter_Fixed_CL();
-  unsigned long Update_Alpha = config->GetUpdate_Alpha();
-
-  unsigned long ExtIter       = config->GetExtIter();
-  bool write_heads = ((ExtIter % Iter_Fixed_CL == 0) && (ExtIter != 0));
-  su2double Beta                 = config->GetAoS()*PI_NUMBER/180.0;
-  su2double dCL_dAlpha           = config->GetdCL_dAlpha()*180.0/PI_NUMBER;
-  bool Update_AoA             = false;
-
-  if (ExtIter == 0) AoA_Counter = 0;
-
-  /*--- Only the fine mesh level should check the convergence criteria ---*/
-
-  if ((iMesh == MESH_0) && Output) {
-
-    /*--- Initialize the update flag to false ---*/
-
-    Update_AoA = false;
-
-    /*--- Reevaluate Angle of Attack at a fixed number of iterations ---*/
-
-    if ((ExtIter % Iter_Fixed_CL == 0) && (ExtIter != 0)) {
-      AoA_Counter++;
-      if ((AoA_Counter <= Update_Alpha)) Update_AoA = true;
-      else Update_AoA = false;
-    }
-
-    /*--- Store the update boolean for use on other mesh levels in the MG ---*/
-
-    config->SetUpdate_AoA(Update_AoA);
-
-  }
-
-  else {
-    Update_AoA = config->GetUpdate_AoA();
-  }
-
-  if (Update_AoA && Output) {
-
-    /*--- Retrieve the specified target CL value. ---*/
-
-    Target_CL = config->GetTarget_CL();
-
-    /*--- Retrieve the old AoA (radians) ---*/
-
-    AoA_old = config->GetAoA()*PI_NUMBER/180.0;
-
-    /*--- Estimate the increment in AoA based on dCL_dAlpha (radians) ---*/
-
-    AoA_inc = (1.0/dCL_dAlpha)*(Target_CL - Total_CL);
-
-    /*--- Compute a new value for AoA on the fine mesh only (radians)---*/
-
-    if (iMesh == MESH_0) AoA = AoA_old + AoA_inc;
-    else { AoA = config->GetAoA()*PI_NUMBER/180.0; }
-
-    /*--- Only the fine mesh stores the updated values for AoA in config ---*/
-
-    if (iMesh == MESH_0) {
-      config->SetAoA(AoA*180.0/PI_NUMBER);
-    }
-
-    /*--- Update the freestream velocity vector at the farfield ---*/
-
-    for (iDim = 0; iDim < nDim; iDim++)
-      Vel_Infty[iDim] = GetVelocity_Inf(iDim);
-
-    /*--- Compute the magnitude of the free stream velocity ---*/
-
-    Vel_Infty_Mag = 0;
-    for (iDim = 0; iDim < nDim; iDim++)
-      Vel_Infty_Mag += Vel_Infty[iDim]*Vel_Infty[iDim];
-    Vel_Infty_Mag = sqrt(Vel_Infty_Mag);
-
-    /*--- Compute the new freestream velocity with the updated AoA ---*/
-
-    if (nDim == 2) {
-      Vel_Infty[0] = cos(AoA)*Vel_Infty_Mag;
-      Vel_Infty[1] = sin(AoA)*Vel_Infty_Mag;
-    }
-    if (nDim == 3) {
-      Vel_Infty[0] = cos(AoA)*cos(Beta)*Vel_Infty_Mag;
-      Vel_Infty[1] = sin(Beta)*Vel_Infty_Mag;
-      Vel_Infty[2] = sin(AoA)*cos(Beta)*Vel_Infty_Mag;
-    }
-
-    /*--- Store the new freestream velocity vector for the next iteration ---*/
-
-    for (iDim = 0; iDim < nDim; iDim++) {
-      Velocity_Inf[iDim] = Vel_Infty[iDim];
-    }
-
-    /*--- Only the fine mesh stores the updated values for velocity in config ---*/
-
-    if (iMesh == MESH_0) {
-      for (iDim = 0; iDim < nDim; iDim++)
-        config->SetVelocity_FreeStreamND(Vel_Infty[iDim], iDim);
-    }
-
-    /*--- Output some information to the console with the headers ---*/
-
-    if ((rank == MASTER_NODE) && (iMesh == MESH_0) && write_heads && !config->GetDiscrete_Adjoint()) {
-      Old_AoA = config->GetAoA() - AoA_inc*(180.0/PI_NUMBER);
-
-      cout.precision(7);
-      cout.setf(ios::fixed, ios::floatfield);
-      cout << endl << "----------------------------- Fixed CL Mode -----------------------------" << endl;
-      cout << "CL: " << Total_CL;
-      cout << " (target: " << config->GetTarget_CL() <<")." << endl;
-      cout.precision(4);
-      cout << "Previous AoA: " << Old_AoA << " deg";
-      cout << ", new AoA: " << config->GetAoA() << " deg." << endl;
-      cout << "-------------------------------------------------------------------------" << endl << endl;
-    }
-
-  }
-
-	unsigned long Iter_dCL_dAlpha = config->GetIter_dCL_dAlpha();
-
-  if ((config->GetnExtIter()-Iter_dCL_dAlpha == ExtIter) && Output) {
-
-    AoA_old = config->GetAoA();
-
-    if (config->GetnExtIter()-Iter_dCL_dAlpha == ExtIter) {
-      Wrt_Con_Freq = SU2_TYPE::Int(su2double(config->GetIter_dCL_dAlpha())/10.0);
-      config->SetWrt_Con_Freq(Wrt_Con_Freq);
-      Total_CD_Prev = Total_CD;
-      Total_CL_Prev = Total_CL;
-      Total_CMx_Prev = Total_CMx;
-      Total_CMy_Prev = Total_CMy;
-      Total_CMz_Prev = Total_CMz;
-      AoA_inc = 0.001;
-      AoA_FD_Change = true;
-    }
-
-    if ((rank == MASTER_NODE) && (iMesh == MESH_0) && !config->GetDiscrete_Adjoint()) {
-
-    	if (config->GetnExtIter()-Iter_dCL_dAlpha == ExtIter) {
-       cout << endl << "----------------------------- Fixed CL Mode -----------------------------" << endl;
-       cout << " Change AoA by +0.001 deg to evaluate gradient." << endl;
-       cout << "-------------------------------------------------------------------------" << endl << endl;
-    	}
-
-    }
-
-    /*--- Compute a new value for AoA on the fine mesh only (radians)---*/
-
-    if (iMesh == MESH_0) AoA = AoA_old + AoA_inc;
-    else { AoA = config->GetAoA(); }
-
-    /*--- Only the fine mesh stores the updated values for AoA in config ---*/
-
-    if (iMesh == MESH_0) { config->SetAoA(AoA); }
-
-    /*--- Update the freestream velocity vector at the farfield ---*/
-
-    for (iDim = 0; iDim < nDim; iDim++)
-      Vel_Infty[iDim] = GetVelocity_Inf(iDim);
-
-    /*--- Compute the magnitude of the free stream velocity ---*/
-
-    Vel_Infty_Mag = 0.0;
-    for (iDim = 0; iDim < nDim; iDim++)
-      Vel_Infty_Mag += Vel_Infty[iDim]*Vel_Infty[iDim];
-    Vel_Infty_Mag = sqrt(Vel_Infty_Mag);
-
-    /*--- Compute the new freestream velocity with the updated AoA ---*/
-
-    if (nDim == 2) {
-      Vel_Infty[0] = cos(AoA*PI_NUMBER/180.0)*Vel_Infty_Mag;
-      Vel_Infty[1] = sin(AoA*PI_NUMBER/180.0)*Vel_Infty_Mag;
-    }
-    if (nDim == 3) {
-      Vel_Infty[0] = cos(AoA*PI_NUMBER/180.0)*cos(Beta)*Vel_Infty_Mag;
-      Vel_Infty[1] = sin(Beta)*Vel_Infty_Mag;
-      Vel_Infty[2] = sin(AoA*PI_NUMBER/180.0)*cos(Beta)*Vel_Infty_Mag;
-    }
-
-    /*--- Store the new freestream velocity vector for the next iteration ---*/
-
-    for (iDim = 0; iDim < nDim; iDim++) {
-      Velocity_Inf[iDim] = Vel_Infty[iDim];
-    }
-
-    /*--- Only the fine mesh stores the updated values for velocity in config ---*/
-
-    if (iMesh == MESH_0) {
-      for (iDim = 0; iDim < nDim; iDim++)
-        config->SetVelocity_FreeStreamND(Vel_Infty[iDim], iDim);
-    }
-
-  }
-
-  if (AoA_FD_Change && (config->GetnExtIter()-1 == ExtIter) && Output && (iMesh == MESH_0) && !config->GetDiscrete_Adjoint()) {
-
-    /*--- Update angle of attack ---*/
-
-    AoA_old = config->GetAoA();
-    AoA = AoA_old - 0.001;
-    config->SetAoA(AoA);
-
-    /*--- Use finite differences to compute  ---*/
-
-  		dCL_dAlpha_ = (Total_CL-Total_CL_Prev)/0.001;
-  		dCD_dCL_    = (Total_CD-Total_CD_Prev)/(Total_CL-Total_CL_Prev);
-  		dCMx_dCL_   = (Total_CMx-Total_CMx_Prev)/(Total_CL-Total_CL_Prev);
-  		dCMy_dCL_   = (Total_CMy-Total_CMy_Prev)/(Total_CL-Total_CL_Prev);
-  		dCMz_dCL_   = (Total_CMz-Total_CMz_Prev)/(Total_CL-Total_CL_Prev);
-
-  		/*--- Set the value of the  dOF/dCL in the config file ---*/
-
-  		config->SetdCD_dCL(dCD_dCL_);
-  		config->SetdCMx_dCL(dCMx_dCL_);
-  		config->SetdCMy_dCL(dCMy_dCL_);
-  		config->SetdCMz_dCL(dCMz_dCL_);
-
-  		config->SetdCL_dAlpha(dCL_dAlpha_);
-
-    if (rank == MASTER_NODE) {
-      cout << endl << "----------------------------- Fixed CL Mode -----------------------------" << endl;
-      cout << "Approx. Delta CL / Delta AoA: " << dCL_dAlpha_ << " (1/deg)." << endl;
-      cout << "Approx. Delta CD / Delta CL: " << dCD_dCL_ << ". " << endl;
-      if (nDim == 3 ) {
-        cout << "Approx. Delta CMx / Delta CL: " << dCMx_dCL_ << ". " << endl;
-        cout << "Approx. Delta CMy / Delta CL: " << dCMy_dCL_ << ". " << endl;
-      }
-      cout << "Approx. Delta CMz / Delta CL: " << dCMz_dCL_ << ". " << endl;
-      cout << "-------------------------------------------------------------------------" << endl << endl;
-    }
-
-  }
-
-}
 
 void CImpactSolver::SetInletAtVertex(su2double *val_inlet,
                                     unsigned short iMarker,
                                     unsigned long iVertex) {
-  //cout << "CImpactSolver SetInletAtVertex*************************************************************************************" << endl;
+  cout << "CImpactSolver SetInletAtVertex*************************************************************************************" << endl;
   /*--- Alias positions within inlet file for readability ---*/
 
   unsigned short T_position       = nDim;
@@ -8614,7 +7154,7 @@ su2double CImpactSolver::GetInletAtVertex(su2double *val_inlet,
                                          unsigned short val_kind_marker,
                                          CGeometry *geometry,
                                          CConfig *config) {
-  //cout << "CImpactSolver GetInletAtVertex*************************************************************************************" << endl;
+  cout << "CImpactSolver GetInletAtVertex*************************************************************************************" << endl;
   /*--- Local variables ---*/
 
   unsigned short iMarker, iDim;
@@ -8673,7 +7213,7 @@ su2double CImpactSolver::GetInletAtVertex(su2double *val_inlet,
 }
 
 void CImpactSolver::SetUniformInlet(CConfig* config, unsigned short iMarker) {
-  //cout << "CImpactSolver SetUniformInlet*************************************************************************************" << endl;
+  cout << "CImpactSolver SetUniformInlet*************************************************************************************" << endl;
   if (config->GetMarker_All_KindBC(iMarker) == INLET_FLOW) {
 
     string Marker_Tag   = config->GetMarker_All_TagBound(iMarker);
@@ -8704,7 +7244,7 @@ void CImpactSolver::SetUniformInlet(CConfig* config, unsigned short iMarker) {
 }
 
 void CImpactSolver::UpdateCustomBoundaryConditions(CGeometry **geometry_container, CConfig *config){
-  //cout << "CImpactSolver UpdateCustomBoundaryConditions*************************************************************************************" << endl;
+  cout << "CImpactSolver UpdateCustomBoundaryConditions*************************************************************************************" << endl;
   unsigned short nMGlevel, iMarker;
 
   // TODO: Update the fluid boundary conditions for MG
@@ -8723,7 +7263,7 @@ void CImpactSolver::UpdateCustomBoundaryConditions(CGeometry **geometry_containe
 
 void CImpactSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container,
                                  CNumerics *numerics, CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Euler_Wall*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Euler_Wall*************************************************************************************" << endl;
   unsigned short iDim, iVar, jVar, kVar, jDim;
   unsigned long iPoint, iVertex;
   su2double *Normal = NULL, *GridVel = NULL, Area, UnitNormal[3], *NormalArea,
@@ -8902,7 +7442,7 @@ void CImpactSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_containe
 
 void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics,
                                 CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Far_Field*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Far_Field*************************************************************************************" << endl;
   unsigned short iDim;
   unsigned long iVertex, iPoint, Point_Normal;
 
@@ -9126,7 +7666,7 @@ void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container
 
 void CImpactSolver::BC_Riemann(CGeometry *geometry, CSolver **solver_container,
                               CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Riemann*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Riemann*************************************************************************************" << endl;
   unsigned short iDim, iVar, jVar, kVar;
   unsigned long iVertex, iPoint, Point_Normal;
   su2double P_Total, T_Total, P_static, T_static, Rho_static, *Mach, *Flow_Dir, Area, UnitNormal[3];
@@ -9561,7 +8101,7 @@ void CImpactSolver::BC_Riemann(CGeometry *geometry, CSolver **solver_container,
 
 void CImpactSolver::BC_TurboRiemann(CGeometry *geometry, CSolver **solver_container,
     CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_TurboRiemann*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_TurboRiemann*************************************************************************************" << endl;
   unsigned short iDim, iVar, jVar, kVar, iSpan;
   unsigned long iPoint, Point_Normal, oldVertex;
   long iVertex;
@@ -9998,7 +8538,7 @@ void CImpactSolver::BC_TurboRiemann(CGeometry *geometry, CSolver **solver_contai
 }
 
 void CImpactSolver::PreprocessBC_Giles(CGeometry *geometry, CConfig *config, CNumerics *conv_numerics, unsigned short marker_flag) {
-  //cout << "CImpactSolver PreprocessBC_Giles*************************************************************************************" << endl;
+  cout << "CImpactSolver PreprocessBC_Giles*************************************************************************************" << endl;
   /* Implementation of Fuorier Transformations for non-regfelcting BC will come soon */
   su2double cj_inf,cj_out1, cj_out2, Density_i, Pressure_i, *turboNormal, *turboVelocity, *Velocity_i, AverageSoundSpeed;
   su2double *deltaprim, *cj, TwoPiThetaFreq_Pitch, pitch, theta, deltaTheta;
@@ -10155,7 +8695,7 @@ void CImpactSolver::PreprocessBC_Giles(CGeometry *geometry, CConfig *config, CNu
 
 void CImpactSolver::BC_Giles(CGeometry *geometry, CSolver **solver_container,
     CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Giles*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Giles*************************************************************************************" << endl;
   unsigned short iDim, iVar, jVar, iSpan;
   unsigned long  iPoint, Point_Normal, oldVertex, k, kend, kend_max;
   long iVertex;
@@ -10838,7 +9378,7 @@ void CImpactSolver::BC_Giles(CGeometry *geometry, CSolver **solver_container,
 
 void CImpactSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container,
                             CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Inlet*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Inlet*************************************************************************************" << endl;
   unsigned short iDim;
   unsigned long iVertex, iPoint;
   su2double P_Total, T_Total, Velocity[3], Velocity2, H_Total, Temperature, Riemann,
@@ -11101,7 +9641,7 @@ void CImpactSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container,
 
 void CImpactSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
                              CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Outlet*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Outlet*************************************************************************************" << endl;
   unsigned short iVar, iDim;
   unsigned long iVertex, iPoint;
   su2double Pressure, P_Exit, Velocity[3],
@@ -11244,7 +9784,7 @@ void CImpactSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
 
 void CImpactSolver::BC_Sym_Plane(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                                 CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Sym_Plane*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Sym_Plane*************************************************************************************" << endl;
   /*--- Call the Euler residual ---*/
 
   BC_Euler_Wall(geometry, solver_container, conv_numerics, config, val_marker);
@@ -11253,7 +9793,7 @@ void CImpactSolver::BC_Sym_Plane(CGeometry *geometry, CSolver **solver_container
 
 void CImpactSolver::BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                                          CConfig *config) {
-  //cout << "CImpactSolver BC_Fluid_Interface*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Fluid_Interface*************************************************************************************" << endl;
   unsigned long iVertex, jVertex, iPoint, Point_Normal = 0;
   unsigned short iDim, iVar, iMarker, nDonorVertex;
 
@@ -11359,7 +9899,7 @@ void CImpactSolver::BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_con
 
 void CImpactSolver::BC_Interface_Boundary(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                          CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Interface_Boundary*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_Interface_Boundary*************************************************************************************" << endl;
   unsigned long iVertex, iPoint, GlobalIndex_iPoint, GlobalIndex_jPoint;
   unsigned short iDim, iVar;
 
@@ -11420,7 +9960,7 @@ void CImpactSolver::BC_Interface_Boundary(CGeometry *geometry, CSolver **solver_
 
 void CImpactSolver::BC_NearField_Boundary(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                          CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_NearField_Boundary*************************************************************************************" << endl;
+  cout << "CImpactSolver BC_NearField_Boundary*************************************************************************************" << endl;
   unsigned long iVertex, iPoint, GlobalIndex_iPoint, GlobalIndex_jPoint;
   unsigned short iDim, iVar;
 
@@ -11482,13 +10022,13 @@ void CImpactSolver::BC_NearField_Boundary(CGeometry *geometry, CSolver **solver_
 
 
 void CImpactSolver::BC_Dirichlet(CGeometry *geometry, CSolver **solver_container,
-                                CConfig *config, unsigned short val_marker) {}//cout << "CImpactSolver BC_Dirichlet*************************************************************************************" << endl; }
+                                CConfig *config, unsigned short val_marker) {cout << "CImpactSolver BC_Dirichlet*************************************************************************************" << endl; }
 
-void CImpactSolver::BC_Custom(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, unsigned short val_marker) {}//cout << "CImpactSolver BC_Custom*************************************************************************************" << endl; }
+void CImpactSolver::BC_Custom(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, unsigned short val_marker) {cout << "CImpactSolver BC_Custom*************************************************************************************" << endl; }
 
 void CImpactSolver::SetResidual_DualTime(CGeometry *geometry, CSolver **solver_container, CConfig *config,
                                         unsigned short iRKStep, unsigned short iMesh, unsigned short RunTime_EqSystem) {
-  //cout << "CImpactSolver SetResidual_DualTime*************************************************************************************" << endl;
+  cout << "CImpactSolver SetResidual_DualTime*************************************************************************************" << endl;
   /*--- Local variables ---*/
 
   unsigned short iVar, jVar, iMarker, iDim;
@@ -11685,7 +10225,7 @@ void CImpactSolver::SetResidual_DualTime(CGeometry *geometry, CSolver **solver_c
 
 void CImpactSolver::SetFlow_Displacement(CGeometry **flow_geometry, CVolumetricMovement *flow_grid_movement,
                                         CConfig *flow_config, CConfig *fea_config, CGeometry **fea_geometry, CSolver ***fea_solution) {
-    //cout << "CImpactSolver SetFlow_Displacement*************************************************************************************" << endl;
+    cout << "CImpactSolver SetFlow_Displacement*************************************************************************************" << endl;
     unsigned short iDim;
     unsigned long iVertex;
     su2double *Coord, VarCoord[3] = {0,0,0};
@@ -12050,7 +10590,7 @@ void CImpactSolver::SetFlow_Displacement(CGeometry **flow_geometry, CVolumetricM
 
 void CImpactSolver::SetFlow_Displacement_Int(CGeometry **flow_geometry, CVolumetricMovement *flow_grid_movement,
                                         CConfig *flow_config, CConfig *fea_config, CGeometry **fea_geometry, CSolver ***fea_solution) {
-    //cout << "CImpactSolver SetFlow_Displacement_Int*************************************************************************************" << endl;
+    cout << "CImpactSolver SetFlow_Displacement_Int*************************************************************************************" << endl;
     unsigned short iMarker, iDim, iDonor, nDonor;
     unsigned long iVertex;
     su2double VarCoord[3];
@@ -12092,7 +10632,7 @@ void CImpactSolver::SetFlow_Displacement_Int(CGeometry **flow_geometry, CVolumet
 }
 
 void CImpactSolver::ComputeResidual_BGS(CGeometry *geometry, CConfig *config){
-  //cout << "CImpactSolver ComputeResidual_BGS*************************************************************************************" << endl;
+  cout << "CImpactSolver ComputeResidual_BGS*************************************************************************************" << endl;
   unsigned short iVar;
   unsigned long iPoint;
   su2double residual;
@@ -12119,7 +10659,7 @@ void CImpactSolver::ComputeResidual_BGS(CGeometry *geometry, CConfig *config){
 
 
 void CImpactSolver::UpdateSolution_BGS(CGeometry *geometry, CConfig *config){
-  //cout << "CImpactSolver UpdateSolution_BGS*************************************************************************************" << endl;
+  cout << "CImpactSolver UpdateSolution_BGS*************************************************************************************" << endl;
   unsigned long iPoint;
 
   /*--- To nPoint: The solution must be communicated beforehand ---*/
@@ -12132,7 +10672,7 @@ void CImpactSolver::UpdateSolution_BGS(CGeometry *geometry, CConfig *config){
 }
 
 void CImpactSolver::LoadRestart(CGeometry **geometry, CSolver ***solver, CConfig *config, int val_iter, bool val_update_geo) {
-  //cout << "CImpactSolver LoadRestart*************************************************************************************" << endl;
+  cout << "CImpactSolver LoadRestart*************************************************************************************" << endl;
   /*--- Restart the solution from file information ---*/
   unsigned short iDim, iVar, iMesh, iMeshFine;
   unsigned long iPoint, index, iChildren, Point_Fine;
@@ -12367,7 +10907,7 @@ void CImpactSolver::LoadRestart(CGeometry **geometry, CSolver ***solver, CConfig
 
 
 void CImpactSolver::SetFreeStream_Solution(CConfig *config) {
-  //cout << "CImpactSolver SetFreeStream_Solution*************************************************************************************" << endl;
+  cout << "CImpactSolver SetFreeStream_Solution*************************************************************************************" << endl;
   /*--- not used now ---*/
   unsigned long iPoint;
   unsigned short iDim;
@@ -12384,7 +10924,7 @@ void CImpactSolver::SetFreeStream_Solution(CConfig *config) {
 
 
 void CImpactSolver::PreprocessAverage(CSolver **solver, CGeometry *geometry, CConfig *config, unsigned short marker_flag) {
-  //cout << "CImpactSolver PreprocessAverage*************************************************************************************" << endl;
+  cout << "CImpactSolver PreprocessAverage*************************************************************************************" << endl;
   unsigned long iVertex, iPoint;
   unsigned short iDim, iMarker, iMarkerTP, iSpan;
   su2double Pressure = 0.0, Density = 0.0, *Velocity = NULL, *TurboVelocity,
@@ -12557,7 +11097,7 @@ void CImpactSolver::PreprocessAverage(CSolver **solver, CGeometry *geometry, CCo
 
 
 void CImpactSolver::TurboAverageProcess(CSolver **solver, CGeometry *geometry, CConfig *config, unsigned short marker_flag) {
-  //cout << "CImpactSolver TurboAverageProcess*************************************************************************************" << endl;
+  cout << "CImpactSolver TurboAverageProcess*************************************************************************************" << endl;
   unsigned long iVertex, iPoint, nVert;
   unsigned short iDim, iVar, iMarker, iMarkerTP, iSpan, jSpan;
   unsigned short average_process = config->GetKind_AverageProcess();
@@ -13187,7 +11727,7 @@ void CImpactSolver::TurboAverageProcess(CSolver **solver, CGeometry *geometry, C
 void CImpactSolver::MixedOut_Average (CConfig *config, su2double val_init_pressure, su2double *val_Averaged_Flux, su2double *val_normal,
     su2double& pressure_mix, su2double& density_mix) {
 
-  //cout << "CImpactSolver MixedOut_Average*************************************************************************************" << endl;
+  cout << "CImpactSolver MixedOut_Average*************************************************************************************" << endl;
   su2double dx, f, df, resdl = 1.0E+05;
   unsigned short iter = 0, iDim;
   su2double relax_factor = config->GetMixedout_Coeff(0);
@@ -13241,7 +11781,7 @@ void CImpactSolver::MixedOut_Average (CConfig *config, su2double val_init_pressu
 }
 
 void CImpactSolver::GatherInOutAverageValues(CConfig *config, CGeometry *geometry){
-  //cout << "CImpactSolver GatherInOutAverageValues*************************************************************************************" << endl;
+  cout << "CImpactSolver GatherInOutAverageValues*************************************************************************************" << endl;
   unsigned short iMarker, iMarkerTP;
   unsigned short iSpan;
   int markerTP;
