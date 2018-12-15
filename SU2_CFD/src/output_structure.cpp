@@ -12623,18 +12623,25 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
 
     /*--- Add Pressure, Temperature, Cp, Mach. ---*/
 
-    nVar_Par += 1;
-    Variable_Names.push_back("Pressure");
+    if (Kind_Solver == IMPACT) {
+      nVar_Par += 1;
+      Variable_Names.push_back("Temperature");
+    }
+    else {
+      nVar_Par += 1;
+      Variable_Names.push_back("Pressure");
 
-    nVar_Par += 2;
-    Variable_Names.push_back("Temperature");
-    Variable_Names.push_back("Mach");
+      nVar_Par += 2;
+      Variable_Names.push_back("Temperature");
+      Variable_Names.push_back("Mach");
 
-    nVar_Par += 1;
-    if (config->GetOutput_FileFormat() == PARAVIEW){
-      Variable_Names.push_back("Pressure_Coefficient");
-    } else {
+      nVar_Par += 1;
+      if (config->GetOutput_FileFormat() == PARAVIEW){
+        Variable_Names.push_back("Pressure_Coefficient");
+      }
+      else {
       Variable_Names.push_back("C<sub>p</sub>");
+      }
     }
 
     /*--- Add Laminar Viscosity, Skin Friction, Heat Flux, & yPlus to the restart file ---*/
@@ -12880,10 +12887,15 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
 
         /*--- Load data for the pressure, temperature, Cp, and Mach variables. ---*/
 
-        Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetPressure(); iVar++;
-        Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetTemperature(); iVar++;
-        Local_Data[jPoint][iVar] = sqrt(solver[FLOW_SOL]->node[iPoint]->GetVelocity2())/solver[FLOW_SOL]->node[iPoint]->GetSoundSpeed(); iVar++;
-        Local_Data[jPoint][iVar] = (solver[FLOW_SOL]->node[iPoint]->GetPressure() - RefPressure)*factor*RefArea; iVar++;
+        if (Kind_Solver == IMPACT) {
+          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetTemperature(); iVar++;
+        }
+        else {
+          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetPressure(); iVar++;
+          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetTemperature(); iVar++;
+          Local_Data[jPoint][iVar] = sqrt(solver[FLOW_SOL]->node[iPoint]->GetVelocity2())/solver[FLOW_SOL]->node[iPoint]->GetSoundSpeed(); iVar++;
+          Local_Data[jPoint][iVar] = (solver[FLOW_SOL]->node[iPoint]->GetPressure() - RefPressure)*factor*RefArea; iVar++;
+        }
 
         if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
 
