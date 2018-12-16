@@ -43,15 +43,11 @@
 
 CSourceDropletDrag::CSourceDropletDrag(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) {
 
-    /*--- Store the pointer to the constant body force vector. ---*/
-
-    Body_Force_Vector = new su2double[nDim];
-    for (unsigned short iDim = 0; iDim < nDim; iDim++)
-        Body_Force_Vector[iDim] = config->GetBody_Force_Vector()[iDim];
-
     su2double Droplet_LWC = config->GetDroplet_LWC();
     su2double Rho_Water = config->GetRho_Water();
     su2double Droplet_Diameter= config->GetDroplet_Diameter();
+    su2double Mach = config->GetMach();
+
 }
 
 CSourceDropletDrag::~CSourceDropletDrag(void) {
@@ -63,27 +59,69 @@ CSourceDropletDrag::~CSourceDropletDrag(void) {
 void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *config) {
 
     unsigned short iDim;
-    su2double Droplet_LWC = config->GetDroplet_LWC();
-    su2double Rho_Water = config->GetRho_Water();
-    su2double Droplet_Diameter= config->GetDroplet_Diameter();
-    su2double Vel_air,Rho_Air,Visc_Air,T_Air;
+    su2double Vel_air,Rho_Air,Visc_Air,T_Air,u_infty,nu_water,droplet_reynolds;
+
+    nu_water = 1.007e-06 //Viscosité de l'eau à 20°, on peut peut être la récupérer quelque part en fonction de mu et rho?
+    u_infty = Mach*343 //u_infty = Mach*v_son, est-ce une bonne façon de faire?
 
     /*--- Get the air variable ---*/
     Rho_Air = Vair_i[0];
     T_Air = Vair_i[nDim+1];
     Visc_Air = Vair_i[nDim+2];
-    
+
+    /*--- Compute droplet_reynolds ---*/
+    //droplet_reynolds = u_infty*|u_air - u _droplet|*Droplet_Diameter/nu_water
+
+    droplet_reynolds = 0;
+
+    for (iDim = 0; iDim < nDim; iDim++){
+      Vel_air = Vair_i[iDim+1];
+      droplet_reynolds += pow((Vel_air - U_i[idim+1]),2);
+    }
+
+    droplet_reynolds = sqrt(droplet_reynolds);
+    droplet_reynolds *= u_infty*Droplet_Diameter/nu_water;
+
     /*--- Zero the continuity contribution ---*/
 
     val_residual[0] = 0.0;
 
     /*--- Momentum contribution ---*/
 
+    if (droplet_reynolds < 1000)
+    {
+      for (iDim = 0; iDim < nDim; iDim++) {
+          Vel_air = Vair_i[iDim+1];
+          val_residual[iDim+1] = (1+ 0.015*pow(droplet_reynolds,0.687))*18*nu_water/pow(Droplet_Diameter,2);
+      }
+    }
+
+    else
+    {
+      for (iDim = 0; iDim < nDim; iDim++) {
+
+          //initialize val_residual at |u_air - u_droplet|
+          val_residual[iDim+1] = 0;
+
+          for (jDim = 0; jDim < nDim; jDim++) {
+            Vel_air = Vair_i[jDim+1];
+            val_residual[iDim+1] += pow((Vel_air - U_i[jdim+1]),2);
+          }
+
+          val_residual[iDim+1] = sqrt(val_residual[iDim+1]);
+
+          //val_residual = 3*u_infty*|u_air - u_droplet|*nu_water/(10*Droplet_Diameter*nu_air)
+          val_residual[iDim+1] *= 3*u_infty*nu_water/(10*Droplet_Diameter*Visc_Air); //Est-ce la bonne viscosité?
+      }
+    }
+
     for (iDim = 0; iDim < nDim; iDim++) {
-        Vel_air = Vair_i[iDim+1];
-        val_residual[iDim+1] = -Volume * U_i[0] * Body_Force_Vector[iDim] / Droplet_LWC;
-        val_residual[iDim+1] = 0.0;
-    } 
+      Vel_air = Vair_i[iDim+1];
+      val_residual[iDim+1] *= U_i[0]*(Vel_air - U_i[iDim+1]);
+    }
+
+    val_residual[nDim] -= (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
+
     /*--- Energy contribution ---*/
 
     val_residual[nDim+1] = 0.0;
@@ -134,7 +172,7 @@ void CCentLax_Impact::ComputeResidual(su2double *val_residual, su2double **val_J
   Enthalpy_i = V_i[nDim+3];                       Enthalpy_j = V_j[nDim+3];
   SoundSpeed_i = V_i[nDim+4];                     SoundSpeed_j = V_j[nDim+4];
   Energy_i = Enthalpy_i - Pressure_i/Density_i;   Energy_j = Enthalpy_j - Pressure_j/Density_j;
-  
+
 
   sq_vel_i = 0.0; sq_vel_j = 0.0;
   for (iDim = 0; iDim < nDim; iDim++) {
