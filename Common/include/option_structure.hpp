@@ -971,7 +971,7 @@ enum BC_TYPE {
   DAMPER_BOUNDARY = 41,    /*!< \brief Damper. */
   CHT_WALL_INTERFACE = 50, /*!< \brief Domain interface definition. */
   SEND_RECEIVE = 99,		/*!< \brief Boundary send-receive definition. */
-  IMPACT_WALL = 17,		/*!< \brief Boundary Euler wall definition. */
+  IMPACT_WALL = 17,		/*!< \brief Boundary Impact wall definition. */
 };
 
 

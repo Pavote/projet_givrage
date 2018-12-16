@@ -768,6 +768,9 @@ map<string, string> CDriver::GetAllBoundaryMarkersType(){
       case EULER_WALL:
         Marker_Type = "EULER_WALL";
         break;
+      case IMPACT_WALL:
+          Marker_Type = "IMPACT_WALL";
+          break;
       case FAR_FIELD:
         Marker_Type = "FARFIELD";
         break;

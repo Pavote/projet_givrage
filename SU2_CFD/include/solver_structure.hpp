@@ -766,6 +766,17 @@ public:
                              unsigned short val_marker);
 
   /*!
+  * \brief A virtual member.
+  * \param[in] geometry - Geometrical definition of the problem.
+  * \param[in] solver_container - Container vector with all the solutions.
+  * \param[in] numerics - Description of the numerical method.
+  * \param[in] config - Definition of the particular problem.
+  * \param[in] val_marker - Surface marker where the boundary condition is applied.
+  */
+  virtual void BC_Impact_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
+                             unsigned short val_marker);
+
+  /*!
    * \brief A virtual member.
    * \param[in] geometry - Geometrical definition of the problem.
    * \param[in] solver_container - Container vector with all the solutions.
@@ -6986,8 +6997,8 @@ protected:
   su2double *Secondary,    /*!< \brief Auxiliary nPrimVar vector. */
   *Secondary_i,        /*!< \brief Auxiliary nPrimVar vector for storing the primitive at point i. */
   *Secondary_j;        /*!< \brief Auxiliary nPrimVar vector for storing the primitive at point j. */
-  
-  /*--- FM su2double *Solution_Air;  ---*/ /*!< \brief Air solution for droplet model calculation. */   
+
+  /*--- FM su2double *Solution_Air;  ---*/ /*!< \brief Air solution for droplet model calculation. */
 
   su2double Cauchy_Value,  /*!< \brief Summed value of the convergence indicator. */
   Cauchy_Func;      /*!< \brief Current value of the convergence indicator at one iteration. */
@@ -7090,8 +7101,8 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void Set_MPI_Solution_Old(CGeometry *geometry, CConfig *config);
-  
-  
+
+
   /*!
    * \brief Impose the send-receive boundary condition.
    * \param[in] geometry - Geometrical definition of the problem.
@@ -7402,6 +7413,19 @@ public:
                      unsigned short val_marker);
 
   /*!
+   * \author: B.Constant, M.Fleurotte, A.Motte, I.Moufid
+   *
+   * \brief Impose via the residual the Euler wall boundary condition.
+   * \param[in] geometry - Geometrical definition of the problem.
+   * \param[in] solver_container - Container vector with all the solutions.
+   * \param[in] numerics - Description of the numerical method.
+   * \param[in] config - Definition of the particular problem.
+   * \param[in] val_marker - Surface marker where the boundary condition is applied.
+   */
+  void BC_Impact_Wall(CGeometry *geometry, CSolver **solver_container,
+                      CNumerics *numerics, CConfig *config, unsigned short val_marker);
+
+  /*!
    * \brief Impose the far-field boundary condition using characteristics.
    * \param[in] geometry - Geometrical definition of the problem.
    * \param[in] solver_container - Container vector with all the solutions.
@@ -7551,7 +7575,7 @@ public:
   void BC_Outlet(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                  CConfig *config, unsigned short val_marker);
 
-  
+
   /*!
    * \brief Set the new solution variables to the current solution value for classical RK.
    * \param[in] geometry - Geometrical definition of the problem.
@@ -11546,6 +11570,7 @@ public:
    */
   void BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
                      unsigned short val_marker);
+
   /*!
    * \brief Impose via the residual the Euler wall boundary condition.
    * \param[in] geometry - Geometrical definition of the problem.

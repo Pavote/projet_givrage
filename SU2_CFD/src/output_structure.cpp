@@ -5066,17 +5066,17 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
         break;
 
       case IMPACT:
-        
+
          /*--- Flow solution coefficients ---*/
 
         Total_CL             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CL();
         Total_CD             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CD();
-        
+
         /*--- Flow Residuals ---*/
 
         for (iVar = 0; iVar < nVar_Flow; iVar++)
           residual_flow[iVar] = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetRes_RMS(iVar);
-        
+
         break;
 
       case WAVE_EQUATION:
@@ -5493,7 +5493,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
           if (!fem) {
             if (!Unsteady && (config[val_iZone]->GetUnsteady_Simulation() != TIME_STEPPING)) {
               switch (config[val_iZone]->GetKind_Solver()) {
-              case EULER : case NAVIER_STOKES: case RANS: 
+              case EULER : case NAVIER_STOKES: case RANS:
               case ADJ_EULER : case ADJ_NAVIER_STOKES: case ADJ_RANS:
 
                 cout << endl << "---------------------- Local Time Stepping Summary ----------------------" << endl;
@@ -5560,7 +5560,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
                 break;
 
               case IMPACT:
-              
+
                  cout << endl << "---------------------- Local Time Stepping Summary ----------------------" << endl;
 
                 for (unsigned short iMesh = FinestMesh; iMesh <= config[val_iZone]->GetnMGLevels(); iMesh++)
@@ -5572,9 +5572,9 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
                     cout << "CFL in zone 2: " << config[1]->GetCFL(MESH_0) << endl;
 
                 cout << "-------------------------------------------------------------------------" << endl;
-                
+
                 break;
-                 
+
 
               case DISC_ADJ_EULER: case DISC_ADJ_NAVIER_STOKES: case DISC_ADJ_RANS:
                 cout << endl;
@@ -5610,7 +5610,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
           }
 
           switch (config[val_iZone]->GetKind_Solver()) {
-          case EULER :                  case NAVIER_STOKES:                 
+          case EULER :                  case NAVIER_STOKES:
 
             /*--- Visualize the maximum residual ---*/
             iPointMaxResid = solver_container[val_iZone][FinestMesh][FLOW_SOL]->GetPoint_Max(0);
@@ -5676,7 +5676,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
             cout << endl;
 
             break;
-            
+
           case IMPACT:
           /*--- Visualize the maximum residual ---*/
             iPointMaxResid = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetPoint_Max(0);
@@ -5705,13 +5705,13 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
               cout << "There are " << config[val_iZone]->GetNonphysical_Reconstr() << " non-physical states in the upwind reconstruction." << endl;
 
             cout << "-------------------------------------------------------------------------" << endl;
-            
+
             if (!Unsteady) cout << endl << " Iter" << "    Time(s)";
             else cout << endl << " IntIter" << " ExtIter";
-            
+
             cout << "     Res[Rho]" << "     Res[RhoE]" << "      CL(Total)" << "      CD(Total)";
-            
-            
+
+
             break;
 
           case RANS :
@@ -9156,6 +9156,7 @@ void COutput::SetCp_InverseDesign(CSolver *solver_container, CGeometry *geometry
     Boundary   = config->GetMarker_All_KindBC(iMarker);
 
     if ((Boundary == EULER_WALL             ) ||
+        (Boundary == IMPACT_WALL            ) ||
         (Boundary == HEAT_FLUX              ) ||
         (Boundary == ISOTHERMAL             ) ||
         (Boundary == NEARFIELD_BOUNDARY)) {
@@ -9244,6 +9245,7 @@ void COutput::SetCp_InverseDesign(CSolver *solver_container, CGeometry *geometry
     Boundary   = config->GetMarker_All_KindBC(iMarker);
 
     if ((Boundary == EULER_WALL             ) ||
+        (Boundary == IMPACT_WALL            ) ||
         (Boundary == HEAT_FLUX              ) ||
         (Boundary == ISOTHERMAL             ) ||
         (Boundary == NEARFIELD_BOUNDARY)) {
@@ -9308,6 +9310,7 @@ void COutput::SetHeatFlux_InverseDesign(CSolver *solver_container, CGeometry *ge
     Boundary   = config->GetMarker_All_KindBC(iMarker);
 
     if ((Boundary == EULER_WALL             ) ||
+        (Boundary == IMPACT_WALL            ) ||
         (Boundary == HEAT_FLUX              ) ||
         (Boundary == ISOTHERMAL             ) ||
         (Boundary == NEARFIELD_BOUNDARY)) {
@@ -9394,6 +9397,7 @@ void COutput::SetHeatFlux_InverseDesign(CSolver *solver_container, CGeometry *ge
     Boundary   = config->GetMarker_All_KindBC(iMarker);
 
     if ((Boundary == EULER_WALL             ) ||
+        (Boundary == IMPACT_WALL            ) ||
         (Boundary == HEAT_FLUX              ) ||
         (Boundary == ISOTHERMAL             ) ||
         (Boundary == NEARFIELD_BOUNDARY)) {
@@ -11518,8 +11522,9 @@ void COutput::SetSensitivity_Files(CGeometry **geometry, CConfig **config, unsig
 
     for (iMarker = 0; iMarker < nMarker; iMarker++) {
 
-      if((config[iZone]->GetMarker_All_KindBC(iMarker) == HEAT_FLUX ) ||
-         (config[iZone]->GetMarker_All_KindBC(iMarker) == EULER_WALL ) ||
+      if((config[iZone]->GetMarker_All_KindBC(iMarker) == HEAT_FLUX )   ||
+         (config[iZone]->GetMarker_All_KindBC(iMarker) == IMPACT_WALL ) ||
+         (config[iZone]->GetMarker_All_KindBC(iMarker) == EULER_WALL )  ||
          (config[iZone]->GetMarker_All_KindBC(iMarker) == ISOTHERMAL )) {
 
         nVertex = geometry[iZone]->GetnVertex(iMarker);
