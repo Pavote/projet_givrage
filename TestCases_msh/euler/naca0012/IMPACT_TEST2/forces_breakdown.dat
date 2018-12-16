@@ -99,10 +99,10 @@ Total CFy:      0.000000 | Pressure (    0%):    0.000000 | Friction (    0%):  
 
 Surface name: airfoil
 
-Total CL    (    0%):    0.000000 | Pressure (    0%):    0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):    0.000000
-Total CD    (    0%):    0.000000 | Pressure (    0%):    0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):    0.000000
-Total CL/CD (    0%):    0.000000 | Pressure (    0%):    0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):    0.000000
-Total CMz   (    0%):    0.000000 | Pressure (    0%):    0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):    0.000000
-Total CFx   (    0%):    0.000000 | Pressure (    0%):    0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):    0.000000
-Total CFy   (    0%):    0.000000 | Pressure (    0%):    0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):    0.000000
+Total CL    (    0%):   -0.000000 | Pressure (    0%):   -0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):   -0.000000
+Total CD    (    0%):   -0.000000 | Pressure (    0%):   -0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):   -0.000000
+Total CL/CD (    0%):   -0.000000 | Pressure (    0%):   -0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):   -0.000000
+Total CMz   (    0%):   -0.000000 | Pressure (    0%):   -0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):   -0.000000
+Total CFx   (    0%):   -0.000000 | Pressure (    0%):   -0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):   -0.000000
+Total CFy   (    0%):   -0.000000 | Pressure (    0%):   -0.000000 | Friction (    0%):    0.000000 | Momentum (    0%):   -0.000000
 

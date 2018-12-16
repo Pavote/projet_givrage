@@ -12508,7 +12508,8 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
    in this zone for output. ---*/
 
   switch (config->GetKind_Solver()) {
-    case EULER : case NAVIER_STOKES: case IMPACT : FirstIndex = FLOW_SOL; SecondIndex = NONE; break;
+    case EULER : case NAVIER_STOKES: FirstIndex = FLOW_SOL; SecondIndex = NONE; break;
+    case IMPACT : FirstIndex = IMPACT_SOL; SecondIndex = NONE; break;
     case RANS : FirstIndex = FLOW_SOL; SecondIndex = TURB_SOL; break;
     default: SecondIndex = NONE; break;
   }
@@ -12549,6 +12550,16 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
   Variable_Names.push_back("Y-Momentum");
   if (geometry->GetnDim() == 3) Variable_Names.push_back("Z-Momentum");
   Variable_Names.push_back("Energy");
+
+  if (Kind_Solver == IMPACT) {
+    nVar_Par += 2;
+    Variable_Names.push_back("X-u_d");
+    Variable_Names.push_back("Y-u_d");
+    if (geometry->GetnDim() == 3) {
+      ++nVar_Par;
+      Variable_Names.push_back("Z-u_d"); 
+    }
+  }
 
   if (SecondIndex != NONE) {
     if (config->GetKind_Turb_Model() == SST) {
@@ -12820,9 +12831,19 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
 
       /*--- Load the conservative variable states for the mean flow variables. ---*/
 
-      for (jVar = 0; jVar < nVar_First; jVar++) {
-        Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar);
+      if (Kind_Solver == IMPACT) {
+        Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(0)*config->GetDroplet_LWC();
         iVar++;
+        for (jVar = 1; jVar < nVar_First; jVar++) {
+          Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar);
+          iVar++;
+        }
+      }
+      else {
+        for (jVar = 0; jVar < nVar_First; jVar++) {
+          Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar);
+          iVar++;
+        }
       }
 
       /*--- If this is RANS, i.e., the second solver container is not empty,
@@ -12881,6 +12902,15 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
           Local_Data[jPoint][iVar] = Grid_Vel[1]; iVar++;
           if (geometry->GetnDim() == 3) {
             Local_Data[jPoint][iVar] = Grid_Vel[2];
+            iVar++;
+          }
+        }
+
+        /*--- Load the droplet velocities for impact ---*/
+
+        if (Kind_Solver == IMPACT) {
+          for (jVar = 1; jVar < nVar_First-1; jVar++) {
+            Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar)/solver[FirstIndex]->node[iPoint]->GetSolution(0);
             iVar++;
           }
         }
