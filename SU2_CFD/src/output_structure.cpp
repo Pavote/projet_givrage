@@ -12549,7 +12549,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
   Variable_Names.push_back("X-Momentum");
   Variable_Names.push_back("Y-Momentum");
   if (geometry->GetnDim() == 3) Variable_Names.push_back("Z-Momentum");
-  Variable_Names.push_back("Energy");
+  Variable_Names.push_back("Energy-Momentum");
 
   if (Kind_Solver == IMPACT) {
     nVar_Par += 2;
@@ -12557,8 +12557,10 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
     Variable_Names.push_back("Y-u_d");
     if (geometry->GetnDim() == 3) {
       ++nVar_Par;
-      Variable_Names.push_back("Z-u_d"); 
+      Variable_Names.push_back("Z-u_d");
     }
+    ++nVar_Par;
+    Variable_Names.push_back("E");
   }
 
   if (SecondIndex != NONE) {
@@ -12906,10 +12908,10 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
           }
         }
 
-        /*--- Load the droplet velocities for impact ---*/
+        /*--- Load the droplet velocities and the energy for impact ---*/
 
         if (Kind_Solver == IMPACT) {
-          for (jVar = 1; jVar < nVar_First-1; jVar++) {
+          for (jVar = 1; jVar < nVar_First; jVar++) {
             Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar)/solver[FirstIndex]->node[iPoint]->GetSolution(0);
             iVar++;
           }
