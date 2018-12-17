@@ -12553,14 +12553,14 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
 
   if (Kind_Solver == IMPACT) {
     nVar_Par += 2;
-    Variable_Names.push_back("X-u_d");
-    Variable_Names.push_back("Y-u_d");
+    Variable_Names.push_back("X-u_droplet");
+    Variable_Names.push_back("Y-u_droplet");
     if (geometry->GetnDim() == 3) {
       ++nVar_Par;
-      Variable_Names.push_back("Z-u_d");
+      Variable_Names.push_back("Z-u_droplet");
     }
     ++nVar_Par;
-    Variable_Names.push_back("E");
+    Variable_Names.push_back("Energy");
   }
 
   if (SecondIndex != NONE) {
@@ -12654,6 +12654,19 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
       }
       else {
       Variable_Names.push_back("C<sub>p</sub>");
+      }
+    }
+
+    /*--- Add Air solution information for impact ---*/
+
+    if (Kind_Solver == IMPACT) {
+      nVar_Par += 3;
+      Variable_Names.push_back("Density_air");
+      Variable_Names.push_back("X-u_air");
+      Variable_Names.push_back("Y-u_air");
+      if (geometry->GetnDim() == 3) {
+        ++nVar_Par;
+        Variable_Names.push_back("Z-u_air");
       }
     }
 
@@ -12920,7 +12933,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
         /*--- Load data for the pressure, temperature, Cp, and Mach variables. ---*/
 
         if (Kind_Solver == IMPACT) {
-          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetTemperature(); iVar++;
+          Local_Data[jPoint][iVar] = solver[IMPACT_SOL]->node[iPoint]->GetTemperature(); iVar++;
         }
         else {
           Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetPressure(); iVar++;
@@ -12946,6 +12959,19 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
           Local_Data[jPoint][iVar] = Aux_Heat[iPoint]; iVar++;
           Local_Data[jPoint][iVar] = Aux_yPlus[iPoint]; iVar++;
 
+        }
+
+        /*--- Load the air information for impact ---*/
+
+        if (Kind_Solver == IMPACT) {
+          for (jVar = 0; jVar < 3; jVar++) {
+            Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetSolution(jVar);
+            iVar++;
+            if (geometry->GetnDim() == 3) {
+              Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetSolution(3);
+              iVar++;
+            }
+          }
         }
 
         /*--- Load data for the Eddy viscosity for RANS. ---*/
