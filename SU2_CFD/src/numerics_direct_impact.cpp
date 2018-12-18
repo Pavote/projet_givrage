@@ -96,20 +96,18 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
     else
     {
         coeff = 0;
-        for (jDim = 0; jDim < nDim; jDim++) {
-          Vel_air = Vair_i[jDim+1];
-          coeff += pow((Vel_air - U_i[jdim+1]),2);
+        for (iDim = 0; iDim < nDim; iDim++) {
+          coeff += pow((Vair_i[iDim+1] - U_i[idim+1]),2);
         }
 
-        coeff = sqrt(val_residual[iDim+1]);
+        coeff = sqrt(coeff);
 
-        //val_residual = 3*u_infty*|u_air - u_droplet|*nu_water/(10*Droplet_Diameter*nu_air)
+        //coeff = 3*u_infty*|u_air - u_droplet|*nu_water/(10*Droplet_Diameter*nu_air)
         coeff *= 3*u_infty*nu_water/(10*Droplet_Diameter*Visc_Air); //Est-ce la bonne viscosité?
     }
 
     for (iDim = 0; iDim < nDim; iDim++) {
-      Vel_air = Vair_i[iDim+1];
-      val_residual[iDim+1] = coeff*U_i[0]*(Vel_air - U_i[iDim+1]);
+      val_residual[iDim+1] = coeff*U_i[0]*(Vair_i[iDim+1] - U_i[iDim+1]);
     }
 
     val_residual[nDim] -= (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
