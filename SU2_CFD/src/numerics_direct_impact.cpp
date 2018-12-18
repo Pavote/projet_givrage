@@ -59,7 +59,7 @@ CSourceDropletDrag::~CSourceDropletDrag(void) {
 void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *config) {
 
     unsigned short iDim;
-    su2double Vel_air,Rho_Air,Visc_Air,T_Air,u_infty,nu_water,droplet_reynolds;
+    su2double Vel_air,Rho_Air,Visc_Air,T_Air,u_infty,nu_water,droplet_reynolds,coeff;
 
     nu_water = 1.007e-06 //Viscosité de l'eau à 20°, on peut peut être la récupérer quelque part en fonction de mu et rho?
     u_infty = Mach*343 //u_infty = Mach*v_son, est-ce une bonne façon de faire?
@@ -90,34 +90,26 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
 
     if (droplet_reynolds < 1000)
     {
-      for (iDim = 0; iDim < nDim; iDim++) {
-          Vel_air = Vair_i[iDim+1];
-          val_residual[iDim+1] = (1+ 0.015*pow(droplet_reynolds,0.687))*18*nu_water/pow(Droplet_Diameter,2);
-      }
+        coeff = (1+ 0.015*pow(droplet_reynolds,0.687))*18*nu_water/pow(Droplet_Diameter,2);
     }
 
     else
     {
-      for (iDim = 0; iDim < nDim; iDim++) {
+        coeff = 0;
+        for (jDim = 0; jDim < nDim; jDim++) {
+          Vel_air = Vair_i[jDim+1];
+          coeff += pow((Vel_air - U_i[jdim+1]),2);
+        }
 
-          //initialize val_residual at |u_air - u_droplet|
-          val_residual[iDim+1] = 0;
+        coeff = sqrt(val_residual[iDim+1]);
 
-          for (jDim = 0; jDim < nDim; jDim++) {
-            Vel_air = Vair_i[jDim+1];
-            val_residual[iDim+1] += pow((Vel_air - U_i[jdim+1]),2);
-          }
-
-          val_residual[iDim+1] = sqrt(val_residual[iDim+1]);
-
-          //val_residual = 3*u_infty*|u_air - u_droplet|*nu_water/(10*Droplet_Diameter*nu_air)
-          val_residual[iDim+1] *= 3*u_infty*nu_water/(10*Droplet_Diameter*Visc_Air); //Est-ce la bonne viscosité?
-      }
+        //val_residual = 3*u_infty*|u_air - u_droplet|*nu_water/(10*Droplet_Diameter*nu_air)
+        coeff *= 3*u_infty*nu_water/(10*Droplet_Diameter*Visc_Air); //Est-ce la bonne viscosité?
     }
 
     for (iDim = 0; iDim < nDim; iDim++) {
       Vel_air = Vair_i[iDim+1];
-      val_residual[iDim+1] *= U_i[0]*(Vel_air - U_i[iDim+1]);
+      val_residual[iDim+1] = coeff*U_i[0]*(Vel_air - U_i[iDim+1]);
     }
 
     val_residual[nDim] -= (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
@@ -126,7 +118,29 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
 
     val_residual[nDim+1] = 0.0;
     for (iDim = 0; iDim < nDim; iDim++)
-        val_residual[nDim+1] += -Volume * U_i[iDim+1] * Body_Force_Vector[iDim] / Droplet_LWC;
+        val_residual[nDim+1] += 0;
+
+
+      /*--- Calculate the source term Jacobian ---*/
+
+      if (implicit) {
+        for (iVar = 0; iVar < nVar; iVar++)
+          for (jVar = 0; jVar < nVar; jVar++)
+            val_Jacobian_i[iVar][jVar] = 0.0;
+        if (nDim == 2) {
+          val_Jacobian_i[1][1] = -coeff;
+          val_Jacobian_i[2][2] = -coeff;
+          val_Jacobian_i[1][0] = coeff*Vair_i[1];
+          val_Jacobian_i[2][0] = coeff*Vair_i[2] - (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
+        } else {
+          val_Jacobian_i[1][1] = -coeff;
+          val_Jacobian_i[2][2] = -coeff;
+          val_Jacobian_i[3][3] = -coeff;
+          val_Jacobian_i[1][0] = coeff*Vair_i[1];
+          val_Jacobian_i[2][0] = coeff*Vair_i[2];
+          val_Jacobian_i[3][0] = coeff*Vair_i[3] - (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
+        }
+      }
 
 }
 
