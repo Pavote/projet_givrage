@@ -59,7 +59,7 @@ CSourceDropletDrag::~CSourceDropletDrag(void) {
 void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *config) {
 
     unsigned short iDim;
-    su2double Vel_air,Rho_Air,Visc_Air,T_Air,u_infty,nu_water,droplet_reynolds,coeff;
+    su2double Rho_Air,Visc_Air,T_Air,u_infty,nu_water,droplet_reynolds,coeff;
 
     nu_water = 1.007e-06 //Viscosité de l'eau à 20°, on peut peut être la récupérer quelque part en fonction de mu et rho?
     u_infty = Mach*343 //u_infty = Mach*v_son, est-ce une bonne façon de faire?
@@ -75,8 +75,7 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
     droplet_reynolds = 0;
 
     for (iDim = 0; iDim < nDim; iDim++){
-      Vel_air = Vair_i[iDim+1];
-      droplet_reynolds += pow((Vel_air - U_i[idim+1]),2);
+      droplet_reynolds += pow((Vair_i[iDim+1] - U_i[idim+1]),2);
     }
 
     droplet_reynolds = sqrt(droplet_reynolds);
@@ -115,31 +114,27 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
     /*--- Energy contribution ---*/
 
     val_residual[nDim+1] = 0.0;
-    for (iDim = 0; iDim < nDim; iDim++)
-        val_residual[nDim+1] += 0;
 
+    /*--- Calculate the source term Jacobian ---*/
 
-      /*--- Calculate the source term Jacobian ---*/
-
-      if (implicit) {
-        for (iVar = 0; iVar < nVar; iVar++)
-          for (jVar = 0; jVar < nVar; jVar++)
-            val_Jacobian_i[iVar][jVar] = 0.0;
-        if (nDim == 2) {
-          val_Jacobian_i[1][1] = -coeff;
-          val_Jacobian_i[2][2] = -coeff;
-          val_Jacobian_i[1][0] = coeff*Vair_i[1];
-          val_Jacobian_i[2][0] = coeff*Vair_i[2] - (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
-        } else {
-          val_Jacobian_i[1][1] = -coeff;
-          val_Jacobian_i[2][2] = -coeff;
-          val_Jacobian_i[3][3] = -coeff;
-          val_Jacobian_i[1][0] = coeff*Vair_i[1];
-          val_Jacobian_i[2][0] = coeff*Vair_i[2];
-          val_Jacobian_i[3][0] = coeff*Vair_i[3] - (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
-        }
+    if (implicit) {
+      for (iVar = 0; iVar < nVar; iVar++)
+        for (jVar = 0; jVar < nVar; jVar++)
+          val_Jacobian_i[iVar][jVar] = 0.0;
+      if (nDim == 2) {
+        val_Jacobian_i[1][1] = -coeff;
+        val_Jacobian_i[2][2] = -coeff;
+        val_Jacobian_i[1][0] = coeff*Vair_i[1];
+        val_Jacobian_i[2][0] = coeff*Vair_i[2] - (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
+      } else {
+        val_Jacobian_i[1][1] = -coeff;
+        val_Jacobian_i[2][2] = -coeff;
+        val_Jacobian_i[3][3] = -coeff;
+        val_Jacobian_i[1][0] = coeff*Vair_i[1];
+        val_Jacobian_i[2][0] = coeff*Vair_i[2];
+        val_Jacobian_i[3][0] = coeff*Vair_i[3] - (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
       }
-
+    }
 }
 
 CCentLax_Impact::CCentLax_Impact(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) {
