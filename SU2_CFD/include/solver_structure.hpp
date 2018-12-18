@@ -7430,25 +7430,6 @@ public:
 
 
   /*!
-   * \brief Impose the interface boundary condition using the residual.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   */
-  void BC_Interface_Boundary(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
-                             CConfig *config, unsigned short val_marker);
-
-  /*!
-   * \brief Impose the near-field boundary condition using the residual.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   */
-  void BC_NearField_Boundary(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
-                             CConfig *config, unsigned short val_marker);
-
-  /*!
    * \brief Impose the dirichlet boundary condition using the residual.
    * \param[in] geometry - Geometrical definition of the problem.
    * \param[in] solver_container - Container vector with all the solutions.
@@ -7457,56 +7438,6 @@ public:
    */
   void BC_Dirichlet(CGeometry *geometry, CSolver **solver_container, CConfig *config,
                     unsigned short val_marker);
-
-  /*!
-   * \author: G.Gori, S.Vitale, M.Pini, A.Guardone, P.Colonna
-   *
-   * \brief Impose the boundary condition using characteristic recostruction.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] conv_numerics - Description of the numerical method.
-   * \param[in] visc_numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] val_marker - Surface marker where the boundary condition is applied.
-   */
-  void BC_Riemann(CGeometry *geometry, CSolver **solver_container,
-                  CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker);
-
-
-  /*!
-   * \brief Impose the boundary condition using characteristic recostruction.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] conv_numerics - Description of the numerical method.
-   * \param[in] visc_numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] val_marker - Surface marker where the boundary condition is applied.
-   */
-  void BC_TurboRiemann(CGeometry *geometry, CSolver **solver_container,
-      CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker);
-
-  /*!
-   * \brief It computes Fourier transformation for the needed quantities along the pitch for each span in turbomachinery analysis.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] marker_flag - Surface marker flag where the function is applied.
-   */
-  void PreprocessBC_Giles(CGeometry *geometry, CConfig *config, CNumerics *conv_numerics,  unsigned short marker_flag);
-
-  /*!
-   * \author: G.Gori, S.Vitale, M.Pini, A.Guardone, P.Colonna
-   *
-   * \brief Impose the boundary condition using characteristic recostruction.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] conv_numerics - Description of the numerical method.
-   * \param[in] visc_numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] val_marker - Surface marker where the boundary condition is applied.
-   */
-  void BC_Giles(CGeometry *geometry, CSolver **solver_container,
-                        CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker);
 
 
   /*!
@@ -7571,13 +7502,6 @@ public:
    */
   void ClassicalRK4_Iteration(CGeometry *geometry, CSolver **solver_container, CConfig *config,
                               unsigned short iRKStep);
-
-  /*!
-   * \brief Compute the Fan face Mach number.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solution - Container vector with all the solutions.
-   */
-  void GetPower_Properties(CGeometry *geometry, CConfig *config, unsigned short iMesh, bool Output);
 
   /*!
    * \brief Update the solution using the explicit Euler scheme.
@@ -8759,14 +8683,6 @@ public:
   void SetFreeStream_Solution(CConfig *config);
 
   /*!
-   * \brief Initilize turbo containers.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] config - Definition of the particular problem.
-   */
-  void InitTurboContainers(CGeometry *geometry, CConfig *config);
-
-
-  /*!
    * \brief It computes average quantities along the span for turbomachinery analysis.
    * \param[in] geometry - Geometrical definition of the problem.
    * \param[in] solver_container - Container vector with all the solutions.
@@ -8774,32 +8690,6 @@ public:
    * \param[in] marker_flag - Surface marker flag where the function is applied.
    */
   void PreprocessAverage(CSolver **solver, CGeometry *geometry, CConfig *config, unsigned short marker_flag);
-
-  /*!
-   * \brief It computes average quantities along the span for turbomachinery analysis.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] marker_flag - Surface marker flag where the function is applied.
-   */
-  void TurboAverageProcess(CSolver **solver, CGeometry *geometry, CConfig *config, unsigned short marker_flag);
-
-  /*!
-   * \brief it performs a mixed out average of the nodes of a boundary.
-   * \param[in] val_init_pressure -  initial pressure value
-   * \param[in] val_Averaged_Flux - flux averaged values.
-   * \param[in] val_normal - normal vector.
-   * \param[in] pressure_mix - value of the mixed-out avaraged pressure.
-   * \param[in] density_miz - value of the mixed-out avaraged density.
-   */
-  void MixedOut_Average (CConfig *config, su2double val_init_pressure, su2double *val_Averaged_Flux, su2double *val_normal, su2double& pressure_mix, su2double& density_mix);
-
-  /*!
-   * \brief It gathers into the master node average quantities at inflow and outflow needed for turbomachinery analysis.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] geometry - Geometrical definition of the problem.
-   */
-  void GatherInOutAverageValues(CConfig *config, CGeometry *geometry);
 
   /*!
    * \brief it take a velocity in the cartesian reference of framework and transform into the turbomachinery frame of reference.
