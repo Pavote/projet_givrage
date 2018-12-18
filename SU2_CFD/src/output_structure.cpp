@@ -5709,7 +5709,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
             if (!Unsteady) cout << endl << " Iter" << "    Time(s)";
             else cout << endl << " IntIter" << " ExtIter";
 
-            cout << "     Res[Alpha]" << "     Res[AlphaE]" << "      CL(Total)" << "      CD(Total)";
+            cout << "     Res[Alpha]" << "     Res[AlphaE]";
 
             cout << endl;
 
@@ -5977,7 +5977,53 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
       }
 
       switch (config[val_iZone]->GetKind_Solver()) {
-        case EULER : case NAVIER_STOKES: case IMPACT:
+        case IMPACT :
+
+          /*--- Write history file ---*/
+
+          if ((!DualTime_Iteration) && (output_files)) {
+            if (!turbo) {
+              ConvHist_file[0] << begin << direct_coeff;
+              if (thermal) ConvHist_file[0] << heat_coeff;
+              if (equiv_area) ConvHist_file[0] << equivalent_area_coeff;
+              if (engine || actuator_disk) ConvHist_file[0] << engine_coeff;
+              if (inv_design) {
+                ConvHist_file[0] << Cp_inverse_design;
+                if (thermal) ConvHist_file[0] << Heat_inverse_design;
+              }
+              if (rotating_frame && !turbo) ConvHist_file[0] << rotating_frame_coeff;
+              ConvHist_file[0] << flow_resid;
+              if (weakly_coupled_heat) ConvHist_file[0] << heat_resid;
+            }
+            else {
+              ConvHist_file[0] << begin << turbo_coeff << flow_resid;
+            }
+
+            if (aeroelastic) ConvHist_file[0] << aeroelastic_coeff;
+            if (output_per_surface) ConvHist_file[0] << monitoring_coeff;
+            if (output_surface) ConvHist_file[0] << surface_outputs;
+            if (direct_diff != NO_DERIVATIVE) ConvHist_file[0] << d_direct_coeff;
+            if (output_comboObj) ConvHist_file[0] << combo_obj;
+            ConvHist_file[0] << end;
+            ConvHist_file[0].flush();
+          }
+
+          /*--- Write screen output ---*/
+          if (val_iZone == 0 || fluid_structure){
+            if(DualTime_Iteration || !Unsteady) {
+              cout.precision(6);
+              cout.setf(ios::fixed, ios::floatfield);
+              cout.width(13); cout << log10(residual_flow[0]);
+              if (!equiv_area) {
+                if (nDim == 2 ) { cout.width(14); cout << log10(residual_flow[3]); }
+                else { cout.width(14); cout << log10(residual_flow[4]); }
+              }
+            }
+            cout << endl;
+          }
+          break;
+
+        case EULER : case NAVIER_STOKES:
 
           /*--- Write history file ---*/
 
