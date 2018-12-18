@@ -12588,7 +12588,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
   nVar_Par += nVar_Consv_Par;
 
   if (Kind_Solver == IMPACT)
-    Variable_Names.push_back("DROPLET_LWC");
+    Variable_Names.push_back("Alpha");
   else
     Variable_Names.push_back("Density");
 
@@ -12893,7 +12893,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
       /*--- Load the conservative variable states for the mean flow variables. ---*/
 
       if (Kind_Solver == IMPACT) {
-        Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(0)*config->GetDroplet_LWC();
+        Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(0);
         iVar++;
         for (jVar = 1; jVar < nVar_First; jVar++) {
           Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar);
