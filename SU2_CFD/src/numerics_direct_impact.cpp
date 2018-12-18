@@ -59,10 +59,7 @@ CSourceDropletDrag::~CSourceDropletDrag(void) {
 void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *config) {
 
     unsigned short iDim;
-    su2double Rho_Air,Visc_Air,T_Air,u_infty,nu_water,droplet_reynolds,coeff;
-
-    nu_water = 1.007e-06 //Viscosité de l'eau à 20°, on peut peut être la récupérer quelque part en fonction de mu et rho?
-    u_infty = Mach*343 //u_infty = Mach*v_son, est-ce une bonne façon de faire?
+    su2double Rho_Air,Visc_Air,T_Air,droplet_reynolds,coeff;
 
     /*--- Get the air variable ---*/
     Rho_Air = Vair_i[0];
@@ -79,7 +76,7 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
     }
 
     droplet_reynolds = sqrt(droplet_reynolds);
-    droplet_reynolds *= u_infty*Droplet_Diameter/nu_water;
+    droplet_reynolds *= u_infty*Droplet_Diameter/Visc_Air;
 
     /*--- Zero the continuity contribution ---*/
 
