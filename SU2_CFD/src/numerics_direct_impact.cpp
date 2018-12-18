@@ -122,14 +122,14 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
         val_Jacobian_i[1][1] = -coeff;
         val_Jacobian_i[2][2] = -coeff;
         val_Jacobian_i[1][0] = coeff*Vair_i[1];
-        val_Jacobian_i[2][0] = coeff*Vair_i[2] - (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
+        val_Jacobian_i[2][0] = coeff*Vair_i[2] - (1 - Rho_Air/Rho_Water)*STANDARD_GRAVITY;
       } else {
         val_Jacobian_i[1][1] = -coeff;
         val_Jacobian_i[2][2] = -coeff;
         val_Jacobian_i[3][3] = -coeff;
         val_Jacobian_i[1][0] = coeff*Vair_i[1];
         val_Jacobian_i[2][0] = coeff*Vair_i[2];
-        val_Jacobian_i[3][0] = coeff*Vair_i[3] - (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
+        val_Jacobian_i[3][0] = coeff*Vair_i[3] - (1 - Rho_Air/Rho_Water)*STANDARD_GRAVITY;
       }
     }
 }
