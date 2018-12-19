@@ -46,7 +46,7 @@ CSourceDropletDrag::CSourceDropletDrag(unsigned short val_nDim, unsigned short v
     su2double Droplet_LWC = config->GetDroplet_LWC();
     su2double Rho_Water = config->GetRho_Water();
     su2double Droplet_Diameter= config->GetDroplet_Diameter();
-    su2double Mach = config->GetMach();
+    su2double Visc_Water = config->GetVisc_Water();
 
 }
 
@@ -62,6 +62,7 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
     su2double Rho_Air,Visc_Air,T_Air,droplet_reynolds,coeff;
 
     /*--- Get the air variable ---*/
+
     Rho_Air = Vair_i[0];
     T_Air = Vair_i[nDim+1];
     Visc_Air = Vair_i[nDim+2];
@@ -72,11 +73,11 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
     droplet_reynolds = 0;
 
     for (iDim = 0; iDim < nDim; iDim++){
-      droplet_reynolds += pow((Vair_i[iDim+1] - U_i[idim+1]),2);
+      droplet_reynolds += pow((Vair_i[iDim+1] - U_i[idim+1]/U_i[0]),2);
     }
 
     droplet_reynolds = sqrt(droplet_reynolds);
-    droplet_reynolds *= u_infty*Droplet_Diameter/Visc_Air;
+    droplet_reynolds *= Droplet_Diameter/Visc_Air;
 
     /*--- Zero the continuity contribution ---*/
 
@@ -99,11 +100,11 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
         coeff = sqrt(coeff);
 
         //coeff = 3*u_infty*|u_air - u_droplet|*nu_water/(10*Droplet_Diameter*nu_air)
-        coeff *= 3*u_infty*nu_water/(10*Droplet_Diameter*Visc_Air); //Est-ce la bonne viscosité?
+        coeff *= 3*nu_water/(10*Droplet_Diameter*Visc_Air); //Est-ce la bonne viscosité?
     }
 
     for (iDim = 0; iDim < nDim; iDim++) {
-      val_residual[iDim+1] = coeff*U_i[0]*(Vair_i[iDim+1] - U_i[iDim+1]);
+      val_residual[iDim+1] = coeff*(U_i[0]*Vair_i[iDim+1] - U_i[iDim+1]);
     }
 
     val_residual[nDim] -= (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
