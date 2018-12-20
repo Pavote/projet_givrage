@@ -9204,6 +9204,7 @@ void COutput::SetCp_InverseDesign(CSolver *solver_container, CGeometry *geometry
     Boundary   = config->GetMarker_All_KindBC(iMarker);
 
     if ((Boundary == EULER_WALL             ) ||
+        (Boundary == IMPACT_WALL            ) ||
         (Boundary == HEAT_FLUX              ) ||
         (Boundary == ISOTHERMAL             ) ||
         (Boundary == NEARFIELD_BOUNDARY)) {
@@ -9292,6 +9293,7 @@ void COutput::SetCp_InverseDesign(CSolver *solver_container, CGeometry *geometry
     Boundary   = config->GetMarker_All_KindBC(iMarker);
 
     if ((Boundary == EULER_WALL             ) ||
+        (Boundary == IMPACT_WALL            ) ||
         (Boundary == HEAT_FLUX              ) ||
         (Boundary == ISOTHERMAL             ) ||
         (Boundary == NEARFIELD_BOUNDARY)) {
@@ -9356,6 +9358,7 @@ void COutput::SetHeatFlux_InverseDesign(CSolver *solver_container, CGeometry *ge
     Boundary   = config->GetMarker_All_KindBC(iMarker);
 
     if ((Boundary == EULER_WALL             ) ||
+        (Boundary == IMPACT_WALL            ) ||
         (Boundary == HEAT_FLUX              ) ||
         (Boundary == ISOTHERMAL             ) ||
         (Boundary == NEARFIELD_BOUNDARY)) {
@@ -9442,6 +9445,7 @@ void COutput::SetHeatFlux_InverseDesign(CSolver *solver_container, CGeometry *ge
     Boundary   = config->GetMarker_All_KindBC(iMarker);
 
     if ((Boundary == EULER_WALL             ) ||
+        (Boundary == IMPACT_WALL            ) ||
         (Boundary == HEAT_FLUX              ) ||
         (Boundary == ISOTHERMAL             ) ||
         (Boundary == NEARFIELD_BOUNDARY)) {
@@ -11566,8 +11570,9 @@ void COutput::SetSensitivity_Files(CGeometry **geometry, CConfig **config, unsig
 
     for (iMarker = 0; iMarker < nMarker; iMarker++) {
 
-      if((config[iZone]->GetMarker_All_KindBC(iMarker) == HEAT_FLUX ) ||
-         (config[iZone]->GetMarker_All_KindBC(iMarker) == EULER_WALL ) ||
+      if((config[iZone]->GetMarker_All_KindBC(iMarker) == HEAT_FLUX )   ||
+         (config[iZone]->GetMarker_All_KindBC(iMarker) == IMPACT_WALL ) ||
+         (config[iZone]->GetMarker_All_KindBC(iMarker) == EULER_WALL )  ||
          (config[iZone]->GetMarker_All_KindBC(iMarker) == ISOTHERMAL )) {
 
         nVertex = geometry[iZone]->GetnVertex(iMarker);

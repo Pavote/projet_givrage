@@ -766,6 +766,17 @@ public:
                              unsigned short val_marker);
 
   /*!
+  * \brief A virtual member.
+  * \param[in] geometry - Geometrical definition of the problem.
+  * \param[in] solver_container - Container vector with all the solutions.
+  * \param[in] numerics - Description of the numerical method.
+  * \param[in] config - Definition of the particular problem.
+  * \param[in] val_marker - Surface marker where the boundary condition is applied.
+  */
+  virtual void BC_Impact_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
+                             unsigned short val_marker);
+
+  /*!
    * \brief A virtual member.
    * \param[in] geometry - Geometrical definition of the problem.
    * \param[in] solver_container - Container vector with all the solutions.
@@ -7084,7 +7095,6 @@ public:
    */
   void Set_MPI_Solution_Old(CGeometry *geometry, CConfig *config);
 
-
   /*!
    * \brief Impose the send-receive boundary condition.
    * \param[in] geometry - Geometrical definition of the problem.
@@ -7347,6 +7357,19 @@ public:
    */
   void BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
                      unsigned short val_marker);
+
+  /*!
+   * \author: B.Constant, M.Fleurotte, A.Motte, I.Moufid
+   *
+   * \brief Impose via the residual the Euler wall boundary condition.
+   * \param[in] geometry - Geometrical definition of the problem.
+   * \param[in] solver_container - Container vector with all the solutions.
+   * \param[in] numerics - Description of the numerical method.
+   * \param[in] config - Definition of the particular problem.
+   * \param[in] val_marker - Surface marker where the boundary condition is applied.
+   */
+  void BC_Impact_Wall(CGeometry *geometry, CSolver **solver_container,
+                      CNumerics *numerics, CConfig *config, unsigned short val_marker);
 
   /*!
    * \brief Impose the far-field boundary condition using characteristics.
@@ -11253,6 +11276,7 @@ public:
    */
   void BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
                      unsigned short val_marker);
+
   /*!
    * \brief Impose via the residual the Euler wall boundary condition.
    * \param[in] geometry - Geometrical definition of the problem.

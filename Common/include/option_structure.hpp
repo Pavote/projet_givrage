@@ -780,7 +780,7 @@ static const map<string, ENUM_AIR_MODEL> Air_Model_Map = CCreateMap<string, ENUM
 ("COMP_EULER", COMP_EULER)
 ("INC_EULER", INC_EULER)
 ("COMP_RANS", COMP_RANS)
-("INC_RANS", INC_RANS); 
+("INC_RANS", INC_RANS);
 
 /*!
  * \brief types of hybrid RANS/LES models
@@ -971,6 +971,7 @@ enum BC_TYPE {
   DAMPER_BOUNDARY = 41,    /*!< \brief Damper. */
   CHT_WALL_INTERFACE = 50, /*!< \brief Domain interface definition. */
   SEND_RECEIVE = 99,		/*!< \brief Boundary send-receive definition. */
+  IMPACT_WALL = 17,		/*!< \brief Boundary Impact wall definition. */
 };
 
 

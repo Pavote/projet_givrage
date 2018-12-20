@@ -685,6 +685,9 @@ inline void CSolver::Solve_System(CGeometry *geometry, CSolver **solver_containe
 inline void CSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
 									 unsigned short val_marker) { }
 
+inline void CSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
+									 unsigned short val_marker) { }
+
 inline void CSolver::BC_Clamped(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config,
                    unsigned short val_marker) { }
 
