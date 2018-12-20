@@ -7082,13 +7082,6 @@ public:
    * \param[in] geometry - Geometrical definition of the problem.
    * \param[in] config - Definition of the particular problem.
    */
-  void Set_MPI_Solution_Gradient(CGeometry *geometry, CConfig *config);
-
-  /*!
-   * \brief Impose the send-receive boundary condition.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] config - Definition of the particular problem.
-   */
   void Set_MPI_Solution_Old(CGeometry *geometry, CConfig *config);
 
 
@@ -7098,13 +7091,6 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void Set_MPI_Solution_Air(CGeometry *geometry, CConfig *config);
-
-  /*!
-   * \brief Impose the send-receive boundary condition.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] config - Definition of the particular problem.
-   */
-  void Set_MPI_Solution_Limiter(CGeometry *geometry, CConfig *config);
 
   /*!
    * \brief Impose the send-receive boundary condition.
@@ -7201,24 +7187,6 @@ public:
                          CConfig *config, unsigned short iMesh, unsigned short iRKStep);
 
   /*!
-   * \brief Compute the spatial integration using a upwind scheme.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] numerics - Description of the numerical method.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] iMesh - Index of the mesh in multigrid computations.
-   */
-  void Upwind_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
-                       CConfig *config, unsigned short iMesh);
-
-  /*!
-   * \brief Compute the extrapolated quantities, for MUSCL upwind 2nd reconstruction,
-   * in a more thermodynamic consistent way
-   * \param[in] config - Definition of the particular problem.
-   */
-  void ComputeConsExtrapolation(CConfig *config);
-
-  /*!
    * \brief Source term integration.
    * \param[in] geometry - Geometrical definition of the problem.
    * \param[in] solver_container - Container vector with all the solutions.
@@ -7277,14 +7245,6 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void SetCentered_Dissipation_Sensor(CGeometry *geometry, CConfig *config);
-
-  /*!
-   * \brief Compute Ducros Sensor for Roe Dissipation.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] config - Definition of the particular problem.
-   */
-  void SetUpwind_Ducros_Sensor(CGeometry *geometry, CConfig *config);
 
   /*!
    * \brief Parallelization of SetPressure_Sensor.
@@ -7359,13 +7319,6 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void Set_MPI_MaxEigenvalue(CGeometry *geometry, CConfig *config);
-
-  /*!
-   * \brief Parallelization of Undivided Laplacian.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] config - Definition of the particular problem.
-   */
-  void Set_MPI_ActDisk(CSolver **solver_container, CGeometry *geometry, CConfig *config);
 
   /*!
    * \brief Parallelization of Undivided Laplacian.
@@ -8529,91 +8482,6 @@ public:
   void SetInlet_FlowDir(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim, su2double val_flowdir);
 
   /*!
-   * \brief Set a uniform inlet profile
-   *
-   * The values at the inlet are set to match the values specified for
-   * inlets in the configuration file.
-   *
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] iMarker - Surface marker where the coefficient is computed.
-   */
-  void SetUniformInlet(CConfig* config, unsigned short iMarker);
-
-  /*!
-   * \brief Store of a set of provided inlet profile values at a vertex.
-   * \param[in] val_inlet - vector containing the inlet values for the current vertex.
-   * \param[in] iMarker - Surface marker where the coefficient is computed.
-   * \param[in] iVertex - Vertex of the marker <i>iMarker</i> where the inlet is being set.
-   */
-  void SetInletAtVertex(su2double *val_inlet, unsigned short iMarker, unsigned long iVertex);
-
-  /*!
-   * \brief Get the set of value imposed at an inlet.
-   * \param[in] val_inlet - vector returning the inlet values for the current vertex.
-   * \param[in] val_inlet_point - Node index where the inlet is being set.
-   * \param[in] val_kind_marker - Enumerated type for the particular inlet type.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param config - Definition of the particular problem.
-   * \return Value of the face area at the vertex.
-   */
-  su2double GetInletAtVertex(su2double *val_inlet,
-                             unsigned long val_inlet_point,
-                             unsigned short val_kind_marker,
-                             CGeometry *geometry,
-                             CConfig *config);
-
-  /*!
-   * \brief Update the multi-grid structure for the customized boundary conditions
-   * \param geometry_container - Geometrical definition.
-   * \param config - Definition of the particular problem.
-   */
-  void UpdateCustomBoundaryConditions(CGeometry **geometry_container, CConfig *config);
-
-  /*!
-   * \brief Set the total residual adding the term that comes from the Dual Time Strategy.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] iRKStep - Current step of the Runge-Kutta iteration.
-   * \param[in] iMesh - Index of the mesh in multigrid computations.
-   * \param[in] RunTime_EqSystem - System of equations which is going to be solved.
-   */
-  void SetResidual_DualTime(CGeometry *geometry, CSolver **solver_container, CConfig *config,
-                            unsigned short iRKStep, unsigned short iMesh, unsigned short RunTime_EqSystem);
-
-  /*!
-   * \brief A virtual member.
-   * \param[in] flow_geometry - Geometrical definition of the problem.
-   * \param[in] flow_grid_movement - Geometrical definition of the problem.
-   * \param[in] flow_config - Geometrical definition of the problem.
-   * \param[in] fea_geometry - Definition of the particular problem.
-   */
-  void SetFlow_Displacement(CGeometry **flow_geometry, CVolumetricMovement *flow_grid_movement, CConfig *flow_config, CConfig *fea_config,
-                            CGeometry **fea_geometry, CSolver ***fea_solution);
-
-/*!
-   * \brief A virtual member.
-   * \param[in] flow_geometry - Geometrical definition of the problem.
-   * \param[in] flow_grid_movement - Geometrical definition of the problem.
-   * \param[in] flow_config - Geometrical definition of the problem.
-   * \param[in] fea_geometry - Definition of the particular problem.
-   */
-  void SetFlow_Displacement_Int(CGeometry **flow_geometry, CVolumetricMovement *flow_grid_movement, CConfig *flow_config, CConfig *fea_config,
-                                CGeometry **fea_geometry, CSolver ***fea_solution);
-
-  /*!
-   * \brief Set the value of the max residual and RMS residual.
-   * \param[in] val_iterlinsolver - Number of linear iterations.
-   */
-  void ComputeResidual_BGS(CGeometry *geometry, CConfig *config);
-
-  /*!
-   * \brief Store the BGS solution in the previous subiteration in the corresponding vector.
-   * \param[in] val_iterlinsolver - Number of linear iterations.
-   */
-  void UpdateSolution_BGS(CGeometry *geometry, CConfig *config);
-
-  /*!
    * \brief Load a solution from a restart file.
    * \param[in] geometry - Geometrical definition of the problem.
    * \param[in] solver - Container vector with all of the solvers.
@@ -8681,15 +8549,6 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void SetFreeStream_Solution(CConfig *config);
-
-  /*!
-   * \brief It computes average quantities along the span for turbomachinery analysis.
-   * \param[in] geometry - Geometrical definition of the problem.
-   * \param[in] solver_container - Container vector with all the solutions.
-   * \param[in] config - Definition of the particular problem.
-   * \param[in] marker_flag - Surface marker flag where the function is applied.
-   */
-  void PreprocessAverage(CSolver **solver, CGeometry *geometry, CConfig *config, unsigned short marker_flag);
 
   /*!
    * \brief it take a velocity in the cartesian reference of framework and transform into the turbomachinery frame of reference.
