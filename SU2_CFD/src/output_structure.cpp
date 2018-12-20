@@ -5066,17 +5066,17 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
         break;
 
       case IMPACT:
-        
+
          /*--- Flow solution coefficients ---*/
 
         Total_CL             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CL();
         Total_CD             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CD();
-        
+
         /*--- Flow Residuals ---*/
 
         for (iVar = 0; iVar < nVar_Flow; iVar++)
           residual_flow[iVar] = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetRes_RMS(iVar);
-        
+
         break;
 
       case WAVE_EQUATION:
@@ -5493,7 +5493,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
           if (!fem) {
             if (!Unsteady && (config[val_iZone]->GetUnsteady_Simulation() != TIME_STEPPING)) {
               switch (config[val_iZone]->GetKind_Solver()) {
-              case EULER : case NAVIER_STOKES: case RANS: 
+              case EULER : case NAVIER_STOKES: case RANS:
               case ADJ_EULER : case ADJ_NAVIER_STOKES: case ADJ_RANS:
 
                 cout << endl << "---------------------- Local Time Stepping Summary ----------------------" << endl;
@@ -5560,7 +5560,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
                 break;
 
               case IMPACT:
-              
+
                  cout << endl << "---------------------- Local Time Stepping Summary ----------------------" << endl;
 
                 for (unsigned short iMesh = FinestMesh; iMesh <= config[val_iZone]->GetnMGLevels(); iMesh++)
@@ -5572,9 +5572,9 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
                     cout << "CFL in zone 2: " << config[1]->GetCFL(MESH_0) << endl;
 
                 cout << "-------------------------------------------------------------------------" << endl;
-                
+
                 break;
-                 
+
 
               case DISC_ADJ_EULER: case DISC_ADJ_NAVIER_STOKES: case DISC_ADJ_RANS:
                 cout << endl;
@@ -5610,7 +5610,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
           }
 
           switch (config[val_iZone]->GetKind_Solver()) {
-          case EULER :                  case NAVIER_STOKES:                 
+          case EULER :                  case NAVIER_STOKES:
 
             /*--- Visualize the maximum residual ---*/
             iPointMaxResid = solver_container[val_iZone][FinestMesh][FLOW_SOL]->GetPoint_Max(0);
@@ -5676,7 +5676,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
             cout << endl;
 
             break;
-            
+
           case IMPACT:
           /*--- Visualize the maximum residual ---*/
             iPointMaxResid = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetPoint_Max(0);
@@ -5705,13 +5705,15 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
               cout << "There are " << config[val_iZone]->GetNonphysical_Reconstr() << " non-physical states in the upwind reconstruction." << endl;
 
             cout << "-------------------------------------------------------------------------" << endl;
-            
+
             if (!Unsteady) cout << endl << " Iter" << "    Time(s)";
             else cout << endl << " IntIter" << " ExtIter";
-            
-            cout << "     Res[Rho]" << "     Res[RhoE]" << "      CL(Total)" << "      CD(Total)";
-            
-            
+
+            cout << "     Res[Alpha]" << "     Res[AlphaE]";
+
+            cout << endl;
+
+
             break;
 
           case RANS :
@@ -5975,7 +5977,53 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
       }
 
       switch (config[val_iZone]->GetKind_Solver()) {
-        case EULER : case NAVIER_STOKES: case IMPACT:
+        case IMPACT :
+
+          /*--- Write history file ---*/
+
+          if ((!DualTime_Iteration) && (output_files)) {
+            if (!turbo) {
+              ConvHist_file[0] << begin << direct_coeff;
+              if (thermal) ConvHist_file[0] << heat_coeff;
+              if (equiv_area) ConvHist_file[0] << equivalent_area_coeff;
+              if (engine || actuator_disk) ConvHist_file[0] << engine_coeff;
+              if (inv_design) {
+                ConvHist_file[0] << Cp_inverse_design;
+                if (thermal) ConvHist_file[0] << Heat_inverse_design;
+              }
+              if (rotating_frame && !turbo) ConvHist_file[0] << rotating_frame_coeff;
+              ConvHist_file[0] << flow_resid;
+              if (weakly_coupled_heat) ConvHist_file[0] << heat_resid;
+            }
+            else {
+              ConvHist_file[0] << begin << turbo_coeff << flow_resid;
+            }
+
+            if (aeroelastic) ConvHist_file[0] << aeroelastic_coeff;
+            if (output_per_surface) ConvHist_file[0] << monitoring_coeff;
+            if (output_surface) ConvHist_file[0] << surface_outputs;
+            if (direct_diff != NO_DERIVATIVE) ConvHist_file[0] << d_direct_coeff;
+            if (output_comboObj) ConvHist_file[0] << combo_obj;
+            ConvHist_file[0] << end;
+            ConvHist_file[0].flush();
+          }
+
+          /*--- Write screen output ---*/
+          if (val_iZone == 0 || fluid_structure){
+            if(DualTime_Iteration || !Unsteady) {
+              cout.precision(6);
+              cout.setf(ios::fixed, ios::floatfield);
+              cout.width(13); cout << log10(residual_flow[0]);
+              if (!equiv_area) {
+                if (nDim == 2 ) { cout.width(14); cout << log10(residual_flow[3]); }
+                else { cout.width(14); cout << log10(residual_flow[4]); }
+              }
+            }
+            cout << endl;
+          }
+          break;
+
+        case EULER : case NAVIER_STOKES:
 
           /*--- Write history file ---*/
 
@@ -12506,7 +12554,8 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
    in this zone for output. ---*/
 
   switch (config->GetKind_Solver()) {
-    case EULER : case NAVIER_STOKES: case IMPACT : FirstIndex = FLOW_SOL; SecondIndex = NONE; break;
+    case EULER : case NAVIER_STOKES: FirstIndex = FLOW_SOL; SecondIndex = NONE; break;
+    case IMPACT : FirstIndex = IMPACT_SOL; SecondIndex = NONE; break;
     case RANS : FirstIndex = FLOW_SOL; SecondIndex = TURB_SOL; break;
     default: SecondIndex = NONE; break;
   }
@@ -12538,11 +12587,27 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
 
   nVar_Par += nVar_Consv_Par;
 
-  Variable_Names.push_back("Density");
+  if (Kind_Solver == IMPACT)
+    Variable_Names.push_back("Alpha");
+  else
+    Variable_Names.push_back("Density");
+
   Variable_Names.push_back("X-Momentum");
   Variable_Names.push_back("Y-Momentum");
   if (geometry->GetnDim() == 3) Variable_Names.push_back("Z-Momentum");
-  Variable_Names.push_back("Energy");
+  Variable_Names.push_back("Energy-Momentum");
+
+  if (Kind_Solver == IMPACT) {
+    nVar_Par += 2;
+    Variable_Names.push_back("X-u_droplet");
+    Variable_Names.push_back("Y-u_droplet");
+    if (geometry->GetnDim() == 3) {
+      ++nVar_Par;
+      Variable_Names.push_back("Z-u_droplet");
+    }
+    ++nVar_Par;
+    Variable_Names.push_back("Energy");
+  }
 
   if (SecondIndex != NONE) {
     if (config->GetKind_Turb_Model() == SST) {
@@ -12617,18 +12682,38 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
 
     /*--- Add Pressure, Temperature, Cp, Mach. ---*/
 
-    nVar_Par += 1;
-    Variable_Names.push_back("Pressure");
+    if (Kind_Solver == IMPACT) {
+      nVar_Par += 1;
+      Variable_Names.push_back("Temperature");
+    }
+    else {
+      nVar_Par += 1;
+      Variable_Names.push_back("Pressure");
 
-    nVar_Par += 2;
-    Variable_Names.push_back("Temperature");
-    Variable_Names.push_back("Mach");
+      nVar_Par += 2;
+      Variable_Names.push_back("Temperature");
+      Variable_Names.push_back("Mach");
 
-    nVar_Par += 1;
-    if (config->GetOutput_FileFormat() == PARAVIEW){
-      Variable_Names.push_back("Pressure_Coefficient");
-    } else {
+      nVar_Par += 1;
+      if (config->GetOutput_FileFormat() == PARAVIEW){
+        Variable_Names.push_back("Pressure_Coefficient");
+      }
+      else {
       Variable_Names.push_back("C<sub>p</sub>");
+      }
+    }
+
+    /*--- Add Air solution information for impact ---*/
+
+    if (Kind_Solver == IMPACT) {
+      nVar_Par += 3;
+      Variable_Names.push_back("Density_air");
+      Variable_Names.push_back("X-u_air");
+      Variable_Names.push_back("Y-u_air");
+      if (geometry->GetnDim() == 3) {
+        ++nVar_Par;
+        Variable_Names.push_back("Z-u_air");
+      }
     }
 
     /*--- Add Laminar Viscosity, Skin Friction, Heat Flux, & yPlus to the restart file ---*/
@@ -12807,9 +12892,19 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
 
       /*--- Load the conservative variable states for the mean flow variables. ---*/
 
-      for (jVar = 0; jVar < nVar_First; jVar++) {
-        Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar);
+      if (Kind_Solver == IMPACT) {
+        Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(0);
         iVar++;
+        for (jVar = 1; jVar < nVar_First; jVar++) {
+          Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar);
+          iVar++;
+        }
+      }
+      else {
+        for (jVar = 0; jVar < nVar_First; jVar++) {
+          Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar);
+          iVar++;
+        }
       }
 
       /*--- If this is RANS, i.e., the second solver container is not empty,
@@ -12872,12 +12967,26 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
           }
         }
 
+        /*--- Load the droplet velocities and the energy for impact ---*/
+
+        if (Kind_Solver == IMPACT) {
+          for (jVar = 1; jVar < nVar_First; jVar++) {
+            Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar)/solver[FirstIndex]->node[iPoint]->GetSolution(0);
+            iVar++;
+          }
+        }
+
         /*--- Load data for the pressure, temperature, Cp, and Mach variables. ---*/
 
-        Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetPressure(); iVar++;
-        Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetTemperature(); iVar++;
-        Local_Data[jPoint][iVar] = sqrt(solver[FLOW_SOL]->node[iPoint]->GetVelocity2())/solver[FLOW_SOL]->node[iPoint]->GetSoundSpeed(); iVar++;
-        Local_Data[jPoint][iVar] = (solver[FLOW_SOL]->node[iPoint]->GetPressure() - RefPressure)*factor*RefArea; iVar++;
+        if (Kind_Solver == IMPACT) {
+          Local_Data[jPoint][iVar] = solver[IMPACT_SOL]->node[iPoint]->GetTemperature(); iVar++;
+        }
+        else {
+          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetPressure(); iVar++;
+          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetTemperature(); iVar++;
+          Local_Data[jPoint][iVar] = sqrt(solver[FLOW_SOL]->node[iPoint]->GetVelocity2())/solver[FLOW_SOL]->node[iPoint]->GetSoundSpeed(); iVar++;
+          Local_Data[jPoint][iVar] = (solver[FLOW_SOL]->node[iPoint]->GetPressure() - RefPressure)*factor*RefArea; iVar++;
+        }
 
         if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
 
@@ -12896,6 +13005,19 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
           Local_Data[jPoint][iVar] = Aux_Heat[iPoint]; iVar++;
           Local_Data[jPoint][iVar] = Aux_yPlus[iPoint]; iVar++;
 
+        }
+
+        /*--- Load the air information for impact ---*/
+
+        if (Kind_Solver == IMPACT) {
+          for (jVar = 0; jVar < 3; jVar++) {
+            Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetSolution(jVar);
+            iVar++;
+            if (geometry->GetnDim() == 3) {
+              Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetSolution(3);
+              iVar++;
+            }
+          }
         }
 
         /*--- Load data for the Eddy viscosity for RANS. ---*/
@@ -13009,7 +13131,7 @@ void COutput::LoadLocalData_IncFlow(CConfig *config, CGeometry *geometry, CSolve
    in this zone for output. ---*/
 
   switch (config->GetKind_Solver()) {
-    case EULER : case NAVIER_STOKES: case IMPACT : FirstIndex = FLOW_SOL; SecondIndex = NONE; break;
+    case EULER : case NAVIER_STOKES : FirstIndex = FLOW_SOL; SecondIndex = NONE; break;
     case RANS : FirstIndex = FLOW_SOL; SecondIndex = TURB_SOL; break;
     default: SecondIndex = NONE; break;
   }
