@@ -52,7 +52,7 @@ CSourceDropletDrag::~CSourceDropletDrag(void) {
 void CSourceDropletDrag::ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, CConfig *config) {
 
     unsigned short iDim, iVar, jVar;
-    su2double Rho_Air,Visc_Air,T_Air,droplet_reynolds,source_coefficient;
+    su2double Rho_Air,Mu_Air,T_Air,droplet_reynolds,source_coefficient;
 
     su2double Rho_Water = config->GetRho_Water();
     su2double Droplet_Diameter= config->GetDroplet_Diameter();
