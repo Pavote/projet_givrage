@@ -92,13 +92,13 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, su2double **va
     {
         source_coefficient = 0;
         for (iDim = 0; iDim < nDim; iDim++) {
-          source_coefficient += pow((Vair_i[iDim+1] - U_i[iDim+1]),2);
+          source_coefficient += pow((Vair_i[iDim+1] - U_i[iDim+1]/U_i[0]),2);
         }
 
         source_coefficient = sqrt(source_coefficient);
 
         //source_coefficient = 3*|u_air - u_droplet|*rho_air/(10*Droplet_Diameter*rho_water)
-        source_coefficient *= 3*Rho_Air/(10*Droplet_Diameter*Rho_Water); //Est-ce la bonne viscosité?
+        source_coefficient *= 3*Rho_Air/(10*Droplet_Diameter*Rho_Water);
     }
 
     for (iDim = 0; iDim < nDim; iDim++) {
