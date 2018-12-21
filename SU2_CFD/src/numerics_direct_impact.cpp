@@ -46,7 +46,6 @@ CSourceDropletDrag::CSourceDropletDrag(unsigned short val_nDim, unsigned short v
     su2double Droplet_LWC = config->GetDroplet_LWC();
     su2double Rho_Water = config->GetRho_Water();
     su2double Droplet_Diameter= config->GetDroplet_Diameter();
-    su2double Visc_Water = config->GetVisc_Water();
 
 }
 
@@ -56,28 +55,31 @@ CSourceDropletDrag::~CSourceDropletDrag(void) {
 
 }
 
-void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *config) {
+void CSourceDropletDrag::ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, CConfig *config) {
 
-    unsigned short iDim;
-    su2double Rho_Air,Visc_Air,T_Air,droplet_reynolds,coeff;
+    unsigned short iDim, iVar, jVar;
+    su2double Rho_Air,Visc_Air,T_Air,droplet_reynolds,source_coefficient;
+
+    bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
 
     /*--- Get the air variable ---*/
 
     Rho_Air = Vair_i[0];
     T_Air = Vair_i[nDim+1];
-    Visc_Air = Vair_i[nDim+2];
+    Mu_Air = Vair_i[nDim+2]; //Dynamic Viscosity
 
     /*--- Compute droplet_reynolds ---*/
-    //droplet_reynolds = u_infty*|u_air - u _droplet|*Droplet_Diameter/nu_water
+
+    //droplet_reynolds = |u_air - u _droplet|*Droplet_Diameter/nu_air where nu_air is the kinematic viscosity
 
     droplet_reynolds = 0;
 
     for (iDim = 0; iDim < nDim; iDim++){
-      droplet_reynolds += pow((Vair_i[iDim+1] - U_i[idim+1]/U_i[0]),2);
+      droplet_reynolds += pow((Vair_i[iDim+1] - U_i[iDim+1]/U_i[0]),2);
     }
 
     droplet_reynolds = sqrt(droplet_reynolds);
-    droplet_reynolds *= Droplet_Diameter/Visc_Air;
+    droplet_reynolds *= Droplet_Diameter*Rho_Air/Mu_Air;
 
     /*--- Zero the continuity contribution ---*/
 
@@ -87,24 +89,24 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
 
     if (droplet_reynolds < 1000)
     {
-        coeff = (1+ 0.015*pow(droplet_reynolds,0.687))*18*nu_water/pow(Droplet_Diameter,2);
+        source_coefficient = (1+ 0.015*pow(droplet_reynolds,0.687))*18*Mu_Air/(Rho_Water*pow(Droplet_Diameter,2));
     }
 
     else
     {
-        coeff = 0;
+        source_coefficient = 0;
         for (iDim = 0; iDim < nDim; iDim++) {
-          coeff += pow((Vair_i[iDim+1] - U_i[idim+1]),2);
+          source_coefficient += pow((Vair_i[iDim+1] - U_i[iDim+1]),2);
         }
 
-        coeff = sqrt(coeff);
+        source_coefficient = sqrt(source_coefficient);
 
-        //coeff = 3*u_infty*|u_air - u_droplet|*nu_water/(10*Droplet_Diameter*nu_air)
-        coeff *= 3*nu_water/(10*Droplet_Diameter*Visc_Air); //Est-ce la bonne viscosité?
+        //source_coefficient = 3*|u_air - u_droplet|*rho_air/(10*Droplet_Diameter*rho_water)
+        source_coefficient *= 3*Rho_Air/(10*Droplet_Diameter*Rho_Water); //Est-ce la bonne viscosité?
     }
 
     for (iDim = 0; iDim < nDim; iDim++) {
-      val_residual[iDim+1] = coeff*(U_i[0]*Vair_i[iDim+1] - U_i[iDim+1]);
+      val_residual[iDim+1] = source_coefficient*(U_i[0]*Vair_i[iDim+1] - U_i[iDim+1]);
     }
 
     val_residual[nDim] -= (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
@@ -120,17 +122,17 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *confi
         for (jVar = 0; jVar < nVar; jVar++)
           val_Jacobian_i[iVar][jVar] = 0.0;
       if (nDim == 2) {
-        val_Jacobian_i[1][1] = -coeff;
-        val_Jacobian_i[2][2] = -coeff;
-        val_Jacobian_i[1][0] = coeff*Vair_i[1];
-        val_Jacobian_i[2][0] = coeff*Vair_i[2] - (1 - Rho_Air/Rho_Water)*STANDARD_GRAVITY;
+        val_Jacobian_i[1][1] = -source_coefficient;
+        val_Jacobian_i[2][2] = -source_coefficient;
+        val_Jacobian_i[1][0] = source_coefficient*Vair_i[1];
+        val_Jacobian_i[2][0] = source_coefficient*Vair_i[2] - (1 - Rho_Air/Rho_Water)*STANDARD_GRAVITY;
       } else {
-        val_Jacobian_i[1][1] = -coeff;
-        val_Jacobian_i[2][2] = -coeff;
-        val_Jacobian_i[3][3] = -coeff;
-        val_Jacobian_i[1][0] = coeff*Vair_i[1];
-        val_Jacobian_i[2][0] = coeff*Vair_i[2];
-        val_Jacobian_i[3][0] = coeff*Vair_i[3] - (1 - Rho_Air/Rho_Water)*STANDARD_GRAVITY;
+        val_Jacobian_i[1][1] = -source_coefficient;
+        val_Jacobian_i[2][2] = -source_coefficient;
+        val_Jacobian_i[3][3] = -source_coefficient;
+        val_Jacobian_i[1][0] = source_coefficient*Vair_i[1];
+        val_Jacobian_i[2][0] = source_coefficient*Vair_i[2];
+        val_Jacobian_i[3][0] = source_coefficient*Vair_i[3] - (1 - Rho_Air/Rho_Water)*STANDARD_GRAVITY;
       }
     }
 }
