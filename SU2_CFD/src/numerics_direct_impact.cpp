@@ -41,13 +41,7 @@
 
 
 
-CSourceDropletDrag::CSourceDropletDrag(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) {
-
-    su2double Droplet_LWC = config->GetDroplet_LWC();
-    su2double Rho_Water = config->GetRho_Water();
-    su2double Droplet_Diameter= config->GetDroplet_Diameter();
-
-}
+CSourceDropletDrag::CSourceDropletDrag(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) { }
 
 CSourceDropletDrag::~CSourceDropletDrag(void) {
 
@@ -60,6 +54,8 @@ void CSourceDropletDrag::ComputeResidual(su2double *val_residual, su2double **va
     unsigned short iDim, iVar, jVar;
     su2double Rho_Air,Visc_Air,T_Air,droplet_reynolds,source_coefficient;
 
+    su2double Rho_Water = config->GetRho_Water();
+    su2double Droplet_Diameter= config->GetDroplet_Diameter();
     bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
 
     /*--- Get the air variable ---*/
