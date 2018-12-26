@@ -39,7 +39,7 @@
 
 CImpactSolver::CImpactSolver(void) : CSolver() {
 
-  cout << "CImpactSolver*************************************************************************************" << endl;
+  //cout << "CImpactSolver*************************************************************************************" << endl;
   /*--- Basic array initialization ---*/
 
   CD_Inv = NULL; CL_Inv = NULL; CSF_Inv = NULL;  CEff_Inv = NULL;
@@ -166,7 +166,7 @@ CImpactSolver::CImpactSolver(void) : CSolver() {
 
 CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned short iMesh) : CSolver() {
 
-  cout << "CImpactSolver*************************************************************************************" << endl;
+  //cout << "CImpactSolver*************************************************************************************" << endl;
   unsigned long iPoint, counter_local = 0, counter_global = 0, iVertex;
   unsigned short iVar, iDim, iMarker, nLineLets;
   su2double StaticEnergy, Density, Velocity2, Pressure, Temperature;
@@ -1300,7 +1300,7 @@ void CImpactSolver::Set_MPI_Solution(CGeometry *geometry, CConfig *config) {
   unsigned long iVertex, iPoint, nVertexS, nVertexR, nBufferS_Vector, nBufferR_Vector;
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi, *Buffer_Receive_U = NULL, *Buffer_Send_U = NULL;
 
-  cout << "CImpactSolver Set_MPI_Solution*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Solution*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1418,7 +1418,7 @@ void CImpactSolver::Set_MPI_Solution_Old(CGeometry *geometry, CConfig *config) {
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_U = NULL, *Buffer_Send_U = NULL;
 
-  cout << "CImpactSolver Set_MPI_Solution_Old*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Solution_Old*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1535,7 +1535,7 @@ void CImpactSolver::Set_MPI_Solution_Air(CGeometry *geometry, CConfig *config) {
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_U = NULL, *Buffer_Send_U = NULL;
 
-  cout << "CImpactSolver Set_MPI_Solution_Air*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Solution_Air*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1652,7 +1652,7 @@ void CImpactSolver::Set_MPI_Undivided_Laplacian(CGeometry *geometry, CConfig *co
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_Undivided_Laplacian = NULL, *Buffer_Send_Undivided_Laplacian = NULL;
 
-  cout << "CImpactSolver Set_MPI_Undivided_Laplacian*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Undivided_Laplacian*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1769,7 +1769,7 @@ void CImpactSolver::Set_MPI_MaxEigenvalue(CGeometry *geometry, CConfig *config) 
   unsigned long iVertex, iPoint, nVertexS, nVertexR, nBufferS_Vector, nBufferR_Vector;
   su2double *Buffer_Receive_Lambda = NULL, *Buffer_Send_Lambda = NULL;
 
-cout << "CImpactSolver Set_MPI_MaxEigenvalue*************************************************************************************" << endl;
+//cout << "CImpactSolver Set_MPI_MaxEigenvalue*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1849,7 +1849,7 @@ void CImpactSolver::Set_MPI_Sensor(CGeometry *geometry, CConfig *config) {
   unsigned long iVertex, iPoint, nVertexS, nVertexR, nBufferS_Vector, nBufferR_Vector;
   su2double *Buffer_Receive_Lambda = NULL, *Buffer_Send_Lambda = NULL;
 
-  cout << "CImpactSolver Set_MPI_Sensor*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Sensor*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1921,7 +1921,7 @@ void CImpactSolver::Set_MPI_Primitive_Gradient(CGeometry *geometry, CConfig *con
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_Gradient = NULL, *Buffer_Send_Gradient = NULL;
 
-  cout << "CImpactSolver Set_MPI_Primitive_Gradient*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Primitive_Gradient*************************************************************************************" << endl;
   su2double **Gradient = new su2double* [nPrimVarGrad];
   for (iVar = 0; iVar < nPrimVarGrad; iVar++)
     Gradient[iVar] = new su2double[nDim];
@@ -2047,7 +2047,7 @@ void CImpactSolver::Set_MPI_Primitive_Limiter(CGeometry *geometry, CConfig *conf
 
   su2double *Limiter = new su2double [nPrimVarGrad];
 
-  cout << "CImpactSolver Set_MPI_Primitive_Limiter*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Primitive_Limiter*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -2163,7 +2163,7 @@ void CImpactSolver::Set_MPI_Primitive_Limiter(CGeometry *geometry, CConfig *conf
 
 void CImpactSolver::Set_MPI_Nearfield(CGeometry *geometry, CConfig *config) {
 
-  cout << "CImpactSolver Set_MPI_Nearfield*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Nearfield*************************************************************************************" << endl;
   unsigned long iter,  iPoint, iVertex, jVertex, iPointTotal,
   Buffer_Send_nPointTotal = 0;
   long iGlobalIndex, iGlobal;
@@ -2483,7 +2483,7 @@ void CImpactSolver::Set_MPI_Nearfield(CGeometry *geometry, CConfig *config) {
 
 void CImpactSolver::Set_MPI_Interface(CGeometry *geometry, CConfig *config) {
 
-  cout << "CImpactSolver Set_MPI_Interface*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Interface*************************************************************************************" << endl;
   unsigned long iter,  iPoint, iVertex, jVertex, iPointTotal,
   Buffer_Send_nPointTotal = 0, iGlobalIndex, iGlobal;
   unsigned short iVar, iMarker, jMarker;
@@ -2800,7 +2800,7 @@ void CImpactSolver::Set_MPI_Interface(CGeometry *geometry, CConfig *config) {
 
 void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config, unsigned short iMesh) {
 
-  cout << "CImpactSolver SetNondimensionalization*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetNondimensionalization*************************************************************************************" << endl;
   su2double Temperature_FreeStream = 0.0, Mach2Vel_FreeStream = 0.0, ModVel_FreeStream = 0.0,
   Energy_FreeStream = 0.0, ModVel_FreeStreamND = 0.0, Velocity_Reynolds = 0.0,
   Omega_FreeStream = 0.0, Omega_FreeStreamND = 0.0, Viscosity_FreeStream = 0.0,
@@ -3226,7 +3226,7 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
 
 void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_container, CConfig *config, unsigned long ExtIter) {
 
-  cout << "CImpactSolver SetInitialCondition*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetInitialCondition*************************************************************************************" << endl;
   unsigned long iPoint;
   unsigned short iMesh, iDim;
   su2double X0[3] = {0.0,0.0,0.0}, X1[3] = {0.0,0.0,0.0}, X2[3] = {0.0,0.0,0.0},
@@ -3322,7 +3322,7 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
 
 void CImpactSolver::Preprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config, unsigned short iMesh, unsigned short iRKStep, unsigned short RunTime_EqSystem, bool Output) {
 
-  cout << endl <<"CImpactSolver Preprocessing*************************************************************************************" << endl;
+  //cout << endl <<"CImpactSolver Preprocessing*************************************************************************************" << endl;
   unsigned long ErrorCounter = 0;
 
   unsigned long ExtIter = config->GetExtIter();
@@ -3410,11 +3410,11 @@ void CImpactSolver::Preprocessing(CGeometry *geometry, CSolver **solver_containe
 }
 
 void CImpactSolver::Postprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config,
-                                  unsigned short iMesh) {cout << "CImpactSolver Postprocessing*************************************************************************************" << endl; }
+                                  unsigned short iMesh) {/*cout << "CImpactSolver Postprocessing*************************************************************************************" << endl;*/ }
 
 unsigned long CImpactSolver::SetPrimitive_Variables(CSolver **solver_container, CConfig *config, bool Output) {
 
-  cout << "CImpactSolver SetPrimitive_Variables*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetPrimitive_Variables*************************************************************************************" << endl;
   unsigned long iPoint, ErrorCounter = 0;
   bool RightSol = true;
 
@@ -3444,7 +3444,7 @@ unsigned long CImpactSolver::SetPrimitive_Variables(CSolver **solver_container, 
 void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container, CConfig *config,
                                 unsigned short iMesh, unsigned long Iteration) {
 
-  cout << "CImpactSolver SetTime_Step*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetTime_Step*************************************************************************************" << endl;
   su2double *Normal, Area, Vol, Mean_SoundSpeed = 0.0, Mean_ProjVel = 0.0, Lambda, Local_Delta_Time,
   Global_Delta_Time = 1E6, Global_Delta_UnstTimeND, ProjVel, ProjVel_i, ProjVel_j;
   unsigned long iEdge, iVertex, iPoint, jPoint;
@@ -3630,7 +3630,7 @@ void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container
 void CImpactSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                      CConfig *config, unsigned short iMesh, unsigned short iRKStep) {
 
-  cout << "CImpactSolver Centered_Residual*************************************************************************************" << endl;
+  //cout << "CImpactSolver Centered_Residual*************************************************************************************" << endl;
   unsigned long iEdge, iPoint, jPoint;
 
   bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
@@ -3689,7 +3689,7 @@ void CImpactSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_cont
 void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CNumerics *second_numerics,
                                    CConfig *config, unsigned short iMesh) {
 
-  cout << "CImpactSolver Source_Residual*************************************************************************************" << endl;
+  //cout << "CImpactSolver Source_Residual*************************************************************************************" << endl;
   unsigned short iVar;
   unsigned long iPoint;
   bool implicit         = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
@@ -3882,7 +3882,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
 void CImpactSolver::Source_Template(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                    CConfig *config, unsigned short iMesh) {
 
-  cout << "CImpactSolver Source_Template*************************************************************************************" << endl;
+  //cout << "CImpactSolver Source_Template*************************************************************************************" << endl;
   /* This method should be used to call any new source terms for a particular problem*/
   /* This method calls the new child class in CNumerics, where the new source term should be implemented.  */
 
@@ -3896,7 +3896,7 @@ void CImpactSolver::Source_Template(CGeometry *geometry, CSolver **solver_contai
 
 void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
 
-  cout << "CImpactSolver SetMax_Eigenvalue*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetMax_Eigenvalue*************************************************************************************" << endl;
   su2double *Normal, Area, Mean_SoundSpeed = 0.0, Mean_ProjVel = 0.0, Lambda,
   ProjVel, ProjVel_i, ProjVel_j, *GridVel, *GridVel_i, *GridVel_j;
   unsigned long iEdge, iVertex, iPoint, jPoint;
@@ -3993,7 +3993,7 @@ void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
 
 void CImpactSolver::SetUndivided_Laplacian(CGeometry *geometry, CConfig *config) {
 
-  cout << "CImpactSolver SetUndivided_Laplacian*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetUndivided_Laplacian*************************************************************************************" << endl;
   unsigned long iPoint, jPoint, iEdge;
   su2double Pressure_i = 0, Pressure_j = 0, *Diff;
   unsigned short iVar;
@@ -4052,7 +4052,7 @@ void CImpactSolver::SetUndivided_Laplacian(CGeometry *geometry, CConfig *config)
 
 void CImpactSolver::SetCentered_Dissipation_Sensor(CGeometry *geometry, CConfig *config) {
 
-  cout << "CImpactSolver SetCentered_Dissipation_Sensor*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetCentered_Dissipation_Sensor*************************************************************************************" << endl;
   unsigned long iEdge, iPoint, jPoint;
   su2double Pressure_i = 0.0, Pressure_j = 0.0;
   bool boundary_i, boundary_j;
@@ -4109,7 +4109,7 @@ void CImpactSolver::SetCentered_Dissipation_Sensor(CGeometry *geometry, CConfig 
 
 void CImpactSolver::ExplicitRK_Iteration(CGeometry *geometry, CSolver **solver_container,
                                         CConfig *config, unsigned short iRKStep) {
-  cout << "CImpactSolver ExplicitRK_Iteration*************************************************************************************" << endl;
+  //cout << "CImpactSolver ExplicitRK_Iteration*************************************************************************************" << endl;
   su2double *Residual, *Res_TruncError, Vol, Delta, Res;
   unsigned short iVar;
   unsigned long iPoint;
@@ -4155,7 +4155,7 @@ void CImpactSolver::ExplicitRK_Iteration(CGeometry *geometry, CSolver **solver_c
 
 void CImpactSolver::ClassicalRK4_Iteration(CGeometry *geometry, CSolver **solver_container,
                                         CConfig *config, unsigned short iRKStep) {
-  cout << "CImpactSolver ClassicalRK4_Iteration*************************************************************************************" << endl;
+  //cout << "CImpactSolver ClassicalRK4_Iteration*************************************************************************************" << endl;
   su2double *Residual, *Res_TruncError, Vol, Delta, Res, tmp_time, tmp_func;
   unsigned short iVar;
   unsigned long iPoint;
@@ -4215,7 +4215,7 @@ void CImpactSolver::ClassicalRK4_Iteration(CGeometry *geometry, CSolver **solver
 }
 
 void CImpactSolver::ExplicitEuler_Iteration(CGeometry *geometry, CSolver **solver_container, CConfig *config) {
-  cout << "CImpactSolver ExplicitEuler_Iteration*************************************************************************************" << endl;
+  //cout << "CImpactSolver ExplicitEuler_Iteration*************************************************************************************" << endl;
   su2double *local_Residual, *local_Res_TruncError, Vol, Delta, Res;
   unsigned short iVar;
   unsigned long iPoint;
@@ -4258,7 +4258,7 @@ void CImpactSolver::ExplicitEuler_Iteration(CGeometry *geometry, CSolver **solve
 }
 
 void CImpactSolver::ImplicitEuler_Iteration(CGeometry *geometry, CSolver **solver_container, CConfig *config) {
-  cout << "CImpactSolver ImplicitEuler_Iteration*************************************************************************************" << endl;
+  //cout << "CImpactSolver ImplicitEuler_Iteration*************************************************************************************" << endl;
   unsigned short iVar, jVar;
   unsigned long iPoint, total_index, IterLinSol = 0;
   su2double Delta, *local_Res_TruncError, Vol;
@@ -4362,7 +4362,7 @@ void CImpactSolver::ImplicitEuler_Iteration(CGeometry *geometry, CSolver **solve
 }
 
 void CImpactSolver::SetPrimitive_Gradient_GG(CGeometry *geometry, CConfig *config) {
-  cout << "CImpactSolver SetPrimitive_Gradient_GG*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetPrimitive_Gradient_GG*************************************************************************************" << endl;
   unsigned long iPoint, jPoint, iEdge, iVertex;
   unsigned short iDim, iVar, iMarker;
   su2double *PrimVar_Vertex, *PrimVar_i, *PrimVar_j, PrimVar_Average,
@@ -4445,7 +4445,7 @@ void CImpactSolver::SetPrimitive_Gradient_GG(CGeometry *geometry, CConfig *confi
 }
 
 void CImpactSolver::SetPrimitive_Gradient_LS(CGeometry *geometry, CConfig *config) {
-  cout << "CImpactSolver SetPrimitive_Gradient_LS*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetPrimitive_Gradient_LS*************************************************************************************" << endl;
   unsigned short iVar, iDim, jDim, iNeigh;
   unsigned long iPoint, jPoint;
   su2double *PrimVar_i, *PrimVar_j, *Coord_i, *Coord_j, r11, r12, r13, r22, r23, r23_a,
@@ -4590,7 +4590,7 @@ void CImpactSolver::SetPrimitive_Gradient_LS(CGeometry *geometry, CConfig *confi
 }
 
 void CImpactSolver::SetPrimitive_Limiter(CGeometry *geometry, CConfig *config) {
-  cout << "CImpactSolver SetPrimitive_Limiter*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetPrimitive_Limiter*************************************************************************************" << endl;
   unsigned long iEdge, iPoint, jPoint;
   unsigned short iVar, iDim;
   su2double **Gradient_i, **Gradient_j, *Coord_i, *Coord_j,
@@ -4852,7 +4852,7 @@ void CImpactSolver::SetPrimitive_Limiter(CGeometry *geometry, CConfig *config) {
 }
 
 void CImpactSolver::SetPreconditioner(CConfig *config, unsigned long iPoint) {
-  cout << "CImpactSolver SetPreconditioner*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetPreconditioner*************************************************************************************" << endl;
   unsigned short iDim, jDim, iVar, jVar;
   su2double local_Mach, rho, enthalpy, soundspeed, sq_vel;
   su2double *U_i = NULL;
@@ -4910,7 +4910,7 @@ void CImpactSolver::SetPreconditioner(CConfig *config, unsigned long iPoint) {
 
 void CImpactSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container,
                                  CNumerics *numerics, CConfig *config, unsigned short val_marker) {
-  cout << "CImpactSolver BC_Euler_Wall*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Euler_Wall*************************************************************************************" << endl;
   unsigned short iDim, iVar, jVar, kVar, jDim;
   unsigned long iPoint, iVertex;
   su2double *Normal = NULL, *GridVel = NULL, Area, UnitNormal[3], *NormalArea,
@@ -5086,7 +5086,7 @@ void CImpactSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_containe
   delete [] DubDu;
 
 }
-  
+
 void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_container,
                                  CNumerics *numerics, CConfig *config, unsigned short val_marker) {
     //cout << "CImpactSolver BC_Impact_Wall*************************************************************************************" << endl;
@@ -5280,7 +5280,7 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
 
 void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics,
                                 CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  cout << "CImpactSolver BC_Far_Field*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Far_Field*************************************************************************************" << endl;
   unsigned short iDim;
   unsigned long iVertex, iPoint, Point_Normal;
 
@@ -5505,7 +5505,7 @@ void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container
 
 void CImpactSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container,
                             CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  cout << "CImpactSolver BC_Inlet*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Inlet*************************************************************************************" << endl;
   unsigned short iDim;
   unsigned long iVertex, iPoint;
   su2double P_Total, T_Total, Velocity[3], Velocity2, H_Total, Temperature, Riemann,
@@ -5768,7 +5768,7 @@ void CImpactSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container,
 
 void CImpactSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
                              CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  cout << "CImpactSolver BC_Outlet*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Outlet*************************************************************************************" << endl;
   unsigned short iVar, iDim;
   unsigned long iVertex, iPoint;
   su2double Pressure, P_Exit, Velocity[3],
@@ -5911,7 +5911,7 @@ void CImpactSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
 
 void CImpactSolver::BC_Sym_Plane(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                                 CConfig *config, unsigned short val_marker) {
-  cout << "CImpactSolver BC_Sym_Plane*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Sym_Plane*************************************************************************************" << endl;
   /*--- Call the Euler residual ---*/
 
   BC_Euler_Wall(geometry, solver_container, conv_numerics, config, val_marker);
@@ -5920,7 +5920,7 @@ void CImpactSolver::BC_Sym_Plane(CGeometry *geometry, CSolver **solver_container
 
 void CImpactSolver::BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                                          CConfig *config) {
-  cout << "CImpactSolver BC_Fluid_Interface*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Fluid_Interface*************************************************************************************" << endl;
   unsigned long iVertex, jVertex, iPoint, Point_Normal = 0;
   unsigned short iDim, iVar, iMarker, nDonorVertex;
 
@@ -6025,12 +6025,12 @@ void CImpactSolver::BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_con
 }
 
 void CImpactSolver::BC_Dirichlet(CGeometry *geometry, CSolver **solver_container,
-                                CConfig *config, unsigned short val_marker) {cout << "CImpactSolver BC_Dirichlet*************************************************************************************" << endl; }
+                                CConfig *config, unsigned short val_marker) {/*cout << "CImpactSolver BC_Dirichlet*************************************************************************************" << endl; */}
 
-void CImpactSolver::BC_Custom(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, unsigned short val_marker) {cout << "CImpactSolver BC_Custom*************************************************************************************" << endl; }
+void CImpactSolver::BC_Custom(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, unsigned short val_marker) {/*cout << "CImpactSolver BC_Custom*************************************************************************************" << endl;*/ }
 
 void CImpactSolver::LoadRestart(CGeometry **geometry, CSolver ***solver, CConfig *config, int val_iter, bool val_update_geo) {
-  cout << "CImpactSolver LoadRestart*************************************************************************************" << endl;
+  //cout << "CImpactSolver LoadRestart*************************************************************************************" << endl;
   /*--- Restart the solution from file information ---*/
   unsigned short iDim, iVar, iMesh, iMeshFine;
   unsigned long iPoint, index, iChildren, Point_Fine;
@@ -6265,7 +6265,7 @@ void CImpactSolver::LoadRestart(CGeometry **geometry, CSolver ***solver, CConfig
 
 
 void CImpactSolver::SetFreeStream_Solution(CConfig *config) {
-  cout << "CImpactSolver SetFreeStream_Solution*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetFreeStream_Solution*************************************************************************************" << endl;
   /*--- not used now ---*/
   unsigned long iPoint;
   unsigned short iDim;
@@ -6278,4 +6278,3 @@ void CImpactSolver::SetFreeStream_Solution(CConfig *config) {
     node[iPoint]->SetSolution(nVar-1, Density_Inf*Energy_Inf);
   }
 }
-
