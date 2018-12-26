@@ -52,7 +52,7 @@ CImpactSolver::CImpactSolver(void) : CSolver() {
   CFx_Mnt = NULL; CFy_Mnt = NULL; CFz_Mnt = NULL;
   CoPx_Mnt = NULL; CoPy_Mnt = NULL; CoPz_Mnt = NULL;
 
-  YPlus = NULL;
+  YPlus = NULL; CMass_Outlet = NULL;
 
   /*--- Surface based array initialization ---*/
 
@@ -234,7 +234,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   CFx_Mnt= NULL;   CFy_Mnt= NULL;   CFz_Mnt= NULL;
   CoPx_Mnt= NULL;   CoPy_Mnt= NULL;   CoPz_Mnt= NULL;
 
-  YPlus = NULL;
+  YPlus = NULL; CMass_Outlet = NULL;
 
   /*--- Surface based array initialization ---*/
 
@@ -569,6 +569,16 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
       }
   }
 
+  /*--- Force definition and coefficient arrays for all of the markers ---*/
+
+  CMass_Outlet = new su2double* [nMarker];
+  for (iMarker = 0; iMarker < nMarker; iMarker++) {
+    CMass_Outlet[iMarker] = new su2double [geometry->nVertex[iMarker]];
+    for (iVertex = 0; iVertex < geometry->nVertex[iMarker]; iVertex++) {
+      CMass_Outlet[iMarker][iVertex] = 0.0;
+    }
+  }
+
   /*--- Store the value of the Total Temperature at the inlet BC ---*/
 
   Inlet_Ptotal = new su2double* [nMarker];
@@ -690,7 +700,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   Total_CEff    = 0.0;    Total_CEquivArea   = 0.0;    Total_CNearFieldOF = 0.0;
   Total_CFx     = 0.0;    Total_CFy          = 0.0;    Total_CFz          = 0.0;
   Total_CT      = 0.0;    Total_CQ           = 0.0;    Total_CMerit       = 0.0;
-  Total_ComboObj     = 0.0;
+  Total_ComboObj = 0.0;   Total_CMass_Outlet = 0.0;
   Total_CpDiff  = 0.0;    Total_Custom_ObjFunc=0.0;
   Total_NetThrust = 0.0;
   Total_Power = 0.0;      AoA_Prev           = 0.0;
@@ -954,6 +964,12 @@ CImpactSolver::~CImpactSolver(void) {
     for (iVar = 0; iVar < nVar; iVar ++)
       delete [] LowMach_Precontioner[iVar];
     delete [] LowMach_Precontioner;
+  }
+
+  if (CMass_Outlet != NULL) {
+    for (iMarker = 0; iMarker < nMarker; iMarker++)
+      delete [] CMass_Outlet[iMarker];
+    delete [] CMass_Outlet;
   }
 
   if (CharacPrimVar != NULL) {
@@ -5095,7 +5111,7 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
     su2double *Normal = NULL, *GridVel = NULL, Area, UnitNormal[3], *NormalArea,
     ProjGridVel = 0.0, turb_ke;
     su2double Density_b, StaticEnergy_b, Enthalpy_b, *Velocity_b, Kappa_b, Chi_b, Energy_b, VelMagnitude2_b, Pressure_b;
-    su2double Density_i, *Velocity_i, ProjVelocity_i = 0.0, Energy_i, VelMagnitude2_i;
+    su2double Density_i, *Velocity_i, ProjVelocity_i = 0.0, Energy_i, VelMagnitude2_i, MassFlow;
     su2double **Jacobian_b, **DubDu;
 
     bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
@@ -5138,14 +5154,16 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
 
         /*--- Get the state i ---*/
 
-        VelMagnitude2_i = 0.0; ProjVelocity_i = 0.0;
+        VelMagnitude2_i = 0.0; ProjVelocity_i = 0.0, MassFlow = 0.0;
+        Density_i = node[iPoint]->GetDensity();
+        Energy_i = node[iPoint]->GetEnergy();
         for (iDim = 0; iDim < nDim; iDim++) {
           Velocity_i[iDim] = node[iPoint]->GetVelocity(iDim);
           ProjVelocity_i += Velocity_i[iDim]*UnitNormal[iDim];
           VelMagnitude2_i += Velocity_i[iDim]*Velocity_i[iDim];
+          MassFlow -= Normal[iDim]*Velocity_i[iDim]*Density_i;
         }
-        Density_i = node[iPoint]->GetDensity();
-        Energy_i = node[iPoint]->GetEnergy();
+        CMass_Outlet[val_marker][iVertex] = MassFlow;
 
         /*--- Compute the boundary state b ---*/
 

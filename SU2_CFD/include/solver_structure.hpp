@@ -6852,6 +6852,7 @@ protected:
   **HeatFlux,    /*!< \brief Heat transfer coefficient for each boundary and vertex. */
   **HeatFluxTarget,    /*!< \brief Heat transfer coefficient for each boundary and vertex. */
   **YPlus,    /*!< \brief Yplus for each boundary and vertex. */
+  **CMass_Outlet,    /*!< \brief Impinging Mass coefficient for each boundary and vertex. */
   ***CharacPrimVar,    /*!< \brief Value of the characteristic variables at each boundary. */
   ***DonorPrimVar,    /*!< \brief Value of the donor variables at each boundary. */
   *ForceInviscid,    /*!< \brief Inviscid force for each boundary. */
@@ -6922,6 +6923,7 @@ protected:
   Total_CD, /*!< \brief Total drag coefficient for all the boundaries. */
   Total_CL,    /*!< \brief Total lift coefficient for all the boundaries. */
   Total_CL_Prev,    /*!< \brief Total lift coefficient for all the boundaries (fixed lift mode). */
+  Total_CMass_Outlet, /*!< \brief Total Mass outlet coefficient for all the boundaries. */
   Total_SolidCD, /*!< \brief Total drag coefficient for all the boundaries. */
   Total_CD_Prev, /*!< \brief Total drag coefficient for all the boundaries (fixed lift mode). */
   Total_NetThrust, /*!< \brief Total drag coefficient for all the boundaries. */
@@ -8365,6 +8367,14 @@ public:
    * \return Value of the pressure coefficient.
    */
   void SetCPressureTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_pressure);
+
+  /*!
+   * \brief Provide the Mass outlet coefficient.
+   * \param[in] val_marker - Surface marker where the coefficient is computed.
+   * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
+   * \return Value of the pressure coefficient.
+   */
+  su2double GetCMass_Outlet(unsigned short val_marker, unsigned long val_vertex);
 
   /*!
    * \brief Value of the characteristic variables at the boundaries.

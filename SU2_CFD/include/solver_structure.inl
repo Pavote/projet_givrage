@@ -1655,6 +1655,8 @@ inline su2double CImpactSolver::GetCPressureTarget(unsigned short val_marker, un
 
 inline void CImpactSolver::SetCPressureTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_pressure) { CPressureTarget[val_marker][val_vertex] = val_pressure; }
 
+inline su2double CImpactSolver::GetCMass_Outlet(unsigned short val_marker, unsigned long val_vertex) { return CMass_Outlet[val_marker][val_vertex]; }
+
 inline su2double *CImpactSolver::GetCharacPrimVar(unsigned short val_marker, unsigned long val_vertex) { return CharacPrimVar[val_marker][val_vertex]; }
 
 inline void CImpactSolver::SetCharacPrimVar(unsigned short val_marker, unsigned long val_vertex, unsigned short val_var, su2double val_value) { CharacPrimVar[val_marker][val_vertex][val_var] = val_value; }
