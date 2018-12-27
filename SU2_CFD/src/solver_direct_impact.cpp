@@ -5103,6 +5103,26 @@ void CImpactSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_containe
 
 }
 
+void CImpactSolver::Impinging_Mass(CGeometry *geometry, CConfig *config) {
+    //cout << "CImpactSolver Impinging_Mass*************************************************************************************" << endl;
+    unsigned long iVertex;
+    unsigned short iMarker, Boundary;
+
+    Total_CMass_Outlet = 0.0;
+
+    for (iMarker = 0; iMarker < nMarker; iMarker++) {
+      Boundary   = config->GetMarker_All_KindBC(iMarker);
+
+      if (Boundary == IMPACT_WALL) {
+        for (iVertex = 0; iVertex < geometry->GetnVertex(iMarker); iVertex++) {
+          Total_CMass_Outlet += CMass_Outlet[iMarker][iVertex];
+          cout << iMarker << " " << iVertex << " " << CMass_Outlet[iMarker][iVertex] << endl;
+        }
+      }
+    }
+}
+
+
 void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_container,
                                  CNumerics *numerics, CConfig *config, unsigned short val_marker) {
     //cout << "CImpactSolver BC_Impact_Wall*************************************************************************************" << endl;

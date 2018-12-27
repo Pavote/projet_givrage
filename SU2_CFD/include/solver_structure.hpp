@@ -1383,6 +1383,13 @@ public:
   virtual void Friction_Forces(CGeometry *geometry, CConfig *config);
 
   /*!
+  * \brief Compute the impinging mass coefficients.
+  * \param[in] geometry - Geometrical definition of the problem.
+  * \param[in] config - Definition of the particular problem.
+  */
+  virtual void Impinging_Mass(CGeometry *geometry, CConfig *config);
+
+  /*!
    * \brief A virtual member.
    * \param[in] geometry - Geometrical definition of the problem.
    * \param[in] solver_container - Container vector with all the solutions.
@@ -2419,6 +2426,12 @@ public:
   virtual su2double GetTotal_CHeat(void);
 
   /*!
+   * \brief Provide the total non dimensional Mass outlet coefficient.
+   * \return Value of impinging mass coefficient (inviscid + viscous contribution).
+   */
+  virtual su2double GetTotal_CMass_Outlet(void);
+
+  /*!
    * \brief A virtual member.
    * \return Value of the lift coefficient (inviscid contribution).
    */
@@ -2674,6 +2687,14 @@ public:
    * \return Value of the pressure coefficient.
    */
   virtual void SetCPressureTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_pressure);
+
+  /*!
+   * \brief Provide the Mass outlet coefficient.
+   * \param[in] val_marker - Surface marker where the coefficient is computed.
+   * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
+   * \return Value of the pressure coefficient.
+   */
+  virtual su2double GetCMass_Outlet(unsigned short val_marker, unsigned long val_vertex);
 
   /*!
    * \brief A virtual member.
@@ -7513,6 +7534,13 @@ public:
    */
   void StoreTurboPerformance(CSolver *solver,  unsigned short inMarkerTP );
 
+  /*!
+  * \brief Compute the impinging mass coefficients.
+  * \param[in] geometry - Geometrical definition of the problem.
+  * \param[in] config - Definition of the particular problem.
+  */
+  void Impinging_Mass(CGeometry *geometry, CConfig *config);
+
  /*!
   * \brief Get the outer state for fluid interface nodes.
   * \param[in] val_marker - marker index
@@ -7828,6 +7856,12 @@ public:
    * \return Value of the NearField pressure coefficient (inviscid + viscous contribution).
    */
   su2double GetTotal_CNearFieldOF(void);
+
+  /*!
+   * \brief Provide the total non dimensional Mass outlet coefficient.
+   * \return Value of impinging mass coefficient (inviscid + viscous contribution).
+   */
+  su2double GetTotal_CMass_Outlet(void);
 
   /*!
    * \author H. Kline
@@ -8180,6 +8214,12 @@ public:
    * \param[in] val_weight - Value of the weight for the custom objective function.
    */
   void SetTotal_Custom_ObjFunc(su2double val_total_custom_objfunc, su2double val_weight);
+
+  /*!
+   * \brief Store the total non dimensional impinging mass coefficient.
+   * \param[in] val_Total_CMass_Outlet - Value of the total impinging mass coefficient.
+   */
+  void SetTotal_CMass_Outlet(su2double val_Total_CMass_Outlet);
 
   /*!
    * \brief Add the value of the custom objective function.

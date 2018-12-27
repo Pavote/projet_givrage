@@ -739,6 +739,24 @@ void CMultiGridIntegration::NonDimensional_Parameters(CGeometry **geometry, CSol
 
       break;
 
+    case RUNTIME_IMPACT_SYS:
+
+      /*--- Calculate the impinging mass ---*/
+
+      solver_container[FinestMesh][IMPACT_SOL]->Impinging_Mass(geometry[FinestMesh], config);
+
+      /*--- Evaluate convergence monitor ---*/
+
+      if (config->GetConvCriteria() == RESIDUAL) {
+        if (config->GetResidual_Func_Flow() == RHO_RESIDUAL) (*monitor) = log10(solver_container[FinestMesh][IMPACT_SOL]->GetRes_RMS(0));
+        else if (config->GetResidual_Func_Flow() == RHO_ENERGY_RESIDUAL) {
+          if (nDim == 2) (*monitor) = log10(solver_container[FinestMesh][IMPACT_SOL]->GetRes_RMS(3));
+          else (*monitor) = log10(solver_container[FinestMesh][IMPACT_SOL]->GetRes_RMS(4));
+        }
+      }
+
+      break;
+
     case RUNTIME_ADJFLOW_SYS:
 
       /*--- Calculate the inviscid and viscous sensitivities ---*/
