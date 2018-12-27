@@ -5114,12 +5114,12 @@ void CImpactSolver::Impinging_Mass(CGeometry *geometry, CConfig *config) {
       Boundary   = config->GetMarker_All_KindBC(iMarker);
 
       if (Boundary == IMPACT_WALL) {
-        for (iVertex = 0; iVertex < geometry->GetnVertex(iMarker); iVertex++) {
+        for (iVertex = 0; iVertex < geometry->nVertex[iMarker]; iVertex++) {
           Total_CMass_Outlet += CMass_Outlet[iMarker][iVertex];
-          cout << iMarker << " " << iVertex << " " << CMass_Outlet[iMarker][iVertex] << endl;
         }
       }
     }
+    Total_CMass_Outlet *= Max_Delta_Time;
 }
 
 
