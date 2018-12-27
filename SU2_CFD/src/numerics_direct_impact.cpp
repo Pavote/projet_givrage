@@ -41,18 +41,7 @@
 
 
 
-CSourceDropletDrag::CSourceDropletDrag(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) {
-
-    /*--- Store the pointer to the constant body force vector. ---*/
-
-    Body_Force_Vector = new su2double[nDim];
-    for (unsigned short iDim = 0; iDim < nDim; iDim++)
-        Body_Force_Vector[iDim] = config->GetBody_Force_Vector()[iDim];
-
-    su2double Droplet_LWC = config->GetDroplet_LWC();
-    su2double Rho_Water = config->GetRho_Water();
-    su2double Droplet_Diameter= config->GetDroplet_Diameter();
-}
+CSourceDropletDrag::CSourceDropletDrag(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) { }
 
 CSourceDropletDrag::~CSourceDropletDrag(void) {
 
@@ -60,36 +49,88 @@ CSourceDropletDrag::~CSourceDropletDrag(void) {
 
 }
 
-void CSourceDropletDrag::ComputeResidual(su2double *val_residual, CConfig *config) {
+void CSourceDropletDrag::ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, CConfig *config) {
 
-    unsigned short iDim;
-    su2double Droplet_LWC = config->GetDroplet_LWC();
+    unsigned short iDim, iVar, jVar;
+    su2double Rho_Air,Mu_Air,T_Air,droplet_reynolds,source_coefficient;
+
     su2double Rho_Water = config->GetRho_Water();
     su2double Droplet_Diameter= config->GetDroplet_Diameter();
-    su2double Vel_air,Rho_Air,Visc_Air,T_Air;
+    bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
 
     /*--- Get the air variable ---*/
+
     Rho_Air = Vair_i[0];
     T_Air = Vair_i[nDim+1];
-    Visc_Air = Vair_i[nDim+2];
-    
+    Mu_Air = Vair_i[nDim+2]; //Dynamic Viscosity
+
+    /*--- Compute droplet_reynolds ---*/
+
+    //droplet_reynolds = |u_air - u _droplet|*Droplet_Diameter/nu_air where nu_air is the kinematic viscosity
+
+    droplet_reynolds = 0;
+
+    for (iDim = 0; iDim < nDim; iDim++){
+      droplet_reynolds += pow((Vair_i[iDim+1] - U_i[iDim+1]/U_i[0]),2);
+    }
+
+    droplet_reynolds = sqrt(droplet_reynolds);
+    droplet_reynolds *= Droplet_Diameter*Rho_Air/Mu_Air;
+
     /*--- Zero the continuity contribution ---*/
 
     val_residual[0] = 0.0;
 
     /*--- Momentum contribution ---*/
 
+    if (droplet_reynolds < 1000)
+    {
+        source_coefficient = (1+ 0.015*pow(droplet_reynolds,0.687))*18*Mu_Air/(Rho_Water*pow(Droplet_Diameter,2));
+    }
+
+    else
+    {
+        source_coefficient = 0;
+        for (iDim = 0; iDim < nDim; iDim++) {
+          source_coefficient += pow((Vair_i[iDim+1] - U_i[iDim+1]/U_i[0]),2);
+        }
+
+        source_coefficient = sqrt(source_coefficient);
+
+        //source_coefficient = 3*|u_air - u_droplet|*rho_air/(10*Droplet_Diameter*rho_water)
+        source_coefficient *= 3*Rho_Air/(10*Droplet_Diameter*Rho_Water);
+    }
+
     for (iDim = 0; iDim < nDim; iDim++) {
-        Vel_air = Vair_i[iDim+1];
-        val_residual[iDim+1] = -Volume * U_i[0] * Body_Force_Vector[iDim] / Droplet_LWC;
-        val_residual[iDim+1] = 0.0;
-    } 
+      val_residual[iDim+1] = source_coefficient*(U_i[0]*Vair_i[iDim+1] - U_i[iDim+1]);
+    }
+
+    val_residual[nDim] -= (1 - Rho_Air/Rho_Water)*U_i[0]*STANDARD_GRAVITY;
+
     /*--- Energy contribution ---*/
 
     val_residual[nDim+1] = 0.0;
-    for (iDim = 0; iDim < nDim; iDim++)
-        val_residual[nDim+1] += -Volume * U_i[iDim+1] * Body_Force_Vector[iDim] / Droplet_LWC;
 
+    /*--- Calculate the source term Jacobian ---*/
+
+    if (implicit) {
+      for (iVar = 0; iVar < nVar; iVar++)
+        for (jVar = 0; jVar < nVar; jVar++)
+          val_Jacobian_i[iVar][jVar] = 0.0;
+      if (nDim == 2) {
+        val_Jacobian_i[1][1] = -source_coefficient;
+        val_Jacobian_i[2][2] = -source_coefficient;
+        val_Jacobian_i[1][0] = source_coefficient*Vair_i[1];
+        val_Jacobian_i[2][0] = source_coefficient*Vair_i[2] - (1 - Rho_Air/Rho_Water)*STANDARD_GRAVITY;
+      } else {
+        val_Jacobian_i[1][1] = -source_coefficient;
+        val_Jacobian_i[2][2] = -source_coefficient;
+        val_Jacobian_i[3][3] = -source_coefficient;
+        val_Jacobian_i[1][0] = source_coefficient*Vair_i[1];
+        val_Jacobian_i[2][0] = source_coefficient*Vair_i[2];
+        val_Jacobian_i[3][0] = source_coefficient*Vair_i[3] - (1 - Rho_Air/Rho_Water)*STANDARD_GRAVITY;
+      }
+    }
 }
 
 CCentLax_Impact::CCentLax_Impact(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) {
@@ -134,7 +175,7 @@ void CCentLax_Impact::ComputeResidual(su2double *val_residual, su2double **val_J
   Enthalpy_i = V_i[nDim+3];                       Enthalpy_j = V_j[nDim+3];
   SoundSpeed_i = V_i[nDim+4];                     SoundSpeed_j = V_j[nDim+4];
   Energy_i = Enthalpy_i - Pressure_i/Density_i;   Energy_j = Enthalpy_j - Pressure_j/Density_j;
-  
+
 
   sq_vel_i = 0.0; sq_vel_j = 0.0;
   for (iDim = 0; iDim < nDim; iDim++) {
