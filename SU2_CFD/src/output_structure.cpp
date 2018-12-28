@@ -4734,7 +4734,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
 
     su2double Total_CL = 0.0, Total_CD = 0.0, Total_CSF = 0.0, Total_CMx = 0.0, Total_CMy = 0.0, Total_CMz = 0.0, Total_CEff = 0.0,
     Total_CEquivArea = 0.0, Total_CNearFieldOF = 0.0, Total_CFx = 0.0, Total_CFy = 0.0, Total_CFz = 0.0, Total_CMerit = 0.0,
-    Total_CT = 0.0, Total_CQ = 0.0, Total_CWave = 0.0, Total_CHeat = 0.0, Total_CMass_Outlet = 0.0,
+    Total_CT = 0.0, Total_CQ = 0.0, Total_CWave = 0.0, Total_CHeat = 0.0, Total_CMassOutlet = 0.0,
     Total_Heat = 0.0, Total_MaxHeat = 0.0, Total_Temperature = 0.0, Total_Custom_ObjFunc = 0.0,
     Total_ComboObj = 0.0, Total_NetThrust = 0.0, Total_Power = 0.0, Total_AeroCD = 0.0, Total_SolidCD = 0.0, Total_IDR = 0.0, Total_IDC = 0.0,
     Total_AoA = 0.0;
@@ -5071,7 +5071,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
 
         Total_CL             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CL();
         Total_CD             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CD();
-        Total_CMass_Outlet   = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CMass_Outlet();
+        Total_CMassOutlet   = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CMassOutlet();
 
         /*--- Flow Residuals ---*/
 
@@ -6019,7 +6019,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
                 if (nDim == 2 ) { cout.width(15); cout << log10(residual_flow[3]); }
                 else { cout.width(15); cout << log10(residual_flow[4]); }
               }
-              cout.width(16); cout << min(10000.0, max(-10000.0, Total_CMass_Outlet));
+              cout.width(16); cout << min(10000.0, max(-10000.0, Total_CMassOutlet));
             }
             cout << endl;
           }

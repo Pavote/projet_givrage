@@ -396,7 +396,7 @@ inline su2double CSolver::GetTotal_AvgTemperature() { return 0; }
 
 inline su2double CSolver::GetTotal_MaxHeatFlux() { return 0; }
 
-inline su2double CSolver::GetTotal_CMass_Outlet() { return 0; }
+inline su2double CSolver::GetTotal_CMassOutlet() { return 0; }
 
 inline su2double CSolver::Get_PressureDrag() { return 0; }
 
@@ -506,7 +506,7 @@ inline su2double CSolver::GetCPressureTarget(unsigned short val_marker, unsigned
 
 inline void CSolver::SetCPressureTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_pressure) { }
 
-inline su2double CSolver::GetCMass_Outlet(unsigned short val_marker, unsigned long val_vertex) { return 0; }
+inline su2double CSolver::GetCMassOutlet(unsigned short val_marker, unsigned long val_vertex) { return 0; }
 
 inline void CSolver::SetHeatFluxTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_heat) { }
 
@@ -1661,7 +1661,7 @@ inline su2double CImpactSolver::GetCPressureTarget(unsigned short val_marker, un
 
 inline void CImpactSolver::SetCPressureTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_pressure) { CPressureTarget[val_marker][val_vertex] = val_pressure; }
 
-inline su2double CImpactSolver::GetCMass_Outlet(unsigned short val_marker, unsigned long val_vertex) { return CMass_Outlet[val_marker][val_vertex]; }
+inline su2double CImpactSolver::GetCMassOutlet(unsigned short val_marker, unsigned long val_vertex) { return CMassOutlet[val_marker][val_vertex]; }
 
 inline su2double *CImpactSolver::GetCharacPrimVar(unsigned short val_marker, unsigned long val_vertex) { return CharacPrimVar[val_marker][val_vertex]; }
 
@@ -1892,7 +1892,7 @@ inline su2double CImpactSolver::GetTotal_HeatFluxDiff() { return Total_HeatFluxD
 
 inline su2double CImpactSolver::GetTotal_CNearFieldOF() { return Total_CNearFieldOF; }
 
-inline su2double CImpactSolver::GetTotal_CMass_Outlet() { return Total_CMass_Outlet; }
+inline su2double CImpactSolver::GetTotal_CMassOutlet() { return Total_CMassOutlet; }
 
 inline void CImpactSolver::AddTotal_ComboObj(su2double val_obj) {Total_ComboObj +=val_obj;}
 
@@ -1938,7 +1938,7 @@ inline void CImpactSolver::SetTotal_DC60(su2double val_Total_DC60) { Total_DC60 
 
 inline void CImpactSolver::SetTotal_Custom_ObjFunc(su2double val_total_custom_objfunc, su2double val_weight) { Total_Custom_ObjFunc = val_total_custom_objfunc*val_weight; }
 
-inline void CImpactSolver::SetTotal_CMass_Outlet(su2double val_Total_CMass_Outlet) { Total_CMass_Outlet = val_Total_CMass_Outlet; }
+inline void CImpactSolver::SetTotal_CMassOutlet(su2double val_Total_CMassOutlet) { Total_CMassOutlet = val_Total_CMassOutlet; }
 
 inline void CImpactSolver::AddTotal_Custom_ObjFunc(su2double val_total_custom_objfunc, su2double val_weight) { Total_Custom_ObjFunc += val_total_custom_objfunc*val_weight; }
 

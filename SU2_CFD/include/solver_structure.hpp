@@ -2429,7 +2429,7 @@ public:
    * \brief Provide the total non dimensional Mass outlet coefficient.
    * \return Value of impinging mass coefficient (inviscid + viscous contribution).
    */
-  virtual su2double GetTotal_CMass_Outlet(void);
+  virtual su2double GetTotal_CMassOutlet(void);
 
   /*!
    * \brief A virtual member.
@@ -2694,7 +2694,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the pressure coefficient.
    */
-  virtual su2double GetCMass_Outlet(unsigned short val_marker, unsigned long val_vertex);
+  virtual su2double GetCMassOutlet(unsigned short val_marker, unsigned long val_vertex);
 
   /*!
    * \brief A virtual member.
@@ -6873,7 +6873,7 @@ protected:
   **HeatFlux,    /*!< \brief Heat transfer coefficient for each boundary and vertex. */
   **HeatFluxTarget,    /*!< \brief Heat transfer coefficient for each boundary and vertex. */
   **YPlus,    /*!< \brief Yplus for each boundary and vertex. */
-  **CMass_Outlet,    /*!< \brief Impinging Mass coefficient for each boundary and vertex. */
+  **CMassOutlet,    /*!< \brief Impinging Mass coefficient for each boundary and vertex. */
   ***CharacPrimVar,    /*!< \brief Value of the characteristic variables at each boundary. */
   ***DonorPrimVar,    /*!< \brief Value of the donor variables at each boundary. */
   *ForceInviscid,    /*!< \brief Inviscid force for each boundary. */
@@ -6944,7 +6944,7 @@ protected:
   Total_CD, /*!< \brief Total drag coefficient for all the boundaries. */
   Total_CL,    /*!< \brief Total lift coefficient for all the boundaries. */
   Total_CL_Prev,    /*!< \brief Total lift coefficient for all the boundaries (fixed lift mode). */
-  Total_CMass_Outlet, /*!< \brief Total Mass outlet coefficient for all the boundaries. */
+  Total_CMassOutlet, /*!< \brief Total Mass outlet coefficient for all the boundaries. */
   Total_SolidCD, /*!< \brief Total drag coefficient for all the boundaries. */
   Total_CD_Prev, /*!< \brief Total drag coefficient for all the boundaries (fixed lift mode). */
   Total_NetThrust, /*!< \brief Total drag coefficient for all the boundaries. */
@@ -7861,7 +7861,7 @@ public:
    * \brief Provide the total non dimensional Mass outlet coefficient.
    * \return Value of impinging mass coefficient (inviscid + viscous contribution).
    */
-  su2double GetTotal_CMass_Outlet(void);
+  su2double GetTotal_CMassOutlet(void);
 
   /*!
    * \author H. Kline
@@ -8217,9 +8217,9 @@ public:
 
   /*!
    * \brief Store the total non dimensional impinging mass coefficient.
-   * \param[in] val_Total_CMass_Outlet - Value of the total impinging mass coefficient.
+   * \param[in] val_Total_CMassOutlet - Value of the total impinging mass coefficient.
    */
-  void SetTotal_CMass_Outlet(su2double val_Total_CMass_Outlet);
+  void SetTotal_CMassOutlet(su2double val_Total_CMassOutlet);
 
   /*!
    * \brief Add the value of the custom objective function.
@@ -8414,7 +8414,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the pressure coefficient.
    */
-  su2double GetCMass_Outlet(unsigned short val_marker, unsigned long val_vertex);
+  su2double GetCMassOutlet(unsigned short val_marker, unsigned long val_vertex);
 
   /*!
    * \brief Value of the characteristic variables at the boundaries.

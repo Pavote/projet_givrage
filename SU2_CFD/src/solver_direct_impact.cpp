@@ -52,7 +52,7 @@ CImpactSolver::CImpactSolver(void) : CSolver() {
   CFx_Mnt = NULL; CFy_Mnt = NULL; CFz_Mnt = NULL;
   CoPx_Mnt = NULL; CoPy_Mnt = NULL; CoPz_Mnt = NULL;
 
-  YPlus = NULL; CMass_Outlet = NULL;
+  YPlus = NULL; CMassOutlet = NULL;
 
   /*--- Surface based array initialization ---*/
 
@@ -234,7 +234,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   CFx_Mnt= NULL;   CFy_Mnt= NULL;   CFz_Mnt= NULL;
   CoPx_Mnt= NULL;   CoPy_Mnt= NULL;   CoPz_Mnt= NULL;
 
-  YPlus = NULL; CMass_Outlet = NULL;
+  YPlus = NULL; CMassOutlet = NULL;
 
   /*--- Surface based array initialization ---*/
 
@@ -571,11 +571,11 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
 
   /*--- Force definition and coefficient arrays for all of the markers ---*/
 
-  CMass_Outlet = new su2double* [nMarker];
+  CMassOutlet = new su2double* [nMarker];
   for (iMarker = 0; iMarker < nMarker; iMarker++) {
-    CMass_Outlet[iMarker] = new su2double [geometry->nVertex[iMarker]];
+    CMassOutlet[iMarker] = new su2double [geometry->nVertex[iMarker]];
     for (iVertex = 0; iVertex < geometry->nVertex[iMarker]; iVertex++) {
-      CMass_Outlet[iMarker][iVertex] = 0.0;
+      CMassOutlet[iMarker][iVertex] = 0.0;
     }
   }
 
@@ -700,7 +700,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   Total_CEff    = 0.0;    Total_CEquivArea   = 0.0;    Total_CNearFieldOF = 0.0;
   Total_CFx     = 0.0;    Total_CFy          = 0.0;    Total_CFz          = 0.0;
   Total_CT      = 0.0;    Total_CQ           = 0.0;    Total_CMerit       = 0.0;
-  Total_ComboObj = 0.0;   Total_CMass_Outlet = 0.0;
+  Total_ComboObj = 0.0;   Total_CMassOutlet = 0.0;
   Total_CpDiff  = 0.0;    Total_Custom_ObjFunc=0.0;
   Total_NetThrust = 0.0;
   Total_Power = 0.0;      AoA_Prev           = 0.0;
@@ -966,10 +966,10 @@ CImpactSolver::~CImpactSolver(void) {
     delete [] LowMach_Precontioner;
   }
 
-  if (CMass_Outlet != NULL) {
+  if (CMassOutlet != NULL) {
     for (iMarker = 0; iMarker < nMarker; iMarker++)
-      delete [] CMass_Outlet[iMarker];
-    delete [] CMass_Outlet;
+      delete [] CMassOutlet[iMarker];
+    delete [] CMassOutlet;
   }
 
   if (CharacPrimVar != NULL) {
@@ -5108,18 +5108,18 @@ void CImpactSolver::Impinging_Mass(CGeometry *geometry, CConfig *config) {
     unsigned long iVertex;
     unsigned short iMarker, Boundary;
 
-    Total_CMass_Outlet = 0.0;
+    Total_CMassOutlet = 0.0;
 
     for (iMarker = 0; iMarker < nMarker; iMarker++) {
       Boundary   = config->GetMarker_All_KindBC(iMarker);
 
       if (Boundary == IMPACT_WALL) {
         for (iVertex = 0; iVertex < geometry->nVertex[iMarker]; iVertex++) {
-          Total_CMass_Outlet += CMass_Outlet[iMarker][iVertex];
+          Total_CMassOutlet += CMassOutlet[iMarker][iVertex];
+          CMassOutlet[iMarker][iVertex] = 0.0;
         }
       }
     }
-    Total_CMass_Outlet *= Max_Delta_Time;
 }
 
 
@@ -5129,8 +5129,9 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
     unsigned short iDim, iVar, jVar, kVar, jDim;
     unsigned long iPoint, iVertex;
     su2double *Normal = NULL, *GridVel = NULL, Area, UnitNormal[3], *NormalArea,
-    ProjGridVel = 0.0, turb_ke;
-    su2double Density_b, StaticEnergy_b, Enthalpy_b, *Velocity_b, Kappa_b, Chi_b, Energy_b, VelMagnitude2_b, Pressure_b;
+    ProjGridVel = 0.0, turb_ke, Delta_Time;
+    su2double Density_b, StaticEnergy_b, Enthalpy_b, *Velocity_b, Kappa_b, Chi_b,
+    Energy_b, VelMagnitude2_b, Pressure_b;
     su2double Density_i, *Velocity_i, ProjVelocity_i = 0.0, Energy_i, VelMagnitude2_i, MassFlow;
     su2double **Jacobian_b, **DubDu;
 
@@ -5138,6 +5139,7 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
     bool grid_movement = config->GetGrid_Movement();
     bool tkeNeeded = (((config->GetKind_Solver() == RANS )|| (config->GetKind_Solver() == DISC_ADJ_RANS)) &&
     (config->GetKind_Turb_Model() == SST));
+    su2double Rho_Water = config->GetRho_Water();
 
     Normal = new su2double[nDim];
     NormalArea = new su2double[nDim];
@@ -5177,13 +5179,14 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
         VelMagnitude2_i = 0.0; ProjVelocity_i = 0.0, MassFlow = 0.0;
         Density_i = node[iPoint]->GetDensity();
         Energy_i = node[iPoint]->GetEnergy();
+        Delta_Time = node[iPoint]->GetDelta_Time();
         for (iDim = 0; iDim < nDim; iDim++) {
           Velocity_i[iDim] = node[iPoint]->GetVelocity(iDim);
           ProjVelocity_i += Velocity_i[iDim]*UnitNormal[iDim];
           VelMagnitude2_i += Velocity_i[iDim]*Velocity_i[iDim];
-          MassFlow -= Normal[iDim]*Velocity_i[iDim]*Density_i;
+          MassFlow -= Normal[iDim]*Velocity_i[iDim]*Density_i*Rho_Water*Delta_Time;
         }
-        CMass_Outlet[val_marker][iVertex] = MassFlow;
+        CMassOutlet[val_marker][iVertex] = MassFlow;
 
         /*--- Compute the boundary state b ---*/
 
