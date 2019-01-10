@@ -5179,12 +5179,11 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
         VelMagnitude2_i = 0.0; ProjVelocity_i = 0.0, MassFlow = 0.0;
         Density_i = node[iPoint]->GetDensity();
         Energy_i = node[iPoint]->GetEnergy();
-        Delta_Time = node[iPoint]->GetDelta_Time();
         for (iDim = 0; iDim < nDim; iDim++) {
           Velocity_i[iDim] = node[iPoint]->GetVelocity(iDim);
           ProjVelocity_i += Velocity_i[iDim]*UnitNormal[iDim];
           VelMagnitude2_i += Velocity_i[iDim]*Velocity_i[iDim];
-          MassFlow -= Normal[iDim]*Velocity_i[iDim]*Density_i*Rho_Water*Delta_Time;
+          MassFlow -= Normal[iDim]*Velocity_i[iDim]*Density_i*Rho_Water;
         }
         CMassOutlet[val_marker][iVertex] = MassFlow;
 
