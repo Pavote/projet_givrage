@@ -2015,7 +2015,6 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
     
     /*--- Definition of the source term integration scheme for each equation and mesh level ---*/
     for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
-      cout << "FM: source init" << endl;
       {numerics_container[iMGlevel][IMPACT_SOL][SOURCE_FIRST_TERM] = new CSourceDropletDrag(nDim, nVar_Flow, config);}
        if (config->GetBody_Force() == YES)
           {numerics_container[iMGlevel][IMPACT_SOL][SOURCE_SECOND_TERM] = new CSourceBodyForce(nDim, nVar_Flow, config);}
@@ -2637,7 +2636,7 @@ void CDriver::Numerics_Postprocessing(CNumerics ****numerics_container,
 
  /*--- Solver definition for the Impact problems ---*/
   if (impact) {
-    cout << "FM: Delete of the convective scheme for each equation and mesh leve" << endl;
+  
     /*--- Definition of the convective scheme for each equation and mesh level ---*/
     switch (config->GetKind_ConvNumScheme_Flow()) {
       
@@ -3916,7 +3915,7 @@ void CFluidDriver::Run() {
 }
 
 void CFluidDriver::Transfer_Data(unsigned short donorZone, unsigned short targetZone) {
-  cout << "FM: Transfer data======================================" << endl;
+ 
   bool MatchingMesh = config_container[targetZone]->GetMatchingMesh();
 
   /*--- Select the transfer method and the appropriate mesh properties (matching or nonmatching mesh) ---*/

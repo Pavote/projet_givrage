@@ -74,7 +74,6 @@ void CIntegration::Space_Integration(CGeometry *geometry,
       solver_container[MainSolver]->Centered_Residual(geometry, solver_container, numerics[CONV_TERM], config, iMesh, iRKStep);
       break;
     case SPACE_UPWIND:
-      cout << "FM: Up integration_structure " << endl;
       solver_container[MainSolver]->Upwind_Residual(geometry, solver_container, numerics[CONV_TERM], config, iMesh);
       break;
   }
@@ -85,7 +84,7 @@ void CIntegration::Space_Integration(CGeometry *geometry,
 
 
   /*--- Compute source term residuals ---*/
-  cout << "FM: Source integration_structure " << endl;
+  
   solver_container[MainSolver]->Source_Residual(geometry, solver_container, numerics[SOURCE_FIRST_TERM], numerics[SOURCE_SECOND_TERM], config, iMesh);
 
   /*--- Add viscous and convective residuals, and compute the Dual Time Source term ---*/
@@ -114,7 +113,6 @@ void CIntegration::Space_Integration(CGeometry *geometry,
         solver_container[MainSolver]->BC_Euler_Wall(geometry, solver_container, numerics[CONV_BOUND_TERM], config, iMarker);
         break;
       case IMPACT_WALL:
-        cout << "FM: Wall integration_structure " << endl;
         solver_container[MainSolver]->BC_Impact_Wall(geometry, solver_container, numerics[CONV_BOUND_TERM], config, iMarker);
         break;
       case ACTDISK_INLET:
@@ -153,7 +151,6 @@ void CIntegration::Space_Integration(CGeometry *geometry,
       	}
       	break;
       case FAR_FIELD:
-        cout << "FM: Farfield integration_structure " << endl;
         solver_container[MainSolver]->BC_Far_Field(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
         break;
       case SYMMETRY_PLANE:

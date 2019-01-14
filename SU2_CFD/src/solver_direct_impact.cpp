@@ -3284,8 +3284,8 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
           solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution_Old(0,LWC);
           Velocity2 = 0.0;
           for (iDim = 0; iDim < nDim; iDim++) {
-            //AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
-            AirVelocity = GetVelocity_Inf(iDim);
+            AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
+            //AirVelocity = GetVelocity_Inf(iDim);
             if (iDim == 0) AirVelocity=AirVelocity;
             solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(iDim+1,LWC*AirVelocity);
             solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution_Old(iDim+1,LWC*AirVelocity);
@@ -3313,8 +3313,8 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
         node[iPoint]->SetDensityAir(AirDensity);
         Velocity2 = 0.0;
         for (iDim = 0; iDim < nDim; iDim++) {
-          //AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
-          AirVelocity = GetVelocity_Inf(iDim);
+          AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
+          //AirVelocity = GetVelocity_Inf(iDim);
           Velocity2 += AirVelocity*AirVelocity;
           node[iPoint]->SetVelocityAir(iDim,AirVelocity);
         }
