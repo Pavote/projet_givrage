@@ -6708,7 +6708,7 @@ void CImpactSolver::Impinging_Mass(CGeometry *geometry, CConfig *config) {
           Velocity_i[iDim] = node[iPoint]->GetVelocity(iDim);
           //ProjVelocity_i += Velocity_i[iDim]*UnitNormal[iDim];
           //VelMagnitude2_i += Velocity_i[iDim]*Velocity_i[iDim];
-          MassFlow -= Normal[iDim]*Velocity_i[iDim]*Density_i*Rho_Water; 
+          MassFlow += UnitNormal[iDim]*Velocity_i[iDim]*Density_i; 
           }
           CMassOutlet[iMarker][iVertex] = MassFlow;
           Total_CMassOutlet += CMassOutlet[iMarker][iVertex];
