@@ -680,11 +680,11 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   /*--- Options related to the IMPACT problem---*/
 
   /* DESCRIPTION: Droplet drag coefficient */
-  addDoubleOption("DROPLET_LWC", Droplet_LWC, 1);
+  addDoubleOption("DROPLET_LWC", Droplet_LWC, 0.001);
   /* DESCRIPTION: Density for water */
-  addDoubleOption("RHO_WATER", Rho_Water, 1);
+  addDoubleOption("RHO_WATER", Rho_Water, 1000.0);
   /* DESCRIPTION: Diameter for droplet */
-  addDoubleOption("DROPLET_DIAMETER", Droplet_Diameter, 1);
+  addDoubleOption("DROPLET_DIAMETER", Droplet_Diameter, 20.0e-6);
 
   /*--- Options related to VAN der WAALS MODEL and PENG ROBINSON ---*/
 
@@ -4552,6 +4552,12 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
       }
 
     }
+    
+    if (Kind_Solver == IMPACT) {
+      cout << "Droplet diameter: " << Droplet_Diameter << endl;
+      cout << "LWC: " << Droplet_LWC << endl;
+      cout << "Droplet density: " << Rho_Water << endl;
+    }
 
     if (EquivArea) {
       cout <<"The equivalent area is going to be evaluated on the near-field."<< endl;
@@ -4591,6 +4597,8 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
     else {
         if (fea) cout << "No restart solution, initialize from undeformed configuration." << endl;
         else cout << "No restart solution, use the values at infinity (freestream)." << endl;
+        if (Kind_Solver == IMPACT){
+          cout << "Read air flow solution from: " << Solution_FlowFileName << "." << endl; }
     }
 
     if (ContinuousAdjoint)

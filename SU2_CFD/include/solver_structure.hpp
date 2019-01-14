@@ -1056,7 +1056,7 @@ public:
    * \param[in] val_marker - Surface marker where the boundary condition is applied.
    */
   virtual void BC_Giles(CGeometry *geometry, CSolver **solver_container,
-                            CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker);
+                        CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker);
 
   /*!
    * \brief A virtual member.
@@ -1381,6 +1381,13 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   virtual void Friction_Forces(CGeometry *geometry, CConfig *config);
+  
+  /*!
+   * \brief Compute the impinging mass coefficients.
+   * \param[in] geometry - Geometrical definition of the problem.
+   * \param[in] config - Definition of the particular problem.
+   */
+   virtual void Impinging_Mass(CGeometry *geometry, CConfig *config);
 
   /*!
    * \brief A virtual member.
@@ -2431,6 +2438,12 @@ public:
   virtual su2double GetAllBound_CD_Inv(void);
 
   /*!
+   * \brief Provide the total non dimensional Mass outlet coefficient.
+   * \return Value of impinging mass coefficient (inviscid + viscous contribution).
+   */
+  virtual su2double GetTotal_CMassOutlet(void);
+
+  /*!
    * \brief A virtual member.
    * \return Value of the drag coefficient (inviscid contribution).
    */
@@ -2692,6 +2705,14 @@ public:
    * \return Value of the pressure coefficient.
    */
   virtual su2double *GetDonorPrimVar(unsigned short val_marker, unsigned long val_vertex);
+  
+   /*!
+   * \brief A virtual member.
+   * \param[in] val_marker - Surface marker where the coefficient is computed.
+   * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
+   * \return Value of the mass flux coefficient.
+   */
+  virtual su2double GetCMassOutlet(unsigned short val_marker, unsigned long val_vertex);
 
   /*!
    * \brief A virtual member.
@@ -6789,6 +6810,7 @@ protected:
   Energy_Inf,      /*!< \brief Energy at the infinity. */
   Temperature_Inf,      /*!< \brief Energy at the infinity. */
   Pressure_Inf,    /*!< \brief Pressure at the infinity. */
+  LWC_Inf,         /*!< \brief Liquid Water Content at the infinity. */  
   *Velocity_Inf;    /*!< \brief Flow Velocity vector at the infinity. */
 
   su2double
@@ -6852,6 +6874,7 @@ protected:
   **HeatFlux,    /*!< \brief Heat transfer coefficient for each boundary and vertex. */
   **HeatFluxTarget,    /*!< \brief Heat transfer coefficient for each boundary and vertex. */
   **YPlus,    /*!< \brief Yplus for each boundary and vertex. */
+  **CMassOutlet,    /*!< \brief Impinging Mass coefficient for each boundary and vertex. */
   ***CharacPrimVar,    /*!< \brief Value of the characteristic variables at each boundary. */
   ***DonorPrimVar,    /*!< \brief Value of the donor variables at each boundary. */
   *ForceInviscid,    /*!< \brief Inviscid force for each boundary. */
@@ -6922,6 +6945,7 @@ protected:
   Total_CD, /*!< \brief Total drag coefficient for all the boundaries. */
   Total_CL,    /*!< \brief Total lift coefficient for all the boundaries. */
   Total_CL_Prev,    /*!< \brief Total lift coefficient for all the boundaries (fixed lift mode). */
+  Total_CMassOutlet, /*!< \brief Total Mass outlet coefficient for all the boundaries. */
   Total_SolidCD, /*!< \brief Total drag coefficient for all the boundaries. */
   Total_CD_Prev, /*!< \brief Total drag coefficient for all the boundaries (fixed lift mode). */
   Total_NetThrust, /*!< \brief Total drag coefficient for all the boundaries. */
@@ -7134,6 +7158,18 @@ public:
    * \return Value of the density at the infinity.
    */
   su2double GetDensity_Inf(void);
+  
+  /*!
+   * \brief Compute the LWC at the infinity.
+   * \return Value of the LWC at the infinity.
+   */
+  su2double GetLWC_Inf(void);
+  
+  /*!
+   * \brief Compute the LWC multiply by energy at the infinity.
+   * \return Value of the LWC multiply by  energy at the infinity.
+   */
+  su2double GetLWC_Energy_Inf(void);
 
   /*!
    * \brief Compute 2-norm of the velocity at the infinity.
@@ -7141,11 +7177,6 @@ public:
    */
   su2double GetModVelocity_Inf(void);
 
-  /*!
-   * \brief Compute the density multiply by energy at the infinity.
-   * \return Value of the density multiply by  energy at the infinity.
-   */
-  su2double GetDensity_Energy_Inf(void);
 
   /*!
    * \brief Compute the pressure at the infinity.
@@ -7153,12 +7184,14 @@ public:
    */
   su2double GetPressure_Inf(void);
 
-  /*!
-   * \brief Compute the density multiply by velocity at the infinity.
+  
+   /*!
+   * \brief Compute the LWC multiply by velocity at the infinity.
    * \param[in] val_dim - Index of the velocity vector.
-   * \return Value of the density multiply by the velocity at the infinity.
+   * \return Value of the LWC multiply by the velocity at the infinity.
    */
-  su2double GetDensity_Velocity_Inf(unsigned short val_dim);
+  su2double GetLWC_Velocity_Inf(unsigned short val_dim);
+
 
   /*!
    * \brief Get the velocity at the infinity.
@@ -7195,6 +7228,17 @@ public:
    */
   void Centered_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                          CConfig *config, unsigned short iMesh, unsigned short iRKStep);
+                         
+  /*!
+   * \brief Compute the spatial integration using a upwind scheme.
+   * \param[in] geometry - Geometrical definition of the problem.
+   * \param[in] solver_container - Container vector with all the solutions.
+   * \param[in] numerics - Description of the numerical method.
+   * \param[in] config - Definition of the particular problem.
+   * \param[in] iMesh - Index of the mesh in multigrid computations.
+   */
+  void Upwind_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
+                       CConfig *config, unsigned short iMesh);
 
   /*!
    * \brief Source term integration.
@@ -7370,6 +7414,19 @@ public:
    */
   void BC_Impact_Wall(CGeometry *geometry, CSolver **solver_container,
                       CNumerics *numerics, CConfig *config, unsigned short val_marker);
+                      
+  /*!
+   * \author: B.Constant, M.Fleurotte, A.Motte, I.Moufid
+   *
+   * \brief Impose via the residual the Euler wall boundary condition.
+   * \param[in] geometry - Geometrical definition of the problem.
+   * \param[in] solver_container - Container vector with all the solutions.
+   * \param[in] numerics - Description of the numerical method.
+   * \param[in] config - Definition of the particular problem.
+   * \param[in] val_marker - Surface marker where the boundary condition is applied.
+   */
+  void BC_Impact_Wall_Old(CGeometry *geometry, CSolver **solver_container,
+                      CNumerics *numerics, CConfig *config, unsigned short val_marker);
 
   /*!
    * \brief Impose the far-field boundary condition using characteristics.
@@ -7510,6 +7567,13 @@ public:
    * \param[in] outMarker - marker related to the outlet.
    */
   void StoreTurboPerformance(CSolver *solver,  unsigned short inMarkerTP );
+
+  /*!
+  * \brief Compute the impinging mass coefficients.
+  * \param[in] geometry - Geometrical definition of the problem.
+  * \param[in] config - Definition of the particular problem.
+  */
+  void Impinging_Mass(CGeometry *geometry, CConfig *config);
 
  /*!
   * \brief Get the outer state for fluid interface nodes.
@@ -7826,6 +7890,8 @@ public:
    * \return Value of the NearField pressure coefficient (inviscid + viscous contribution).
    */
   su2double GetTotal_CNearFieldOF(void);
+  
+  su2double GetTotal_CMassOutlet(void);
 
   /*!
    * \author H. Kline
@@ -8178,6 +8244,12 @@ public:
    * \param[in] val_weight - Value of the weight for the custom objective function.
    */
   void SetTotal_Custom_ObjFunc(su2double val_total_custom_objfunc, su2double val_weight);
+  
+  /*!
+   * \brief Store the total impinging mass coefficient.
+   * \param[in] val_Total_CMassOutlet - Value of the total impinging mass coefficient.
+   */
+  void SetTotal_CMassOutlet(su2double val_Total_CMassOutlet);
 
   /*!
    * \brief Add the value of the custom objective function.
@@ -8365,6 +8437,14 @@ public:
    * \return Value of the pressure coefficient.
    */
   void SetCPressureTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_pressure);
+
+  /*!
+   * \brief Get the value of the impinging mass coefficient.
+   * \param[in] val_marker - Surface marker where the coefficient is computed.
+   * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
+   * \return Value of the impinging coefficient.
+   */
+  su2double GetCMassOutlet(unsigned short val_marker, unsigned long val_vertex);
 
   /*!
    * \brief Value of the characteristic variables at the boundaries.
@@ -8879,7 +8959,7 @@ protected:
   Density_Inf,  /*!< \brief Density at the infinity. */
   Pressure_Inf,    /*!< \brief Pressure at the infinity. */
   *Velocity_Inf,    /*!< \brief Flow Velocity vector at the infinity. */
-  Temperature_Inf;      /*!< \brief Temperature at infinity. */
+  Temperature_Inf;      /*!< \brief Temperature at infinity. */    
 
   su2double
   *CD_Inv,  /*!< \brief Drag coefficient (inviscid contribution) for each boundary. */

@@ -396,6 +396,8 @@ inline su2double CSolver::GetTotal_AvgTemperature() { return 0; }
 
 inline su2double CSolver::GetTotal_MaxHeatFlux() { return 0; }
 
+inline su2double CSolver::GetTotal_CMassOutlet() { return 0; }
+
 inline su2double CSolver::Get_PressureDrag() { return 0; }
 
 inline su2double CSolver::Get_ViscDrag() { return 0; }
@@ -503,6 +505,8 @@ inline su2double CSolver::GetCPressure(unsigned short val_marker, unsigned long 
 inline su2double CSolver::GetCPressureTarget(unsigned short val_marker, unsigned long val_vertex) { return 0; }
 
 inline void CSolver::SetCPressureTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_pressure) { }
+
+inline su2double CSolver::GetCMassOutlet(unsigned short val_marker, unsigned long val_vertex) { return 0; }
 
 inline void CSolver::SetHeatFluxTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_heat) { }
 
@@ -848,6 +852,8 @@ inline void CSolver::Pressure_Forces(CGeometry *geometry, CConfig *config) { }
 inline void CSolver::Momentum_Forces(CGeometry *geometry, CConfig *config) { }
 
 inline void CSolver::Friction_Forces(CGeometry *geometry, CConfig *config) { }
+
+inline void CSolver::Impinging_Mass(CGeometry *geometry, CConfig *config) { }
 
 inline void CSolver::Heat_Fluxes(CGeometry *geometry, CSolver **solver_container, CConfig *config) { }
 
@@ -1632,6 +1638,8 @@ inline void CEulerSolver::SetTemperature_Inf(su2double t_inf) {Temperature_Inf =
 
 inline su2double CImpactSolver::GetDensity_Inf(void) { return Density_Inf; }
 
+inline su2double CImpactSolver::GetLWC_Inf(void) { return LWC_Inf; }
+
 inline su2double CImpactSolver::GetModVelocity_Inf(void) {
   su2double Vel2 = 0;
   for (unsigned short iDim = 0; iDim < nDim; iDim++)
@@ -1639,9 +1647,9 @@ inline su2double CImpactSolver::GetModVelocity_Inf(void) {
   return sqrt(Vel2);
 }
 
-inline su2double CImpactSolver::GetDensity_Energy_Inf(void) { return Density_Inf*Energy_Inf; }
+inline su2double CImpactSolver::GetLWC_Energy_Inf(void) { return LWC_Inf*Energy_Inf; }
 
-inline su2double CImpactSolver::GetDensity_Velocity_Inf(unsigned short val_dim) { return Density_Inf*Velocity_Inf[val_dim]; }
+inline su2double CImpactSolver::GetLWC_Velocity_Inf(unsigned short val_dim) { return LWC_Inf*Velocity_Inf[val_dim]; }
 
 inline su2double CImpactSolver::GetVelocity_Inf(unsigned short val_dim) { return Velocity_Inf[val_dim]; }
 
@@ -1650,6 +1658,8 @@ inline su2double *CImpactSolver::GetVelocity_Inf(void) { return Velocity_Inf; }
 inline su2double CImpactSolver::GetPressure_Inf(void) { return Pressure_Inf; }
 
 inline su2double CImpactSolver::GetCPressure(unsigned short val_marker, unsigned long val_vertex) { return CPressure[val_marker][val_vertex]; }
+
+inline su2double CImpactSolver::GetCMassOutlet(unsigned short val_marker, unsigned long val_vertex) { return CMassOutlet[val_marker][val_vertex]; }
 
 inline su2double CImpactSolver::GetCPressureTarget(unsigned short val_marker, unsigned long val_vertex) { return CPressureTarget[val_marker][val_vertex]; }
 
@@ -1884,6 +1894,8 @@ inline su2double CImpactSolver::GetTotal_HeatFluxDiff() { return Total_HeatFluxD
 
 inline su2double CImpactSolver::GetTotal_CNearFieldOF() { return Total_CNearFieldOF; }
 
+inline su2double CImpactSolver::GetTotal_CMassOutlet() { return Total_CMassOutlet; }
+
 inline void CImpactSolver::AddTotal_ComboObj(su2double val_obj) {Total_ComboObj +=val_obj;}
 
 inline void CImpactSolver::SetTotal_CEquivArea(su2double val_cequivarea) { Total_CEquivArea = val_cequivarea; }
@@ -1927,6 +1939,8 @@ inline void CImpactSolver::SetTotal_IDR(su2double val_Total_IDR) { Total_IDR = v
 inline void CImpactSolver::SetTotal_DC60(su2double val_Total_DC60) { Total_DC60 = val_Total_DC60; }
 
 inline void CImpactSolver::SetTotal_Custom_ObjFunc(su2double val_total_custom_objfunc, su2double val_weight) { Total_Custom_ObjFunc = val_total_custom_objfunc*val_weight; }
+
+inline void CImpactSolver::SetTotal_CMassOutlet(su2double val_Total_CMassOutlet) { Total_CMassOutlet = val_Total_CMassOutlet; }
 
 inline void CImpactSolver::AddTotal_Custom_ObjFunc(su2double val_total_custom_objfunc, su2double val_weight) { Total_Custom_ObjFunc += val_total_custom_objfunc*val_weight; }
 

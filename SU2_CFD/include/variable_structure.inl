@@ -317,6 +317,16 @@ inline su2double* CVariable::GetVorticity(void) { return 0; }
 
 inline su2double CVariable::GetStrainMag(void) { return 0; }
 
+inline su2double CVariable::GetVelocityAir2(void) { return 0; }
+
+inline su2double CVariable::GetVelocityAir(unsigned short val_dim) { return 0; }
+
+inline su2double CVariable::GetDensityAir(void) { return 0; }
+
+inline su2double CVariable::GetTemperatureAir(void) { return 0; }
+
+inline su2double CVariable::GetViscosityAir(void) { return 0; }
+
 inline void CVariable::SetForceProj_Vector(su2double *val_ForceProj_Vector) { }
 
 inline void CVariable::SetObjFuncSource(su2double *val_ObjFuncSource) { }
@@ -440,6 +450,10 @@ inline void CVariable::SetThermalCoeff(CConfig *config) { }
 inline void CVariable::SetVelocity(void) { }
 
 inline void CVariable::SetVelocity2(void) { }
+
+inline void CVariable::SetVelocityAir(su2double *val_velocity) { }
+
+inline void CVariable::SetVelocityAir(unsigned short val_var, su2double val_velocity) { }
 
 inline void CVariable::SetVelocity_Old(su2double *val_velocity) { }
 
@@ -696,6 +710,12 @@ inline void CVariable::SetVortex_Tilting(su2double **PrimGrad_Flow, su2double* V
 
 inline su2double CVariable::GetVortex_Tilting() { return 0.0; }
 
+inline void CVariable::SetDensityAir(su2double DensAir) { }
+
+inline void CVariable::SetTemperatureAir(su2double TAir) { }
+
+inline void CVariable::SetViscosityAir(su2double nuAir) { }
+
 inline su2double CEulerVariable::GetSolution_New(unsigned short val_var) { return Solution_New[val_var]; }
 
 inline su2double CImpactVariable::GetSolution_New(unsigned short val_var) { return Solution_New[val_var]; }
@@ -891,23 +911,25 @@ inline su2double CImpactVariable::GetVelocity(unsigned short val_dim) { return P
 
 inline su2double CImpactVariable::GetVelocity2(void) { return Velocity2; }
 
-inline su2double CVariable::GetVelocityAir(unsigned short val_dim) { return Solution_Air[val_dim+1]; }
+inline su2double CImpactVariable::GetVelocityAir2(void) { return VelocityAir2; }
 
-inline su2double CVariable::GetDensityAir(void) { return Solution_Air[0]; }
+inline su2double CImpactVariable::GetVelocityAir(unsigned short val_dim) { return Solution_Air[val_dim+1]; }
 
-inline su2double CVariable::GetTemperatureAir(void) { return Solution_Air[nDim+1]; }
+inline su2double CImpactVariable::GetDensityAir(void) { return Solution_Air[0]; }
 
-inline su2double CVariable::GetViscosityAir(void) { return Solution_Air[nDim+2]; }
+inline su2double CImpactVariable::GetTemperatureAir(void) { return Solution_Air[nDim+1]; }
+
+inline su2double CImpactVariable::GetViscosityAir(void) { return Solution_Air[nDim+2]; }
 
 
 inline bool CImpactVariable::SetDensity(void) {
   Primitive[nDim+2] = Solution[0];
-  if (Primitive[nDim+2] > 0.0) return false;
+  if (Primitive[nDim+2] > 0.0 +1.e-6) return false;
   else return true;
 }
 
 inline bool CImpactVariable::SetPressure(su2double pressure) {
-  Primitive[nDim+1] = pressure;
+  Primitive[nDim+1] = 1.0e-6;
   if (Primitive[nDim+1] > 0.0) return false;
   else return true;
 }
@@ -915,21 +937,27 @@ inline bool CImpactVariable::SetPressure(su2double pressure) {
 inline void CImpactVariable::SetVelocity(void) {
   Velocity2 = 0.0;
   for (unsigned short iDim = 0; iDim < nDim; iDim++) {
-    Primitive[iDim+1] = Solution[iDim+1] / Solution[0];
+    Primitive[iDim+1] = Solution[iDim+1] / (Solution[0] + EPS);
     Velocity2 += Primitive[iDim+1]*Primitive[iDim+1];
   }
 }
 
-inline void CVariable::SetVelocityAir(su2double *val_velocity) {
-  for (unsigned short iDim = 0; iDim < nDim; iDim++)
+inline void CImpactVariable::SetVelocityAir(su2double *val_velocity) {
+  VelocityAir2 = 0.0;
+  for (unsigned short iDim = 0; iDim < nDim; iDim++) {
     Solution_Air[iDim+1] = val_velocity[iDim];
+    VelocityAir2 += Solution_Air[iDim+1]*Solution_Air[iDim+1];
+  }
 }
 
 
-inline void CImpactVariable::SetEnthalpy(void) { Primitive[nDim+3] = (Solution[nVar-1] + Primitive[nDim+1]) / Solution[0]; }
+inline void CImpactVariable::SetEnthalpy(void) { 
+  //Primitive[nDim+3] = (Solution[nVar-1]) / Solution[0];
+    Primitive[nDim+3] = 1.0;
+    }
 
 inline bool CImpactVariable::SetSoundSpeed(su2double soundspeed2) {
-  su2double radical = soundspeed2;
+  su2double radical = 1.0e-6;
   if (radical < 0.0) return true;
   else {
     Primitive[nDim+4] = sqrt(radical);
@@ -1037,19 +1065,19 @@ inline void CImpactVariable::Set_BGSSolution_k(void) {
     Solution_BGS_k[iVar] = Solution[iVar];
 }
 
-inline void CVariable::SetVelocityAir(unsigned short iDim, su2double VelAir) {
+inline void CImpactVariable::SetVelocityAir(unsigned short iDim, su2double VelAir) {
   Solution_Air[iDim+1] = VelAir;
 }
 
-inline void CVariable::SetDensityAir(su2double DensAir) {
+inline void CImpactVariable::SetDensityAir(su2double DensAir) {
   Solution_Air[0] = DensAir;
 }
 
-inline void CVariable::SetTemperatureAir(su2double TAir) {
+inline void CImpactVariable::SetTemperatureAir(su2double TAir) {
   Solution_Air[nDim+1] = TAir;
 }
 
-inline void CVariable::SetViscosityAir(su2double nuAir) {
+inline void CImpactVariable::SetViscosityAir(su2double nuAir) {
   Solution_Air[nDim+2] = nuAir;
 }
 

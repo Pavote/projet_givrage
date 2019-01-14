@@ -791,6 +791,20 @@ public:
                                   su2double *val_pressure, su2double *val_betainc2,
                                   su2double *val_enthalpy,
                                   su2double *val_normal, su2double *val_Proj_Flux);
+                                  
+   /*!
+   * \brief Compute the projected inviscid flux vector.
+   * \param[in] val_density - Pointer to the density.
+   * \param[in] val_velocity - Pointer to the velocity.
+   * \param[in] val_enthalpy - Pointer to the enthalpy.
+   * \param[in] val_normal - Normal vector, the norm of the vector is the area of the face.
+   * \param[out] val_Proj_Flux - Pointer to the projected flux.
+   */
+   void GetInviscidPlessProjFlux(su2double *val_density,
+                                    su2double *val_velocity,
+                                    su2double *val_enthalpy,
+                                    su2double *val_normal,
+                                    su2double *val_Proj_Flux);
   
   /*!
    * \brief Compute the projection of the viscous fluxes into a direction.
@@ -894,6 +908,18 @@ public:
                                  su2double *val_normal,
                                  su2double val_scale,
                                  su2double **val_Proj_Jac_Tensor);
+
+  /*!
+   * \brief Compute the projection of the inviscid Jacobian matrices for pressureless gas.
+   * \param[in] val_velocity Pointer to the velocity.
+   * \param[in] val_energy Value of the energy.
+   * \param[in] val_normal - Normal vector, the norm of the vector is the area of the face.
+   * \param[in] val_scale - Scale of the projection.
+   * \param[out] val_Proj_Jac_tensor - Pointer to the projected inviscid Jacobian.
+   */
+  void GetInviscidPlessProjJac(su2double *val_velocity, su2double *val_energy,
+                                   su2double *val_normal, su2double val_scale,
+                                   su2double **val_Proj_Jac_Tensor);
 
   /*!
    * \brief Compute the low speed preconditioning matrix.
@@ -1045,6 +1071,18 @@ public:
                   su2double *val_soundspeed, su2double *val_normal,
                   su2double **val_p_tensor);
   
+    /*!
+   * \brief Computation of the matrix P, this matrix diagonalize the conservative Jacobians in
+   *        the form $P^{-1}(A.Normal)P=Lambda$.
+   * \param[in] val_density - Value of the density.
+   * \param[in] val_velocity - Value of the velocity.
+   * \param[in] val_enthalpy - Value of the Enthalpy
+   * \param[in] val_normal - Normal vector, the norm of the vector is the area of the face.
+   * \param[out] val_p_tensor - Pointer to the P matrix.
+   */
+   void GetPlessPMatrix(su2double *val_density, su2double *val_velocity,
+                           su2double val_enthalpy, su2double *val_normal, su2double **val_p_tensor); 
+  
   /*!
    * \brief Computation of the matrix Rinv*Pe.
    * \param[in] Beta2 - A variable in used to define Pe matrix.
@@ -1159,6 +1197,18 @@ public:
   void GetPMatrix_inv(su2double *val_density, su2double *val_velocity,
                       su2double *val_soundspeed, su2double *val_normal,
                       su2double **val_invp_tensor);
+
+ /*!
+   * \brief Computation of the matrix P^{-1}, this matrix Jordanize the conservative Jacobians
+   *        in the form $P^{-1}(A.Normal)P=Lambda$.
+   * \param[in] val_density - Value of the density.
+   * \param[in] val_velocity - Value of the velocity.
+   * \param[in] val_enthalpy- Value of the enthalpy.
+   * \param[in] val_normal - Normal vector, the norm of the vector is the area of the face.
+   * \param[out] val_invp_tensor - Pointer to inverse of the P matrix.
+   */
+   void GetPlessPMatrix_inv(su2double *val_density, su2double *val_velocity,
+                           su2double val_enthalpy, su2double *val_normal, su2double **val_p_tensor); 
   
   /*!
    * \brief Compute viscous residual and jacobian.
@@ -5229,7 +5279,9 @@ public:
  * \author B. Constant, M. Fleurotte, A. Motte, I. Moufid
  */
 class CSourceDropletDrag : public CNumerics {
-    su2double *Body_Force_Vector;
+
+private:
+    su2double Droplet_LWC, Rho_Water, Droplet_Diameter;
     
 public:
     
@@ -5250,7 +5302,7 @@ public:
    * \param[out] val_residual - Pointer to the residual vector.
    * \param[in] config - Definition of the particular problem.
    */
-  void ComputeResidual(su2double *val_residual, CConfig *config);
+  void ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, CConfig *config);
     
 };
 

@@ -1025,6 +1025,12 @@ public:
    * \return Norm 2 of the velocity vector of Fluid val_species.
    */
   virtual su2double GetVelocity2(unsigned short val_species);
+  
+  /*!
+   * \brief A virtual member.
+   * \return Norm 2 of the velocity vector.
+   */
+  virtual su2double GetVelocityAir2(void);
 
   /*!
    * \brief A virtual member.
@@ -2420,59 +2426,59 @@ public:
    * \brief Set the air velocity vector from the air solution.
    * \param[in] val_velocity - Pointer to the air velocity.
    */
-   void SetVelocityAir(su2double *val_velocity);
+   virtual void SetVelocityAir(su2double *val_velocity);
   
   /*!
    * \brief Set the air velocity vector from the air solution.
    * \param[in] val_velocity - Pointer to the air velocity.
    */
-  void SetVelocityAir(unsigned short val_var, su2double val_velocity);
+  virtual void SetVelocityAir(unsigned short val_var, su2double val_velocity);
 
   /*!
    * \brief Set the air velocity vector from the air solution.
    * \param[in] val_velocity - Pointer to the air velocity.
    */
-  void SetTemperatureAir(su2double val_temp);
+  virtual void SetTemperatureAir(su2double val_temp);
   
   /*!
    * \brief Set the air density.
    * \return Value of the air density.
    */
-  void SetDensityAir(su2double density); 
+  virtual void SetDensityAir(su2double density); 
   
    /*!
    * \brief Set the air viscosity.
    * \return Value of the air density.
    */
-  void SetViscosityAir(su2double density); 
+  virtual void SetViscosityAir(su2double density); 
   
    /*!
    * \brief A virtual member.
    * \param[in] val_dim - Index of the dimension.
    * \return Value of the air velocity for the dimension <i>val_dim</i>.
    */
-  su2double GetVelocityAir(unsigned short val_dim);
+  virtual su2double GetVelocityAir(unsigned short val_dim);
   
   /*!
    * \brief A virtual member.
    * \param[in] val_dim - Index of the dimension.
    * \return Value of the air velocity for the dimension <i>val_dim</i>.
    */
-  su2double GetDensityAir(void); 
+  virtual su2double GetDensityAir(void); 
   
   /*!
    * \brief A virtual member.
    * \param[in] val_dim - Index of the dimension.
    * \return Value of the air velocity for the dimension <i>val_dim</i>.
    */
-  su2double GetViscosityAir(void); 
+  virtual su2double GetViscosityAir(void); 
   
   /*!
    * \brief A virtual member.
    * \param[in] val_dim - Index of the dimension.
    * \return Value of the air velocity for the dimension <i>val_dim</i>.
    */
-  su2double GetTemperatureAir(void); 
+  virtual su2double GetTemperatureAir(void); 
 
 };
 
@@ -3701,7 +3707,7 @@ public:
  */
 class CImpactVariable : public CVariable {
 protected:
-  su2double  Velocity2;      /*!< \brief Square of the velocity vector. */
+  su2double  Velocity2,VelocityAir2;      /*!< \brief Square of the velocity vector. */
   su2double *HB_Source;     /*!< \brief harmonic balance source term. */
   su2double  Precond_Beta;  /*!< \brief Low Mach number preconditioner value, Beta. */
   su2double *WindGust;      /*! < \brief Wind gust value */
@@ -4017,6 +4023,12 @@ public:
    * \return Norm 2 of the velocity vector.
    */
   su2double GetVelocity2(void);
+  
+   /*!
+   * \brief Get the norm 2 of the velocity.
+   * \return Norm 2 of the velocity vector.
+   */
+  su2double GetVelocityAir2(void);
 
   /*!
    * \brief Get the flow pressure.
@@ -4141,6 +4153,64 @@ public:
    * \param[out] val_solution - solution in the previous BGS subiteration.
    */
   su2double Get_BGSSolution_k(unsigned short iDim);
+  
+  /*!
+   * \brief Set the air velocity vector from the air solution.
+   * \param[in] val_velocity - Pointer to the air velocity.
+   */
+   void SetVelocityAir(su2double *val_velocity);
+  
+  /*!
+   * \brief Set the air velocity vector from the air solution.
+   * \param[in] val_velocity - Pointer to the air velocity.
+   */
+  void SetVelocityAir(unsigned short val_var, su2double val_velocity);
+
+  /*!
+   * \brief Set the air velocity vector from the air solution.
+   * \param[in] val_velocity - Pointer to the air velocity.
+   */
+  void SetTemperatureAir(su2double val_temp);
+  
+  /*!
+   * \brief Set the air density.
+   * \return Value of the air density.
+   */
+  void SetDensityAir(su2double density); 
+  
+   /*!
+   * \brief Set the air viscosity.
+   * \return Value of the air density.
+   */
+  void SetViscosityAir(su2double density); 
+  
+   /*!
+   * \brief A virtual member.
+   * \param[in] val_dim - Index of the dimension.
+   * \return Value of the air velocity for the dimension <i>val_dim</i>.
+   */
+  su2double GetVelocityAir(unsigned short val_dim);
+  
+  /*!
+   * \brief A virtual member.
+   * \param[in] val_dim - Index of the dimension.
+   * \return Value of the air velocity for the dimension <i>val_dim</i>.
+   */
+  su2double GetDensityAir(void); 
+  
+  /*!
+   * \brief A virtual member.
+   * \param[in] val_dim - Index of the dimension.
+   * \return Value of the air velocity for the dimension <i>val_dim</i>.
+   */
+  su2double GetViscosityAir(void); 
+  
+  /*!
+   * \brief A virtual member.
+   * \param[in] val_dim - Index of the dimension.
+   * \return Value of the air velocity for the dimension <i>val_dim</i>.
+   */
+  su2double GetTemperatureAir(void); 
   
 };
 
@@ -4322,6 +4392,7 @@ public:
    * \return Norm 2 of the velocity vector.
    */
   su2double GetVelocity2(void);
+ 
 
   /*!
    * \brief Get the flow pressure.

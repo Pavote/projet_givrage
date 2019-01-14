@@ -2015,6 +2015,7 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
     
     /*--- Definition of the source term integration scheme for each equation and mesh level ---*/
     for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
+      cout << "FM: source init" << endl;
       {numerics_container[iMGlevel][IMPACT_SOL][SOURCE_FIRST_TERM] = new CSourceDropletDrag(nDim, nVar_Flow, config);}
        if (config->GetBody_Force() == YES)
           {numerics_container[iMGlevel][IMPACT_SOL][SOURCE_SECOND_TERM] = new CSourceBodyForce(nDim, nVar_Flow, config);}
@@ -2026,10 +2027,9 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
         {numerics_container[iMGlevel][IMPACT_SOL][SOURCE_SECOND_TERM] = new CSourceGravity(nDim, nVar_Flow, config);}
       else if (config->GetWind_Gust() == YES)
         {numerics_container[iMGlevel][IMPACT_SOL][SOURCE_SECOND_TERM] = new CSourceWindGust(nDim, nVar_Flow, config);}
-      else
-        {numerics_container[iMGlevel][IMPACT_SOL][SOURCE_FIRST_TERM] = new CSourceNothing(nDim, nVar_Flow, config);}
-
-        numerics_container[iMGlevel][IMPACT_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Flow, config);
+      else {
+        numerics_container[iMGlevel][IMPACT_SOL][SOURCE_SECOND_TERM] = new CSourceNothing(nDim, nVar_Flow, config);}
+      
     }
 
   }

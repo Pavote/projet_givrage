@@ -515,6 +515,10 @@ inline su2double CConfig::GetPressure_Ref(void) { return Pressure_Ref; }
 
 inline su2double CConfig::GetTemperature_Ref(void) { return Temperature_Ref; }
 
+inline su2double CConfig::GetLWC_Ref(void) { return LWC_Ref; }
+
+inline su2double CConfig::GetLWC_FreeStreamND(void) { return LWC_FreeStreamND; }
+
 inline su2double CConfig::GetDensity_Ref(void) { return Density_Ref; }
 
 inline su2double CConfig::GetVelocity_Ref(void) { return Velocity_Ref; }
@@ -683,6 +687,10 @@ inline void CConfig::SetPressure_Ref(su2double val_pressure_ref) { Pressure_Ref 
 inline void CConfig::SetDensity_Ref(su2double val_density_ref) { Density_Ref = val_density_ref; }
 
 inline void CConfig::SetTemperature_Ref(su2double val_temperature_ref) { Temperature_Ref = val_temperature_ref; }
+
+inline void CConfig::SetLWC_Ref(su2double val_LWC_ref) { LWC_Ref = val_LWC_ref; }
+
+inline void CConfig::SetLWC_FreeStreamND(su2double val_LWC_ND) { LWC_FreeStreamND = val_LWC_ND; }
 
 inline void CConfig::SetTime_Ref(su2double val_time_ref) { Time_Ref = val_time_ref; }
 
