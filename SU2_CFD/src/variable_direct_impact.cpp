@@ -161,6 +161,7 @@ CImpactVariable::CImpactVariable(su2double val_density, su2double *val_velocity,
   }
 
   /*--- Solution and old solution initialization ---*/
+  /*--- This solution initialization is replaced latter by the air solution velocity ---*/
 
   Solution[0] = val_density;
   Solution_Old[0] = val_density;
@@ -170,6 +171,10 @@ CImpactVariable::CImpactVariable(su2double val_density, su2double *val_velocity,
   }
   Solution[nVar-1] = val_density*val_energy;
   Solution_Old[nVar-1] = val_density*val_energy;
+  
+  /*--- Impose initial LWC to zero at wall ---*/
+  //for (iVertex = 0; iVertex < geometry->nVertex[val_marker]; iVertex++) {
+    //iPoint = geometry->vertex[val_marker][iVertex]->GetNode();
 
   /*--- New solution initialization for Classical RK4 ---*/
 
@@ -477,26 +482,32 @@ bool CImpactVariable::SetPrimVar(CFluidModel *FluidModel) {
   SetVelocity();   // Computes velocity and velocity^2
   su2double density = GetDensity();
   su2double staticEnergy = GetEnergy()-0.5*Velocity2;
+  su2double cpwater = 4185; //should be put in config file in the future
 
   /*--- Check will be moved inside fluid model plus error description strings ---*/
-
-  FluidModel->SetTDState_rhoe(density, staticEnergy);
+  /*--- this is not needed for pressureless gas or define a new fluid model ---*/
+  //FluidModel->SetTDState_rhoe(density, staticEnergy);
   
   check_dens = SetDensity();
-  /*--- FM la vitess du son et la pression n'ont pas de sens pour impact ---*/
-  check_press = SetPressure(FluidModel->GetPressure());
-  check_sos = SetSoundSpeed(FluidModel->GetSoundSpeed2());
+  /*--- FM: pressure and sound speed are set to zero for pressureless gas, to be removed ---*/
+  //check_press = SetPressure(FluidModel->GetPressure());
+  //check_sos = SetSoundSpeed(FluidModel->GetSoundSpeed2());
   /*--- FM ---*/
-  check_temp = SetTemperature(FluidModel->GetTemperature());
+  //cout << "FM: static energy SetPrimVar " << staticEnergy << " energy " << GetEnergy() << " Vel " << Velocity2 << endl;
+  //check_temp = SetTemperature(staticEnergy/cpwater);
 
   /*--- Check that the solution has a physical meaning ---*/
 
-  if (check_dens || check_press || check_sos || check_temp) {
+  if (check_dens || check_temp) {
 
     /*--- Copy the old solution ---*/
-
+    //if ( density < -1.0 ) cout << "FM: cp old solution "  << density << " V " << Velocity2 << endl;
+    Solution[0] = (Solution_Old[0]+1.e-6)/2.0;
     for (iVar = 0; iVar < nVar; iVar++)
-      Solution[iVar] = Solution_Old[iVar];
+      Solution[iVar+1] = Solution[0]*GetVelocityAir(iVar);
+      //Solution[iVar+1] = Solution_Old[iVar+1]/Solution[0];
+      //Solution[iVar+1] = Solution_Old[iVar];
+      Solution[nVar] = Solution_Old[nVar]*Solution[0]/Solution_Old[0];
 
     /*--- Recompute the primitive variables ---*/
 
@@ -504,20 +515,20 @@ bool CImpactVariable::SetPrimVar(CFluidModel *FluidModel) {
     su2double density = GetDensity();
     su2double staticEnergy = GetEnergy()-0.5*Velocity2;
     /* check will be moved inside fluid model plus error description strings*/
-    FluidModel->SetTDState_rhoe(density, staticEnergy);
+    //FluidModel->SetTDState_rhoe(density, staticEnergy);
 
     SetDensity();
-    SetPressure(FluidModel->GetPressure());
-    SetSoundSpeed(FluidModel->GetSoundSpeed2());
-    SetTemperature(FluidModel->GetTemperature());
+    //SetPressure(FluidModel->GetPressure());
+    //SetSoundSpeed(FluidModel->GetSoundSpeed2());
+    SetTemperature(staticEnergy/cpwater);
 
     RightVol = false;
 
   }
 
   /*--- Set enthalpy ---*/
-
-  SetEnthalpy();                                // Requires pressure computation.
+  
+  SetEnthalpy();                             
   
   
   
@@ -528,8 +539,9 @@ bool CImpactVariable::SetPrimVar(CFluidModel *FluidModel) {
 void CImpactVariable::SetSecondaryVar(CFluidModel *FluidModel) {
 
    /*--- Compute secondary thermo-physical properties (partial derivatives...) ---*/
+   /*--- For pressureless gas no link between Pressure, density, and energy ---*/
 
-   SetdPdrho_e(FluidModel->GetdPdrho_e());
-   SetdPde_rho(FluidModel->GetdPde_rho());
+   SetdPdrho_e(0.0);
+   SetdPde_rho(0.0);
 
 }

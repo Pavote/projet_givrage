@@ -39,7 +39,7 @@
 
 CImpactSolver::CImpactSolver(void) : CSolver() {
 
-  cout << "CImpactSolver*************************************************************************************" << endl;
+  //cout << "CImpactSolver*************************************************************************************" << endl;
   /*--- Basic array initialization ---*/
 
   CD_Inv = NULL; CL_Inv = NULL; CSF_Inv = NULL;  CEff_Inv = NULL;
@@ -52,7 +52,7 @@ CImpactSolver::CImpactSolver(void) : CSolver() {
   CFx_Mnt = NULL; CFy_Mnt = NULL; CFz_Mnt = NULL;
   CoPx_Mnt = NULL; CoPy_Mnt = NULL; CoPz_Mnt = NULL;
 
-  YPlus = NULL;
+  YPlus = NULL; CMassOutlet = NULL;
 
   /*--- Surface based array initialization ---*/
 
@@ -166,7 +166,7 @@ CImpactSolver::CImpactSolver(void) : CSolver() {
 
 CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned short iMesh) : CSolver() {
 
-  cout << "CImpactSolver*************************************************************************************" << endl;
+  //cout << "CImpactSolver ***********************************************************************************" << endl;
   unsigned long iPoint, counter_local = 0, counter_global = 0, iVertex;
   unsigned short iVar, iDim, iMarker, nLineLets;
   su2double StaticEnergy, Density, Velocity2, Pressure, Temperature;
@@ -234,7 +234,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   CFx_Mnt= NULL;   CFy_Mnt= NULL;   CFz_Mnt= NULL;
   CoPx_Mnt= NULL;   CoPy_Mnt= NULL;   CoPz_Mnt= NULL;
 
-  YPlus = NULL;
+  YPlus = NULL; CMassOutlet = NULL;
 
   /*--- Surface based array initialization ---*/
 
@@ -358,7 +358,6 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   //FM nPrimVar = nPrimVar+nDim+3;
   nSecondaryVar = 2; nSecondaryVarGrad = 2;
 
-
   /*--- Initialize nVarGrad for deallocation ---*/
 
   nVarGrad = nPrimVarGrad;
@@ -375,7 +374,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
 
   /*--- Perform the non-dimensionalization for the flow equations using the
    specified reference values. ---*/
-
+  
   SetNondimensionalization(geometry, config, iMesh);
 
   /*--- Allocate the node variables ---*/
@@ -477,7 +476,6 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   else {
     if (rank == MASTER_NODE) cout << "Explicit scheme. No Jacobian structure (Euler). MG level: " << iMesh <<"." << endl;
   }
-
   /*--- Define some auxiliary vectors for computing flow variable
    gradients by least squares, S matrix := inv(R)*traspose(inv(R)),
    c vector := transpose(WA)*(Wb) ---*/
@@ -528,7 +526,7 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
       }
     }
   }
-
+  
   /*--- Store the value of the characteristic primitive variables index at the boundaries ---*/
 
   DonorGlobalIndex = new unsigned long* [nMarker];
@@ -590,6 +588,15 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
           Inlet_FlowDir[iMarker][iVertex][iDim] = 0;
         }
       }
+  }
+  
+  /*--- Store the value of the mass flow at impact wall BC ---*/
+  CMassOutlet = new su2double* [nMarker];
+  for (iMarker = 0; iMarker < nMarker; iMarker++) {
+    CMassOutlet[iMarker] = new su2double [geometry->nVertex[iMarker]];
+    for (iVertex = 0; iVertex < geometry->nVertex[iMarker]; iVertex++) {
+      CMassOutlet[iMarker][iVertex] = 0.0;
+    }
   }
 
   /*--- Non-dimensional coefficients ---*/
@@ -693,19 +700,19 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
   Total_ComboObj     = 0.0;
   Total_CpDiff  = 0.0;    Total_Custom_ObjFunc=0.0;
   Total_NetThrust = 0.0;
-  Total_Power = 0.0;      AoA_Prev           = 0.0;
+  Total_Power = 0.0;      AoA_Prev           = 0.0; Total_CMassOutlet = 0.0;
   Total_CL_Prev = 0.0;    Total_CD_Prev      = 0.0;
   Total_CMx_Prev      = 0.0; Total_CMy_Prev      = 0.0; Total_CMz_Prev      = 0.0;
   Total_AeroCD = 0.0;  Total_SolidCD = 0.0;   Total_IDR   = 0.0;    Total_IDC   = 0.0;
 
   /*--- Read farfield conditions ---*/
-
+  LWC_Inf         = config->GetLWC_FreeStreamND();
   Density_Inf     = config->GetDensity_FreeStreamND();
-  Pressure_Inf    = config->GetPressure_FreeStreamND();
   Velocity_Inf    = config->GetVelocity_FreeStreamND();
   Energy_Inf      = config->GetEnergy_FreeStreamND();
   Temperature_Inf = config->GetTemperature_FreeStreamND();
   Mach_Inf        = config->GetMach();
+  Pressure_Inf    = config->GetPressure_FreeStreamND();
 
   /*--- Initialize the secondary values for direct derivative approxiations ---*/
 
@@ -773,16 +780,16 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
 
 
   /*--- Initialize the solution to the far-field state everywhere. ---*/
-
+  /*--- The velocity is initialized latter from the air velocity solution. ---*/
   for (iPoint = 0; iPoint < nPoint; iPoint++)
-    node[iPoint] = new CImpactVariable(Density_Inf, Velocity_Inf, Energy_Inf, nDim, nVar, config);
+    node[iPoint] = new CImpactVariable(LWC_Inf, Velocity_Inf, Energy_Inf, nDim, nVar, config);
 
   /*--- Check that the initial solution is physical, report any non-physical nodes ---*/
 
   counter_local = 0;
 
   for (iPoint = 0; iPoint < nPoint; iPoint++) {
-
+    /*--- Note that density for the impact solution is the LWC ---*/
     Density = node[iPoint]->GetSolution(0);
 
     Velocity2 = 0.0;
@@ -791,17 +798,18 @@ CImpactSolver::CImpactSolver(CGeometry *geometry, CConfig *config, unsigned shor
 
     StaticEnergy= node[iPoint]->GetSolution(nDim+1)/Density - 0.5*Velocity2;
 
-    FluidModel->SetTDState_rhoe(Density, StaticEnergy);
-    Pressure= FluidModel->GetPressure();
-    Temperature= FluidModel->GetTemperature();
+    //FluidModel->SetTDState_rhoe(Density, StaticEnergy);
+    Pressure= 1.0e-8;
+    su2double Cp_water= 4185; /*--- to be done: should be defined in the config file ---*/
+    Temperature= StaticEnergy/Cp_water;
 
     /*--- Use the values at the infinity ---*/
 
     if ((Pressure < 0.0) || (Density < 0.0) || (Temperature < 0.0)) {
-      Solution[0] = Density_Inf;
+      Solution[0] = LWC_Inf;
       for (iDim = 0; iDim < nDim; iDim++)
-        Solution[iDim+1] = Velocity_Inf[iDim]*Density_Inf;
-      Solution[nDim+1] = Energy_Inf*Density_Inf;
+        Solution[iDim+1] = Velocity_Inf[iDim]*LWC_Inf;
+      Solution[nDim+1] = Energy_Inf*LWC_Inf;
       node[iPoint]->SetSolution(Solution);
       node[iPoint]->SetSolution_Old(Solution);
       counter_local++;
@@ -963,6 +971,12 @@ CImpactSolver::~CImpactSolver(void) {
       delete [] CharacPrimVar[iMarker];
     }
     delete [] CharacPrimVar;
+  }
+  
+  if (CMassOutlet != NULL) {
+    for (iMarker = 0; iMarker < nMarker; iMarker++)
+      delete [] CMassOutlet[iMarker];
+    delete [] CMassOutlet;
   }
 
   if (SlidingState != NULL) {
@@ -1300,7 +1314,7 @@ void CImpactSolver::Set_MPI_Solution(CGeometry *geometry, CConfig *config) {
   unsigned long iVertex, iPoint, nVertexS, nVertexR, nBufferS_Vector, nBufferR_Vector;
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi, *Buffer_Receive_U = NULL, *Buffer_Send_U = NULL;
 
-  cout << "CImpactSolver Set_MPI_Solution*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Solution*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1418,7 +1432,7 @@ void CImpactSolver::Set_MPI_Solution_Old(CGeometry *geometry, CConfig *config) {
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_U = NULL, *Buffer_Send_U = NULL;
 
-  cout << "CImpactSolver Set_MPI_Solution_Old*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Solution_Old*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1535,7 +1549,7 @@ void CImpactSolver::Set_MPI_Solution_Air(CGeometry *geometry, CConfig *config) {
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_U = NULL, *Buffer_Send_U = NULL;
 
-  cout << "CImpactSolver Set_MPI_Solution_Air*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Solution_Air*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1652,7 +1666,7 @@ void CImpactSolver::Set_MPI_Undivided_Laplacian(CGeometry *geometry, CConfig *co
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_Undivided_Laplacian = NULL, *Buffer_Send_Undivided_Laplacian = NULL;
 
-  cout << "CImpactSolver Set_MPI_Undivided_Laplacian*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Undivided_Laplacian*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1769,7 +1783,7 @@ void CImpactSolver::Set_MPI_MaxEigenvalue(CGeometry *geometry, CConfig *config) 
   unsigned long iVertex, iPoint, nVertexS, nVertexR, nBufferS_Vector, nBufferR_Vector;
   su2double *Buffer_Receive_Lambda = NULL, *Buffer_Send_Lambda = NULL;
 
-cout << "CImpactSolver Set_MPI_MaxEigenvalue*************************************************************************************" << endl;
+//cout << "CImpactSolver Set_MPI_MaxEigenvalue*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1849,7 +1863,7 @@ void CImpactSolver::Set_MPI_Sensor(CGeometry *geometry, CConfig *config) {
   unsigned long iVertex, iPoint, nVertexS, nVertexR, nBufferS_Vector, nBufferR_Vector;
   su2double *Buffer_Receive_Lambda = NULL, *Buffer_Send_Lambda = NULL;
 
-  cout << "CImpactSolver Set_MPI_Sensor*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Sensor*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -1921,7 +1935,7 @@ void CImpactSolver::Set_MPI_Primitive_Gradient(CGeometry *geometry, CConfig *con
   su2double rotMatrix[3][3], *angles, theta, cosTheta, sinTheta, phi, cosPhi, sinPhi, psi, cosPsi, sinPsi,
   *Buffer_Receive_Gradient = NULL, *Buffer_Send_Gradient = NULL;
 
-  cout << "CImpactSolver Set_MPI_Primitive_Gradient*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Primitive_Gradient*************************************************************************************" << endl;
   su2double **Gradient = new su2double* [nPrimVarGrad];
   for (iVar = 0; iVar < nPrimVarGrad; iVar++)
     Gradient[iVar] = new su2double[nDim];
@@ -2047,7 +2061,7 @@ void CImpactSolver::Set_MPI_Primitive_Limiter(CGeometry *geometry, CConfig *conf
 
   su2double *Limiter = new su2double [nPrimVarGrad];
 
-  cout << "CImpactSolver Set_MPI_Primitive_Limiter*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Primitive_Limiter*************************************************************************************" << endl;
 #ifdef HAVE_MPI
   int send_to, receive_from;
   SU2_MPI::Status status;
@@ -2163,7 +2177,7 @@ void CImpactSolver::Set_MPI_Primitive_Limiter(CGeometry *geometry, CConfig *conf
 
 void CImpactSolver::Set_MPI_Nearfield(CGeometry *geometry, CConfig *config) {
 
-  cout << "CImpactSolver Set_MPI_Nearfield*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Nearfield*************************************************************************************" << endl;
   unsigned long iter,  iPoint, iVertex, jVertex, iPointTotal,
   Buffer_Send_nPointTotal = 0;
   long iGlobalIndex, iGlobal;
@@ -2483,7 +2497,7 @@ void CImpactSolver::Set_MPI_Nearfield(CGeometry *geometry, CConfig *config) {
 
 void CImpactSolver::Set_MPI_Interface(CGeometry *geometry, CConfig *config) {
 
-  cout << "CImpactSolver Set_MPI_Interface*************************************************************************************" << endl;
+  //cout << "CImpactSolver Set_MPI_Interface*************************************************************************************" << endl;
   unsigned long iter,  iPoint, iVertex, jVertex, iPointTotal,
   Buffer_Send_nPointTotal = 0, iGlobalIndex, iGlobal;
   unsigned short iVar, iMarker, jMarker;
@@ -2800,16 +2814,16 @@ void CImpactSolver::Set_MPI_Interface(CGeometry *geometry, CConfig *config) {
 
 void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config, unsigned short iMesh) {
 
-  cout << "CImpactSolver SetNondimensionalization*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetNondimensionalization*************************************************************************************" << endl;
   su2double Temperature_FreeStream = 0.0, Mach2Vel_FreeStream = 0.0, ModVel_FreeStream = 0.0,
   Energy_FreeStream = 0.0, ModVel_FreeStreamND = 0.0, Velocity_Reynolds = 0.0,
   Omega_FreeStream = 0.0, Omega_FreeStreamND = 0.0, Viscosity_FreeStream = 0.0,
-  Density_FreeStream = 0.0, Pressure_FreeStream = 0.0, Tke_FreeStream = 0.0,
+  Density_FreeStream = 0.0, Pressure_FreeStream = 0.0, Tke_FreeStream = 0.0, LWC_FreeStream,
   Length_Ref = 0.0, Density_Ref = 0.0, Pressure_Ref = 0.0, Velocity_Ref = 0.0,
-  Temperature_Ref = 0.0, Time_Ref = 0.0, Omega_Ref = 0.0,
+  Temperature_Ref = 0.0, Time_Ref = 0.0, Omega_Ref = 0.0, LWC_Ref = 0.0,
   Gas_Constant_Ref = 0.0, Viscosity_Ref = 0.0, Conductivity_Ref = 0.0, Energy_Ref= 0.0,
-  Froude = 0.0, Pressure_FreeStreamND = 0.0, Density_FreeStreamND = 0.0,
-  Temperature_FreeStreamND = 0.0, Gas_ConstantND = 0.0,
+  Froude = 0.0, Pressure_FreeStreamND = 0.0, Density_FreeStreamND = 0.0, 
+  Temperature_FreeStreamND = 0.0, LWC_FreeStreamND, Gas_ConstantND = 0.0,
   Velocity_FreeStreamND[3] = {0.0, 0.0, 0.0}, Viscosity_FreeStreamND = 0.0,
   Tke_FreeStreamND = 0.0, Energy_FreeStreamND = 0.0,
   Total_UnstTimeND = 0.0, Delta_UnstTimeND = 0.0, TgammaR = 0.0;
@@ -2831,15 +2845,6 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
   bool reynolds_init      = (config->GetKind_InitOption() == REYNOLDS);
   bool aeroelastic        = config->GetAeroelastic_Simulation();
 
-  /*--- Set temperature via the flutter speed index ---*/
-  if (aeroelastic) {
-    su2double vf             = config->GetAeroelastic_Flutter_Speed_Index();
-    su2double w_alpha        = config->GetAeroelastic_Frequency_Pitch();
-    su2double b              = config->GetLength_Reynolds()/2.0; // airfoil semichord, Reynolds length is by defaul 1.0
-    su2double mu             = config->GetAeroelastic_Airfoil_Mass_Ratio();
-    // The temperature times gamma times the gas constant. Depending on the FluidModel temp is calculated below.
-    TgammaR = ((vf*vf)*(b*b)*(w_alpha*w_alpha)*mu) / (Mach*Mach);
-  }
 
   /*--- Compressible non dimensionalization ---*/
 
@@ -2952,6 +2957,9 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
 
   if (tkeNeeded) { Energy_FreeStream += Tke_FreeStream; }; config->SetEnergy_FreeStream(Energy_FreeStream);
 
+  /*--- Get the freestream liquid water content ---*/
+  LWC_FreeStream = config->GetDroplet_LWC();
+  
   /*--- Compute non dimensional quantities. By definition,
      Lref is one because we have converted the grid to meters. ---*/
 
@@ -2959,25 +2967,31 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
     Pressure_Ref      = 1.0;
     Density_Ref       = 1.0;
     Temperature_Ref   = 1.0;
+    LWC_Ref           = 1.0;
   }
+  /*--- still have to think about non dimensional problem for impact, not working now ---*/
   else if (config->GetRef_NonDim() == FREESTREAM_PRESS_EQ_ONE) {
     Pressure_Ref      = Pressure_FreeStream;     // Pressure_FreeStream = 1.0
     Density_Ref       = Density_FreeStream;      // Density_FreeStream = 1.0
     Temperature_Ref   = Temperature_FreeStream;  // Temperature_FreeStream = 1.0
+    LWC_Ref           = LWC_FreeStream; // LWC_FreeStream = 1.0
   }
   else if (config->GetRef_NonDim() == FREESTREAM_VEL_EQ_MACH) {
     Pressure_Ref      = Gamma*Pressure_FreeStream; // Pressure_FreeStream = 1.0/Gamma
     Density_Ref       = Density_FreeStream;        // Density_FreeStream = 1.0
     Temperature_Ref   = Temperature_FreeStream;    // Temp_FreeStream = 1.0
+    LWC_Ref           = LWC_FreeStream; // LWC_FreeStream = 1.0
   }
   else if (config->GetRef_NonDim() == FREESTREAM_VEL_EQ_ONE) {
     Pressure_Ref      = Mach*Mach*Gamma*Pressure_FreeStream; // Pressure_FreeStream = 1.0/(Gamma*(M_inf)^2)
     Density_Ref       = Density_FreeStream;        // Density_FreeStream = 1.0
     Temperature_Ref   = Temperature_FreeStream;    // Temp_FreeStream = 1.0
+    LWC_Ref           = LWC_FreeStream; // LWC_FreeStream = 1.0
   }
   config->SetPressure_Ref(Pressure_Ref);
   config->SetDensity_Ref(Density_Ref);
   config->SetTemperature_Ref(Temperature_Ref);
+  config->SetLWC_Ref(LWC_Ref);
 
   Length_Ref        = 1.0;                                                         config->SetLength_Ref(Length_Ref);
   Velocity_Ref      = sqrt(config->GetPressure_Ref()/config->GetDensity_Ref());    config->SetVelocity_Ref(Velocity_Ref);
@@ -2992,6 +3006,7 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
 
   Pressure_FreeStreamND = Pressure_FreeStream/config->GetPressure_Ref();  config->SetPressure_FreeStreamND(Pressure_FreeStreamND);
   Density_FreeStreamND  = Density_FreeStream/config->GetDensity_Ref();    config->SetDensity_FreeStreamND(Density_FreeStreamND);
+  LWC_FreeStreamND      = LWC_FreeStream/config->GetLWC_Ref();            config->SetLWC_FreeStreamND(LWC_FreeStreamND);     
 
   for (iDim = 0; iDim < nDim; iDim++) {
     Velocity_FreeStreamND[iDim] = config->GetVelocity_FreeStream()[iDim]/Velocity_Ref; config->SetVelocity_FreeStreamND(Velocity_FreeStreamND[iDim], iDim);
@@ -3226,7 +3241,7 @@ void CImpactSolver::SetNondimensionalization(CGeometry *geometry, CConfig *confi
 
 void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_container, CConfig *config, unsigned long ExtIter) {
 
-  cout << "CImpactSolver SetInitialCondition*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetInitialCondition*************************************************************************************" << endl;
   unsigned long iPoint;
   unsigned short iMesh, iDim;
   su2double X0[3] = {0.0,0.0,0.0}, X1[3] = {0.0,0.0,0.0}, X2[3] = {0.0,0.0,0.0},
@@ -3241,42 +3256,69 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
   bool dual_time = ((config->GetUnsteady_Simulation() == DT_STEPPING_1ST) ||
                     (config->GetUnsteady_Simulation() == DT_STEPPING_2ND));
   bool SubsonicEngine = config->GetSubsonicEngine();
+  su2double Droplet_LWC = config->GetDroplet_LWC(), LWC;
+  su2double Viscosity, Velocity2, StaticEnergy, Pressure, Temperature;
 
-//  /*--- If no restart file, read the air solution file and use it to init impact model ---*/
-  if (dual_time && (ExtIter == 0 || (restart && (long)ExtIter == config->GetUnst_RestartIter()))) {
+  if (ExtIter == 0) {
     cout << "read air velocity" << endl;
+    solver_container[MESH_0][FLOW_SOL]->LoadRestart(geometry, solver_container, config, SU2_TYPE::Int(config->GetUnst_RestartIter()-1), true);
+  /*--- If no restart file, read the air solution file and use it to init impact model ---*/
+//  if (dual_time && (ExtIter == 0 || (restart && (long)ExtIter == config->GetUnst_RestartIter()))) {
+
     if (!restart) {
-      solver_container[MESH_0][FLOW_SOL]->LoadRestart(geometry, solver_container, config, SU2_TYPE::Int(config->GetUnst_RestartIter()-1), true);
+//      solver_container[MESH_0][FLOW_SOL]->LoadRestart(geometry, solver_container, config, SU2_TYPE::Int(config->GetUnst_RestartIter()-1), true);
   /*--- Get the air velocity solution as initial velocity for impact solution ---*/
+  /*--- use uniform LWC and energy at farfield as initial for the impact solution done in CImpactSolver
+  write the solution in conservative form  ---*/
       for (iMesh = 0; iMesh <= config->GetnMGLevels(); iMesh++) {
         for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
           AirDensity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(0);
-          solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(0,AirDensity);
+          StaticEnergy=solver_container[iMesh][IMPACT_SOL]->node[iPoint]->GetEnergy();
+          //solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(0,Droplet_LWC);
+          //if ((iPoint < 3000 ) && (iPoint > 2500)) {
+            //LWC = 0.2;
+            //} else {
+            LWC = Droplet_LWC;
+            //}
+          solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(0,LWC);
+          solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution_Old(0,LWC);
+          Velocity2 = 0.0;
           for (iDim = 0; iDim < nDim; iDim++) {
-            AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
-            solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(iDim+1,AirVelocity);
+            //AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
+            AirVelocity = GetVelocity_Inf(iDim);
+            if (iDim == 0) AirVelocity=AirVelocity;
+            solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(iDim+1,LWC*AirVelocity);
+            solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution_Old(iDim+1,LWC*AirVelocity);
+            Velocity2 += AirVelocity*AirVelocity;
           }
+          solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(nDim+1,LWC*StaticEnergy);
+          solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution_Old(nDim+1,LWC*StaticEnergy);
+          //StaticEnergy = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(nDim+1)/AirDensity - 0.5*Velocity2;
+          //solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution(nDim+1,LWC*StaticEnergy);
+          //solver_container[iMesh][IMPACT_SOL]->node[iPoint]->SetSolution_Old(nDim+1,LWC*StaticEnergy);
         }
       }
     }
 
   /*--- The primitive air solution variable file information is stored for drag calculation ---*/
-      su2double Viscosity, Velocity2, StaticEnergy, Pressure, Temperature;
-      FluidModel->SetLaminarViscosityModel(config);
-      for (iMesh = 0; iMesh <= config->GetnMGLevels(); iMesh++) {
-        for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
-          AirDensity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(0);
-//        AirDensity = 1.0;
-          node[iPoint]->SetDensityAir(AirDensity);
-          Velocity2 = 0.0;
-          for (iDim = 0; iDim < nDim; iDim++) {
-            AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
-//          AirVelocity = 0.0;
-            Velocity2 += AirVelocity*AirVelocity;
-            node[iPoint]->SetVelocityAir(iDim,AirVelocity);
-          }
+  /*--- Compute the viscosity from the temperature fiel ---*/
+    config->SetMu_RefND(config->GetMu_Ref());
+    config->SetMu_Temperature_RefND(config->GetMu_Temperature_Ref());
+    config->SetMu_SND(config->GetMu_S());
+    config->SetMu_ConstantND(config->GetMu_Constant());
+    FluidModel->SetLaminarViscosityModel(config);
+    for (iMesh = 0; iMesh <= config->GetnMGLevels(); iMesh++) {
+      for (iPoint = 0; iPoint < geometry[iMesh]->GetnPoint(); iPoint++) {
+        AirDensity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(0);
+        node[iPoint]->SetDensityAir(AirDensity);
+        Velocity2 = 0.0;
+        for (iDim = 0; iDim < nDim; iDim++) {
+          //AirVelocity = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(iDim+1)/AirDensity;
+          AirVelocity = GetVelocity_Inf(iDim);
+          Velocity2 += AirVelocity*AirVelocity;
+          node[iPoint]->SetVelocityAir(iDim,AirVelocity);
+        }
         StaticEnergy = solver_container[iMesh][FLOW_SOL]->node[iPoint]->GetSolution(nDim+1)/AirDensity - 0.5*Velocity2;
-//      StaticEnergy = 200000.0;
         FluidModel->SetTDState_rhoe(AirDensity, StaticEnergy);
         Pressure = FluidModel->GetPressure();
         Temperature = FluidModel->GetTemperature();
@@ -3322,7 +3364,7 @@ void CImpactSolver::SetInitialCondition(CGeometry **geometry, CSolver ***solver_
 
 void CImpactSolver::Preprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config, unsigned short iMesh, unsigned short iRKStep, unsigned short RunTime_EqSystem, bool Output) {
 
-  cout << endl <<"CImpactSolver Preprocessing*************************************************************************************" << endl;
+  //cout << endl <<"CImpactSolver Preprocessing*************************************************************************************" << endl;
   unsigned long ErrorCounter = 0;
 
   unsigned long ExtIter = config->GetExtIter();
@@ -3410,11 +3452,13 @@ void CImpactSolver::Preprocessing(CGeometry *geometry, CSolver **solver_containe
 }
 
 void CImpactSolver::Postprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config,
-                                  unsigned short iMesh) {cout << "CImpactSolver Postprocessing*************************************************************************************" << endl; }
+                                  unsigned short iMesh) {
+//cout << "CImpactSolver Postprocessing*************************************************************************************" << endl; 
+}
 
 unsigned long CImpactSolver::SetPrimitive_Variables(CSolver **solver_container, CConfig *config, bool Output) {
 
-  cout << "CImpactSolver SetPrimitive_Variables*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetPrimitive_Variables*************************************************************************************" << endl;
   unsigned long iPoint, ErrorCounter = 0;
   bool RightSol = true;
 
@@ -3425,10 +3469,8 @@ unsigned long CImpactSolver::SetPrimitive_Variables(CSolver **solver_container, 
     node[iPoint]->SetNon_Physical(false);
 
     /*--- impact flow, primitive variables 2*nDim+12, (T, vx, vy, vz, P, rho, h, c, lamMu, eddyMu, ThCond, Cp) ---*/
-
     RightSol = node[iPoint]->SetPrimVar(FluidModel);
     node[iPoint]->SetSecondaryVar(FluidModel);
-
 
     if (!RightSol) { node[iPoint]->SetNon_Physical(true); ErrorCounter++; }
 
@@ -3444,7 +3486,7 @@ unsigned long CImpactSolver::SetPrimitive_Variables(CSolver **solver_container, 
 void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container, CConfig *config,
                                 unsigned short iMesh, unsigned long Iteration) {
 
-  cout << "CImpactSolver SetTime_Step*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetTime_Step*************************************************************************************" << endl;
   su2double *Normal, Area, Vol, Mean_SoundSpeed = 0.0, Mean_ProjVel = 0.0, Lambda, Local_Delta_Time,
   Global_Delta_Time = 1E6, Global_Delta_UnstTimeND, ProjVel, ProjVel_i, ProjVel_j;
   unsigned long iEdge, iVertex, iPoint, jPoint;
@@ -3458,7 +3500,7 @@ void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container
 
   Min_Delta_Time = 1.E6; Max_Delta_Time = 0.0;
 
-  /*--- Set maximum inviscid eigenvalue to zero, and compute sound speed ---*/
+  /*--- Set maximum inviscid eigenvalue to zero, and compute proj vel ---*/
 
   for (iPoint = 0; iPoint < nPointDomain; iPoint++)
     node[iPoint]->SetMax_Lambda_Inv(0.0);
@@ -3477,7 +3519,7 @@ void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container
     /*--- Mean Values ---*/
 
     Mean_ProjVel = 0.5 * (node[iPoint]->GetProjVel(Normal) + node[jPoint]->GetProjVel(Normal));
-    Mean_SoundSpeed = 0.5 * (node[iPoint]->GetSoundSpeed() + node[jPoint]->GetSoundSpeed()) * Area;
+    //Mean_SoundSpeed = 0.5 * (node[iPoint]->GetSoundSpeed() + node[jPoint]->GetSoundSpeed()) * Area;
 
     /*--- Adjustment for grid movement ---*/
 
@@ -3494,7 +3536,7 @@ void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container
 
     /*--- Inviscid contribution ---*/
 
-    Lambda = fabs(Mean_ProjVel) + Mean_SoundSpeed;
+    Lambda = fabs(Mean_ProjVel);
     if (geometry->node[iPoint]->GetDomain()) node[iPoint]->AddMax_Lambda_Inv(Lambda);
     if (geometry->node[jPoint]->GetDomain()) node[jPoint]->AddMax_Lambda_Inv(Lambda);
 
@@ -3515,7 +3557,7 @@ void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container
       /*--- Mean Values ---*/
 
       Mean_ProjVel = node[iPoint]->GetProjVel(Normal);
-      Mean_SoundSpeed = node[iPoint]->GetSoundSpeed() * Area;
+      //Mean_SoundSpeed = node[iPoint]->GetSoundSpeed() * Area;
 
       /*--- Adjustment for grid movement ---*/
 
@@ -3528,7 +3570,7 @@ void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container
       }
 
       /*--- Inviscid contribution ---*/
-      Lambda = fabs(Mean_ProjVel) + Mean_SoundSpeed;
+      Lambda = fabs(Mean_ProjVel);
       if (geometry->node[iPoint]->GetDomain()) {
         node[iPoint]->AddMax_Lambda_Inv(Lambda);
       }
@@ -3630,7 +3672,7 @@ void CImpactSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container
 void CImpactSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                      CConfig *config, unsigned short iMesh, unsigned short iRKStep) {
 
-  cout << "CImpactSolver Centered_Residual*************************************************************************************" << endl;
+  //cout << "CImpactSolver Centered_Residual*************************************************************************************" << endl;
   unsigned long iEdge, iPoint, jPoint;
 
   bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
@@ -3686,10 +3728,228 @@ void CImpactSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_cont
 
 }
 
+void CImpactSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
+                                   CConfig *config, unsigned short iMesh) {
+
+  su2double **Gradient_i, **Gradient_j, Project_Grad_i, Project_Grad_j, RoeVelocity[3] = {0.0,0.0,0.0}, R, sq_vel, RoeEnthalpy,
+  *V_i, *V_j, *S_i, *S_j, *Limiter_i = NULL, *Limiter_j = NULL, sqvel, Non_Physical = 1.0, Sensor_i, Sensor_j, Dissipation_i, Dissipation_j, *Coord_i, *Coord_j;
+
+  su2double z, velocity2_i, velocity2_j, mach_i, mach_j, vel_i_corr[3], vel_j_corr[3];
+
+  unsigned long iEdge, iPoint, jPoint, counter_local = 0, counter_global = 0;
+  unsigned short iDim, iVar;
+
+  bool neg_density_i = false, neg_density_j = false, neg_pressure_i = false, neg_pressure_j = false, neg_sound_speed = false;
+
+  unsigned long ExtIter = config->GetExtIter();
+  bool implicit         = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
+  bool muscl            = (config->GetMUSCL_Flow() && (iMesh == MESH_0));
+  bool disc_adjoint     = config->GetDiscrete_Adjoint();
+  bool limiter          = ((config->GetKind_SlopeLimit_Flow() != NO_LIMITER) && (ExtIter <= config->GetLimiterIter()) && !(disc_adjoint && config->GetFrozen_Limiter_Disc()));
+  bool grid_movement    = config->GetGrid_Movement();
+  bool roe_turkel       = (config->GetKind_Upwind_Flow() == TURKEL);
+  bool ideal_gas        = (config->GetKind_FluidModel() == STANDARD_AIR || config->GetKind_FluidModel() == IDEAL_GAS );
+  bool van_albada       = config->GetKind_SlopeLimit_Flow() == VAN_ALBADA_EDGE;
+  bool low_mach_corr    = config->Low_Mach_Correction();
+  unsigned short kind_dissipation = config->GetKind_RoeLowDiss();
+
+  /*--- Loop over all the edges ---*/
+
+  for (iEdge = 0; iEdge < geometry->GetnEdge(); iEdge++) {
+
+    /*--- Points in edge and normal vectors ---*/
+
+    iPoint = geometry->edge[iEdge]->GetNode(0); jPoint = geometry->edge[iEdge]->GetNode(1);
+    numerics->SetNormal(geometry->edge[iEdge]->GetNormal());
+
+    /*--- Roe Turkel preconditioning ---*/
+
+    if (roe_turkel) {
+      sqvel = 0.0;
+      for (iDim = 0; iDim < nDim; iDim ++)
+        sqvel += config->GetVelocity_FreeStream()[iDim]*config->GetVelocity_FreeStream()[iDim];
+      numerics->SetVelocity2_Inf(sqvel);
+    }
+
+    /*--- Grid movement ---*/
+
+    if (grid_movement)
+      numerics->SetGridVel(geometry->node[iPoint]->GetGridVel(), geometry->node[jPoint]->GetGridVel());
+
+    /*--- Get primitive variables ---*/
+
+    V_i = node[iPoint]->GetPrimitive(); V_j = node[jPoint]->GetPrimitive();
+    S_i = node[iPoint]->GetSecondary(); S_j = node[jPoint]->GetSecondary();
+
+    /*--- High order reconstruction using MUSCL strategy ---*/
+
+    if (muscl) {
+
+      for (iDim = 0; iDim < nDim; iDim++) {
+        Vector_i[iDim] = 0.5*(geometry->node[jPoint]->GetCoord(iDim) - geometry->node[iPoint]->GetCoord(iDim));
+        Vector_j[iDim] = 0.5*(geometry->node[iPoint]->GetCoord(iDim) - geometry->node[jPoint]->GetCoord(iDim));
+      }
+
+      Gradient_i = node[iPoint]->GetGradient_Primitive();
+      Gradient_j = node[jPoint]->GetGradient_Primitive();
+      if (limiter) {
+        Limiter_i = node[iPoint]->GetLimiter_Primitive();
+        Limiter_j = node[jPoint]->GetLimiter_Primitive();
+      }
+
+      for (iVar = 0; iVar < nPrimVarGrad; iVar++) {
+        Project_Grad_i = 0.0; Project_Grad_j = 0.0;
+        Non_Physical = node[iPoint]->GetNon_Physical()*node[jPoint]->GetNon_Physical();
+        for (iDim = 0; iDim < nDim; iDim++) {
+          Project_Grad_i += Vector_i[iDim]*Gradient_i[iVar][iDim]*Non_Physical;
+          Project_Grad_j += Vector_j[iDim]*Gradient_j[iVar][iDim]*Non_Physical;
+        }
+        if (limiter) {
+          if (van_albada){
+            Limiter_i[iVar] = (V_j[iVar]-V_i[iVar])*(2.0*Project_Grad_i + V_j[iVar]-V_i[iVar])/(4*Project_Grad_i*Project_Grad_i+(V_j[iVar]-V_i[iVar])*(V_j[iVar]-V_i[iVar])+EPS);
+            Limiter_j[iVar] = (V_j[iVar]-V_i[iVar])*(-2.0*Project_Grad_j + V_j[iVar]-V_i[iVar])/(4*Project_Grad_j*Project_Grad_j+(V_j[iVar]-V_i[iVar])*(V_j[iVar]-V_i[iVar])+EPS);
+          }
+          Primitive_i[iVar] = V_i[iVar] + Limiter_i[iVar]*Project_Grad_i;
+          Primitive_j[iVar] = V_j[iVar] + Limiter_j[iVar]*Project_Grad_j;
+        }
+        else {
+          Primitive_i[iVar] = V_i[iVar] + Project_Grad_i;
+          Primitive_j[iVar] = V_j[iVar] + Project_Grad_j;
+        }
+      }
+
+
+      
+      /*--- Check for non-physical solutions after reconstruction. If found,
+       use the cell-average value of the solution. This results in a locally
+       first-order approximation, but this is typically only active
+       during the start-up of a calculation. If non-physical, use the
+       cell-averaged state. ---*/
+
+      //neg_pressure_i = (Primitive_i[nDim+1] < 0.0); neg_pressure_j = (Primitive_j[nDim+1] < 0.0); no pressure
+      neg_density_i  = (Primitive_i[nDim+2] < 0.0); neg_density_j  = (Primitive_j[nDim+2] < 0.0);
+
+      R = sqrt(fabs(Primitive_j[nDim+2]/Primitive_i[nDim+2]));
+      sq_vel = 0.0;
+      for (iDim = 0; iDim < nDim; iDim++) {
+        RoeVelocity[iDim] = (R*Primitive_j[iDim+1]+Primitive_i[iDim+1])/(R+1);
+        sq_vel += RoeVelocity[iDim]*RoeVelocity[iDim];
+      }
+      RoeEnthalpy = (R*Primitive_j[nDim+3]+Primitive_i[nDim+3])/(R+1);
+      //neg_sound_speed = ((Gamma-1)*(RoeEnthalpy-0.5*sq_vel) < 0.0); no speed of sound
+
+      //if (neg_sound_speed) {
+        //for (iVar = 0; iVar < nPrimVar; iVar++) {
+          //Primitive_i[iVar] = V_i[iVar];
+          //Primitive_j[iVar] = V_j[iVar]; }
+        //Secondary_i[0] = S_i[0]; Secondary_i[1] = S_i[1];
+        //Secondary_j[0] = S_i[0]; Secondary_j[1] = S_i[1];
+        //counter_local++;
+      //}
+
+      //if (neg_density_i || neg_pressure_i) {
+      if (neg_density_i) {
+        for (iVar = 0; iVar < nPrimVar; iVar++) Primitive_i[iVar] = V_i[iVar];
+        Secondary_i[0] = S_i[0]; Secondary_i[1] = S_i[1];
+        counter_local++;
+      }
+
+      //if (neg_density_j || neg_pressure_j) {
+      if (neg_density_j) { 
+        for (iVar = 0; iVar < nPrimVar; iVar++) Primitive_j[iVar] = V_j[iVar];
+        Secondary_j[0] = S_j[0]; Secondary_j[1] = S_j[1];
+        counter_local++;
+      }
+
+      numerics->SetPrimitive(Primitive_i, Primitive_j);
+      numerics->SetSecondary(Secondary_i, Secondary_j);
+
+    }
+    else {
+
+      /*--- Set conservative variables without reconstruction ---*/
+
+      numerics->SetPrimitive(V_i, V_j);
+      numerics->SetSecondary(S_i, S_j);
+
+    }
+
+    /*--- Roe Low Dissipation Scheme ---*/
+
+    if (kind_dissipation != NO_ROELOWDISS){
+
+      Dissipation_i = node[iPoint]->GetRoe_Dissipation();
+      Dissipation_j = node[jPoint]->GetRoe_Dissipation();
+      numerics->SetDissipation(Dissipation_i, Dissipation_j);
+
+      if (kind_dissipation == FD_DUCROS || kind_dissipation == NTS_DUCROS){
+        Sensor_i = node[iPoint]->GetSensor();
+        Sensor_j = node[jPoint]->GetSensor();
+        numerics->SetSensor(Sensor_i, Sensor_j);
+      }
+      if (kind_dissipation == NTS || kind_dissipation == NTS_DUCROS){
+        Coord_i = geometry->node[iPoint]->GetCoord();
+        Coord_j = geometry->node[jPoint]->GetCoord();
+        numerics->SetCoord(Coord_i, Coord_j);
+      }
+    }
+
+    /*--- Compute the residual ---*/
+
+    numerics->ComputeResidual(Res_Conv, Jacobian_i, Jacobian_j, config);
+
+    /*--- Set energy residual to zero to avoid solving ---*/
+    
+    Res_Conv[nDim+1]=0.0;
+      
+    /*--- Update residual value ---*/
+
+    LinSysRes.AddBlock(iPoint, Res_Conv);
+    LinSysRes.SubtractBlock(jPoint, Res_Conv);
+
+    /*--- Set implicit Jacobians ---*/
+
+    if (implicit) {
+      Jacobian.AddBlock(iPoint, iPoint, Jacobian_i);
+      Jacobian.AddBlock(iPoint, jPoint, Jacobian_j);
+      Jacobian.SubtractBlock(jPoint, iPoint, Jacobian_i);
+      Jacobian.SubtractBlock(jPoint, jPoint, Jacobian_j);
+    }
+
+    /*--- Roe Turkel preconditioning, set the value of beta ---*/
+
+    if (roe_turkel) {
+      node[iPoint]->SetPreconditioner_Beta(numerics->GetPrecond_Beta());
+      node[jPoint]->SetPreconditioner_Beta(numerics->GetPrecond_Beta());
+    }
+
+    /*--- Set the final value of the Roe dissipation coefficient ---*/
+
+    if (kind_dissipation != NO_ROELOWDISS){
+      node[iPoint]->SetRoe_Dissipation(numerics->GetDissipation());
+      node[jPoint]->SetRoe_Dissipation(numerics->GetDissipation());
+    }
+
+  }
+
+  /*--- Warning message about non-physical reconstructions ---*/
+
+  if (config->GetConsole_Output_Verb() == VERB_HIGH) {
+#ifdef HAVE_MPI
+    SU2_MPI::Reduce(&counter_local, &counter_global, 1, MPI_UNSIGNED_LONG, MPI_SUM, MASTER_NODE, MPI_COMM_WORLD);
+#else
+    counter_global = counter_local;
+#endif
+    if (iMesh == MESH_0) config->SetNonphysical_Reconstr(counter_global);
+  }
+}
+
+
+
 void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CNumerics *second_numerics,
                                    CConfig *config, unsigned short iMesh) {
 
-  cout << "CImpactSolver Source_Residual*************************************************************************************" << endl;
+  //cout << "CImpactSolver Source_Residual*************************************************************************************" << endl;
   unsigned short iVar;
   unsigned long iPoint;
   bool implicit         = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
@@ -3699,6 +3959,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
   bool harmonic_balance = (config->GetUnsteady_Simulation() == HARMONIC_BALANCE);
   bool windgust         = config->GetWind_Gust();
   bool body_force       = config->GetBody_Force();
+  su2double *V_i;
 
   /*--- Initialize the source residual to zero ---*/
 
@@ -3706,24 +3967,34 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
 
   /*--- compute the drag force for the droplet equation ---*/
     /*--- Loop over all points ---*/
-    for (iPoint = 0; iPoint < nPointDomain; iPoint++) {
+ 
+  for (iPoint = 0; iPoint < nPointDomain; iPoint++) {
 
       /*--- Load the conservative variables ---*/
-      numerics->SetConservative(node[iPoint]->GetSolution(),
+    numerics->SetConservative(node[iPoint]->GetSolution(),
                                 node[iPoint]->GetSolution());
-
+    
       /*--- Load the air variable ---*/
-      numerics->SetPrimitiveAir(node[iPoint]->GetSolution_Air(),
+    numerics->SetPrimitiveAir(node[iPoint]->GetSolution_Air(),
                                 node[iPoint]->GetSolution_Air());
+                                
+    /*--- Load the primitive variables ---*/
+
+    V_i = node[iPoint]->GetPrimitive();
+    numerics->SetPrimitive(V_i,V_i); 
 
       /*--- Load the volume of the dual mesh cell ---*/
-      numerics->SetVolume(geometry->node[iPoint]->GetVolume());
+    numerics->SetVolume(geometry->node[iPoint]->GetVolume());
 
-      /*--- Compute the rotating frame source residual ---*/
-      numerics->ComputeResidual(Residual, config);
-
+      /*--- Compute the drag source residual ---*/
+    numerics->ComputeResidual(Residual, Jacobian_i, config);
+     
+      
       /*--- Add the source residual to the total ---*/
-      LinSysRes.AddBlock(iPoint, Residual);
+    LinSysRes.SubtractBlock(iPoint, Residual);
+    
+    /*--- Add the implicit Jacobian contribution ---*/
+    if (implicit) Jacobian.SubtractBlock(iPoint, iPoint, Jacobian_i);
 
     }
 
@@ -3738,7 +4009,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
 
       /*--- Load the volume of the dual mesh cell ---*/
       numerics->SetVolume(geometry->node[iPoint]->GetVolume());
-
+      
       /*--- Compute the rotating frame source residual ---*/
       numerics->ComputeResidual(Residual, config);
 
@@ -3806,7 +4077,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
   }
 
   if (gravity) {
-
+  
     /*--- loop over points ---*/
     for (iPoint = 0; iPoint < nPointDomain; iPoint++) {
 
@@ -3882,7 +4153,7 @@ void CImpactSolver::Source_Residual(CGeometry *geometry, CSolver **solver_contai
 void CImpactSolver::Source_Template(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                    CConfig *config, unsigned short iMesh) {
 
-  cout << "CImpactSolver Source_Template*************************************************************************************" << endl;
+  //cout << "CImpactSolver Source_Template*************************************************************************************" << endl;
   /* This method should be used to call any new source terms for a particular problem*/
   /* This method calls the new child class in CNumerics, where the new source term should be implemented.  */
 
@@ -3896,7 +4167,7 @@ void CImpactSolver::Source_Template(CGeometry *geometry, CSolver **solver_contai
 
 void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
 
-  cout << "CImpactSolver SetMax_Eigenvalue*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetMax_Eigenvalue*************************************************************************************" << endl;
   su2double *Normal, Area, Mean_SoundSpeed = 0.0, Mean_ProjVel = 0.0, Lambda,
   ProjVel, ProjVel_i, ProjVel_j, *GridVel, *GridVel_i, *GridVel_j;
   unsigned long iEdge, iVertex, iPoint, jPoint;
@@ -3904,7 +4175,7 @@ void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
 
   bool grid_movement = config->GetGrid_Movement();
 
-  /*--- Set maximum inviscid eigenvalue to zero, and compute sound speed ---*/
+  /*--- Set maximum inviscid eigenvalue to zero, sound speed = 0 for pressureless ---*/
 
   for (iPoint = 0; iPoint < nPointDomain; iPoint++) {
     node[iPoint]->SetLambda(0.0);
@@ -3925,7 +4196,7 @@ void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
     /*--- Mean Values ---*/
 
     Mean_ProjVel = 0.5 * (node[iPoint]->GetProjVel(Normal) + node[jPoint]->GetProjVel(Normal));
-    Mean_SoundSpeed = 0.5 * (node[iPoint]->GetSoundSpeed() + node[jPoint]->GetSoundSpeed()) * Area;
+    //Mean_SoundSpeed = 0.5 * (node[iPoint]->GetSoundSpeed() + node[jPoint]->GetSoundSpeed()) * Area;
 
     /*--- Adjustment for grid movement ---*/
 
@@ -3942,7 +4213,7 @@ void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
 
     /*--- Inviscid contribution ---*/
 
-    Lambda = fabs(Mean_ProjVel) + Mean_SoundSpeed;
+    Lambda = fabs(Mean_ProjVel);
     if (geometry->node[iPoint]->GetDomain()) node[iPoint]->AddLambda(Lambda);
     if (geometry->node[jPoint]->GetDomain()) node[jPoint]->AddLambda(Lambda);
 
@@ -3963,7 +4234,7 @@ void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
       /*--- Mean Values ---*/
 
       Mean_ProjVel = node[iPoint]->GetProjVel(Normal);
-      Mean_SoundSpeed = node[iPoint]->GetSoundSpeed() * Area;
+      //Mean_SoundSpeed = node[iPoint]->GetSoundSpeed() * Area;
 
       /*--- Adjustment for grid movement ---*/
 
@@ -3977,7 +4248,7 @@ void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
 
       /*--- Inviscid contribution ---*/
 
-      Lambda = fabs(Mean_ProjVel) + Mean_SoundSpeed;
+      Lambda = fabs(Mean_ProjVel);
       if (geometry->node[iPoint]->GetDomain()) {
         node[iPoint]->AddLambda(Lambda);
       }
@@ -3993,7 +4264,7 @@ void CImpactSolver::SetMax_Eigenvalue(CGeometry *geometry, CConfig *config) {
 
 void CImpactSolver::SetUndivided_Laplacian(CGeometry *geometry, CConfig *config) {
 
-  cout << "CImpactSolver SetUndivided_Laplacian*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetUndivided_Laplacian*************************************************************************************" << endl;
   unsigned long iPoint, jPoint, iEdge;
   su2double Pressure_i = 0, Pressure_j = 0, *Diff;
   unsigned short iVar;
@@ -4052,7 +4323,7 @@ void CImpactSolver::SetUndivided_Laplacian(CGeometry *geometry, CConfig *config)
 
 void CImpactSolver::SetCentered_Dissipation_Sensor(CGeometry *geometry, CConfig *config) {
 
-  cout << "CImpactSolver SetCentered_Dissipation_Sensor*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetCentered_Dissipation_Sensor*************************************************************************************" << endl;
   unsigned long iEdge, iPoint, jPoint;
   su2double Pressure_i = 0.0, Pressure_j = 0.0;
   bool boundary_i, boundary_j;
@@ -4109,7 +4380,7 @@ void CImpactSolver::SetCentered_Dissipation_Sensor(CGeometry *geometry, CConfig 
 
 void CImpactSolver::ExplicitRK_Iteration(CGeometry *geometry, CSolver **solver_container,
                                         CConfig *config, unsigned short iRKStep) {
-  cout << "CImpactSolver ExplicitRK_Iteration*************************************************************************************" << endl;
+  //cout << "CImpactSolver ExplicitRK_Iteration*************************************************************************************" << endl;
   su2double *Residual, *Res_TruncError, Vol, Delta, Res;
   unsigned short iVar;
   unsigned long iPoint;
@@ -4155,7 +4426,7 @@ void CImpactSolver::ExplicitRK_Iteration(CGeometry *geometry, CSolver **solver_c
 
 void CImpactSolver::ClassicalRK4_Iteration(CGeometry *geometry, CSolver **solver_container,
                                         CConfig *config, unsigned short iRKStep) {
-  cout << "CImpactSolver ClassicalRK4_Iteration*************************************************************************************" << endl;
+  //cout << "CImpactSolver ClassicalRK4_Iteration*************************************************************************************" << endl;
   su2double *Residual, *Res_TruncError, Vol, Delta, Res, tmp_time, tmp_func;
   unsigned short iVar;
   unsigned long iPoint;
@@ -4215,7 +4486,7 @@ void CImpactSolver::ClassicalRK4_Iteration(CGeometry *geometry, CSolver **solver
 }
 
 void CImpactSolver::ExplicitEuler_Iteration(CGeometry *geometry, CSolver **solver_container, CConfig *config) {
-  cout << "CImpactSolver ExplicitEuler_Iteration*************************************************************************************" << endl;
+  //cout << "CImpactSolver ExplicitEuler_Iteration*************************************************************************************" << endl;
   su2double *local_Residual, *local_Res_TruncError, Vol, Delta, Res;
   unsigned short iVar;
   unsigned long iPoint;
@@ -4258,7 +4529,7 @@ void CImpactSolver::ExplicitEuler_Iteration(CGeometry *geometry, CSolver **solve
 }
 
 void CImpactSolver::ImplicitEuler_Iteration(CGeometry *geometry, CSolver **solver_container, CConfig *config) {
-  cout << "CImpactSolver ImplicitEuler_Iteration*************************************************************************************" << endl;
+  //cout << "CImpactSolver ImplicitEuler_Iteration*************************************************************************************" << endl;
   unsigned short iVar, jVar;
   unsigned long iPoint, total_index, IterLinSol = 0;
   su2double Delta, *local_Res_TruncError, Vol;
@@ -4333,21 +4604,25 @@ void CImpactSolver::ImplicitEuler_Iteration(CGeometry *geometry, CSolver **solve
   }
 
   /*--- Solve or smooth the linear system ---*/
-
+  
   CSysSolve system;
   IterLinSol = system.Solve(Jacobian, LinSysRes, LinSysSol, geometry, config);
 
   /*--- The the number of iterations of the linear solver ---*/
-
+ 
   SetIterLinSolver(IterLinSol);
 
   /*--- Update solution (system written in terms of increments) ---*/
-
+ 
   if (!adjoint) {
     for (iPoint = 0; iPoint < nPointDomain; iPoint++) {
+
       for (iVar = 0; iVar < nVar; iVar++) {
-        node[iPoint]->AddSolution(iVar, config->GetRelaxation_Factor_Flow()*LinSysSol[iPoint*nVar+iVar]);
+        if (iVar < nVar-1) {
+        node[iPoint]->AddSolution(iVar, config->GetRelaxation_Factor_Flow()*LinSysSol[iPoint*nVar+iVar]); 
+        }       
       }
+
     }
   }
 
@@ -4362,7 +4637,7 @@ void CImpactSolver::ImplicitEuler_Iteration(CGeometry *geometry, CSolver **solve
 }
 
 void CImpactSolver::SetPrimitive_Gradient_GG(CGeometry *geometry, CConfig *config) {
-  cout << "CImpactSolver SetPrimitive_Gradient_GG*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetPrimitive_Gradient_GG*************************************************************************************" << endl;
   unsigned long iPoint, jPoint, iEdge, iVertex;
   unsigned short iDim, iVar, iMarker;
   su2double *PrimVar_Vertex, *PrimVar_i, *PrimVar_j, PrimVar_Average,
@@ -4445,7 +4720,7 @@ void CImpactSolver::SetPrimitive_Gradient_GG(CGeometry *geometry, CConfig *confi
 }
 
 void CImpactSolver::SetPrimitive_Gradient_LS(CGeometry *geometry, CConfig *config) {
-  cout << "CImpactSolver SetPrimitive_Gradient_LS*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetPrimitive_Gradient_LS*************************************************************************************" << endl;
   unsigned short iVar, iDim, jDim, iNeigh;
   unsigned long iPoint, jPoint;
   su2double *PrimVar_i, *PrimVar_j, *Coord_i, *Coord_j, r11, r12, r13, r22, r23, r23_a,
@@ -4590,7 +4865,7 @@ void CImpactSolver::SetPrimitive_Gradient_LS(CGeometry *geometry, CConfig *confi
 }
 
 void CImpactSolver::SetPrimitive_Limiter(CGeometry *geometry, CConfig *config) {
-  cout << "CImpactSolver SetPrimitive_Limiter*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetPrimitive_Limiter*************************************************************************************" << endl;
   unsigned long iEdge, iPoint, jPoint;
   unsigned short iVar, iDim;
   su2double **Gradient_i, **Gradient_j, *Coord_i, *Coord_j,
@@ -4734,7 +5009,7 @@ void CImpactSolver::SetPrimitive_Limiter(CGeometry *geometry, CConfig *config) {
       (config->GetKind_SlopeLimit_Flow() == VENKATAKRISHNAN_WANG)) {
 
     /*--- Allocate memory for the max and min primitive value --*/
-
+    
     LocalMinPrimitive = new su2double [nPrimVarGrad]; GlobalMinPrimitive = new su2double [nPrimVarGrad];
     LocalMaxPrimitive = new su2double [nPrimVarGrad]; GlobalMaxPrimitive = new su2double [nPrimVarGrad];
 
@@ -4910,7 +5185,7 @@ void CImpactSolver::SetPreconditioner(CConfig *config, unsigned long iPoint) {
 
 void CImpactSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container,
                                  CNumerics *numerics, CConfig *config, unsigned short val_marker) {
-  cout << "CImpactSolver BC_Euler_Wall*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Euler_Wall*************************************************************************************" << endl;
   unsigned short iDim, iVar, jVar, kVar, jDim;
   unsigned long iPoint, iVertex;
   su2double *Normal = NULL, *GridVel = NULL, Area, UnitNormal[3], *NormalArea,
@@ -5087,21 +5362,20 @@ void CImpactSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_containe
 
 }
   
-void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_container,
+void CImpactSolver::BC_Impact_Wall_Old(CGeometry *geometry, CSolver **solver_container,
                                  CNumerics *numerics, CConfig *config, unsigned short val_marker) {
     //cout << "CImpactSolver BC_Impact_Wall*************************************************************************************" << endl;
     unsigned short iDim, iVar, jVar, kVar, jDim;
     unsigned long iPoint, iVertex;
     su2double *Normal = NULL, *GridVel = NULL, Area, UnitNormal[3], *NormalArea,
-    ProjGridVel = 0.0, turb_ke;
+    ProjGridVel = 0.0;
     su2double Density_b, StaticEnergy_b, Enthalpy_b, *Velocity_b, Kappa_b, Chi_b, Energy_b, VelMagnitude2_b, Pressure_b;
     su2double Density_i, *Velocity_i, ProjVelocity_i = 0.0, Energy_i, VelMagnitude2_i;
     su2double **Jacobian_b, **DubDu;
 
     bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
     bool grid_movement = config->GetGrid_Movement();
-    bool tkeNeeded = (((config->GetKind_Solver() == RANS )|| (config->GetKind_Solver() == DISC_ADJ_RANS)) &&
-    (config->GetKind_Turb_Model() == SST));
+
 
     Normal = new su2double[nDim];
     NormalArea = new su2double[nDim];
@@ -5149,20 +5423,11 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
 
         /*--- Compute the boundary state b ---*/
 
-        if ( ProjVelocity_i > 0)
-        {
-          for (iDim = 0; iDim < nDim; iDim++)
+     
+          for (iDim = 0; iDim < nDim; iDim++) {
           Velocity_b[iDim] = Velocity_i[iDim] - ProjVelocity_i * UnitNormal[iDim]; //Force the velocity to be tangential to the surface.
-
-          Density_b = 1e-6;
-        }
-        else
-        {
-          for (iDim = 0; iDim < nDim; iDim++)
-          Velocity_b[iDim] = Velocity_i[iDim]; //Take the original velocity.
-
-          Density_b = Density_i;                 //Take the original density.
-        }
+          }
+       
 
         if (grid_movement) {
           GridVel = geometry->node[iPoint]->GetGridVel();
@@ -5177,37 +5442,18 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
 
         /*--- Compute the residual ---*/
 
-        turb_ke = 0.0;
-        if (tkeNeeded) turb_ke = solver_container[TURB_SOL]->node[iPoint]->GetSolution(0);
-
         //Density_b = Density_i;
-        StaticEnergy_b = Energy_i - 0.5 * VelMagnitude2_i - turb_ke;
-        Energy_b = StaticEnergy_b + 0.5 * VelMagnitude2_b + turb_ke;
+        StaticEnergy_b = Energy_i - 0.5 * VelMagnitude2_i ;
+        Energy_b = StaticEnergy_b + 0.5 * VelMagnitude2_b ;
 
-        FluidModel->SetTDState_rhoe(Density_b, StaticEnergy_b);
-        Kappa_b = FluidModel->GetdPde_rho() / Density_b;
-        Chi_b = FluidModel->GetdPdrho_e() - Kappa_b * StaticEnergy_b;
-        Pressure_b = FluidModel->GetPressure();
-        Enthalpy_b = Energy_b + Pressure_b/Density_b;
+        //FluidModel->SetTDState_rhoe(Density_b, StaticEnergy_b);
+        //Kappa_b = FluidModel->GetdPde_rho() / Density_b;
+        //Chi_b = FluidModel->GetdPdrho_e() - Kappa_b * StaticEnergy_b;
+        //Pressure_b = FluidModel->GetPressure();
+        Enthalpy_b = Energy_b;
 
-        numerics->GetInviscidProjFlux(&Density_b, Velocity_b, &Pressure_b, &Enthalpy_b, NormalArea, Residual);
-
-        /*--- Grid velocity correction to the energy term ---*/
-        if (grid_movement) {
-          GridVel = geometry->node[iPoint]->GetGridVel();
-          ProjGridVel = 0.0;
-          for (iDim = 0; iDim < nDim; iDim++)
-          ProjGridVel += GridVel[iDim]*UnitNormal[iDim];
-          Residual[nVar-1] += Pressure_b*ProjGridVel*Area;
-        }
-
-        /*--- Add the Reynolds stress tensor contribution ---*/
-
-        if (tkeNeeded) {
-          for (iDim = 0; iDim < nDim; iDim++)
-          Residual[iDim+1] += (2.0/3.0)*Density_b*turb_ke*NormalArea[iDim];
-        }
-
+        numerics->GetInviscidPlessProjFlux(&Density_b, Velocity_b, &Enthalpy_b, NormalArea, Residual);
+      
         /*--- Add value to the residual ---*/
 
         LinSysRes.AddBlock(iPoint, Residual);
@@ -5241,7 +5487,7 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
 
           /*--- Compute flux Jacobian in state b ---*/
 
-          numerics->GetInviscidProjJac(Velocity_b, &Enthalpy_b, &Chi_b, &Kappa_b, NormalArea, 1, Jacobian_b);
+          numerics->GetInviscidPlessProjJac(Velocity_b, &Enthalpy_b, NormalArea, 1, Jacobian_b);
 
           // Check for grid movement, should be already considered since Jacobian b is computed from u_b
           // if (grid_movement) {
@@ -5276,32 +5522,204 @@ void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_contain
     delete [] Jacobian_b;
     delete [] DubDu;
   }
+  
+void CImpactSolver::BC_Impact_Wall(CGeometry *geometry, CSolver **solver_container,
+                                 CNumerics *numerics, CConfig *config, unsigned short val_marker) {
+    //cout << "CImpactSolver BC_Impact_Wall*************************************************************************************" << endl;
+    unsigned short iDim, iVar, jVar, kVar, jDim;
+    unsigned long iPoint, iVertex, total_index;
+    su2double *Normal = NULL, *GridVel = NULL, Area, UnitNormal[3], 
+    ProjGridVel = 0.0;
+    su2double Density_b, StaticEnergy_b, Enthalpy_b, *V_boundary, Kappa_b, Chi_b, Energy_b, VelMagnitude2_b, Pressure_b;
+    su2double Density_i, *V_domain, *Velocity_i, ProjVelocity_i = 0.0, Energy_i, VelMagnitude2_i;
+
+    bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
+    bool grid_movement = config->GetGrid_Movement();
+
+
+    Normal = new su2double[nDim];
+    Velocity_i = new su2double[nDim];   
+
+
+    /*--- Loop over all the vertices on this boundary marker ---*/
+
+    for (iVertex = 0; iVertex < geometry->nVertex[val_marker]; iVertex++) {
+      iPoint = geometry->vertex[val_marker][iVertex]->GetNode();
+
+      /*--- Allocate the value at the boundary ---*/
+      V_boundary = GetCharacPrimVar(val_marker, iVertex); 
+
+      /*--- Check if the node belongs to the domain (i.e, not a halo node) ---*/
+
+      if (geometry->node[iPoint]->GetDomain()) {
+
+        /*--- Normal vector for this vertex (negative for outward convention) ---*/
+
+        geometry->vertex[val_marker][iVertex]->GetNormal(Normal);
+        for (iDim = 0; iDim < nDim; iDim++) Normal[iDim] = -Normal[iDim];
+        numerics->SetNormal(Normal);
+        
+        Area = 0.0;
+        for (iDim = 0; iDim < nDim; iDim++) Area += Normal[iDim]*Normal[iDim];
+        Area = sqrt (Area);
+
+        for (iDim = 0; iDim < nDim; iDim++) {
+          UnitNormal[iDim] = Normal[iDim]/Area;
+        }
+        
+       /*--- Initialize the residuals to zero ---*/
+
+        for (iVar = 0; iVar < nVar; iVar++) {
+          Residual[iVar] = 0.0;
+        }
+
+        /*--- Get the state i the boundary node---*/
+        V_domain = node[iPoint]->GetPrimitive();
+        //V_domain[nDim+2] = GetLWC_Inf()*1.0e-10;
+        
+        VelMagnitude2_i = 0.0; ProjVelocity_i = 0.0;
+        for (iDim = 0; iDim < nDim; iDim++) {
+          Velocity_i[iDim] = V_domain[iDim+1];
+          ProjVelocity_i += Velocity_i[iDim]*UnitNormal[iDim];
+          VelMagnitude2_i += Velocity_i[iDim]*Velocity_i[iDim];
+        }
+        Density_i = V_domain[nDim+2];
+        //Energy_i = V_domain[nDim+3] - V_domain[nDim+1]/V_domain[nDim+2];
+        
+        
+        /*--- Two possibilities depending on velocity projection : inlet or outlet ---*/
+        if ( ProjVelocity_i <= 0) {
+      
+          /*--- Inlet case impose density to zero ---*/
+          /*--- Compute the boundary state ---*/
+          Density_b = config->GetDroplet_LWC();
+          V_boundary[0]= V_domain[0];
+          for (iDim = 0; iDim < nDim; iDim++)
+            V_boundary[iDim+1] = Velocity_i[iDim]; 
+            //V_boundary[iDim+1] = 1.0e-6; 
+          V_boundary[nDim+1] = 1.0e-8; /*--- pressure ---*/
+          V_boundary[nDim+2] = Density_b;
+          V_boundary[nDim+3] = V_domain[nDim+3];
+          
+          
+          /*--- Set various quantities in the solver class ---*/
+
+          numerics->SetPrimitive(V_domain, V_boundary);
+
+          if (grid_movement)
+            numerics->SetGridVel(geometry->node[iPoint]->GetGridVel(), geometry->node[iPoint]->GetGridVel());
+
+          /*--- Compute the residual using an upwind scheme ---*/
+   
+            numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
+      
+          /*--- Update residual value ---*/
+
+          LinSysRes.AddBlock(iPoint, Residual);
+
+          /*--- Jacobian contribution for implicit integration ---*/
+
+          if (implicit)
+            Jacobian.AddBlock(iPoint, iPoint, Jacobian_i);
+
+          /*--- Roe Turkel preconditioning, set the value of beta ---*/
+
+          if (config->GetKind_Upwind() == TURKEL)
+            node[iPoint]->SetPreconditioner_Beta(numerics->GetPrecond_Beta());
+        
+        /*--- Impose the value of the denisty as a strong boundary
+       condition (Dirichlet). Fix the density and remove any
+       contribution to the residual at this node. ---*/
+      //Solution[0]=1.e-6;
+      //node[iPoint]->SetSolution_Old(0,Solution[0]);
+      //LinSysRes.SetBlock_Zero(iPoint, 0);
+      ///*--- Convective contribution to the residual at the wall ---*/
+
+      //LinSysRes.AddBlock(iPoint, Residual);
+      ///*--- Apply a week boundary conditions for velocity: residuals stay 0 ---*/
+      
+      ///*--- Enforce the no-flux boundary condition in a strong way by
+      // modifying the velocity-rows of the Jacobian (1 on the diagonal). ---*/
+
+      //if (implicit) {
+        //  total_index = iPoint*nVar;
+          //Jacobian.DeleteValsRowi(total_index);
+        //}
+            
+        } else {
+          /*--- Outlet case impose no boundary---*/
+          /*--- Copy the boundary state from domain---*/
+          for (iVar = 0; iVar < nPrimVar; iVar++) V_boundary[iVar] = V_domain[iVar];
+          
+          /*--- Set various quantities in the solver class ---*/
+          numerics->SetPrimitive(V_domain, V_boundary);
+
+          if (grid_movement)
+            numerics->SetGridVel(geometry->node[iPoint]->GetGridVel(), geometry->node[iPoint]->GetGridVel());
+
+          /*--- Compute the residual using an upwind scheme ---*/
+          numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
+
+          /*--- Update residual value ---*/
+          LinSysRes.AddBlock(iPoint, Residual);
+
+          /*--- Jacobian contribution for implicit integration ---*/
+          if (implicit) {
+            Jacobian.AddBlock(iPoint, iPoint, Jacobian_i);
+          }
+
+          /*--- Roe Turkel preconditioning, set the value of beta ---*/
+          if (config->GetKind_Upwind() == TURKEL)
+            node[iPoint]->SetPreconditioner_Beta(numerics->GetPrecond_Beta());
+        
+          ///*--- Source term contributions ---*/
+        
+          ///*--- Primitive variable already loaded ---*/
+          //cout << " FM Source solver_direct " << V_domain[nDim+2] << " V bound" << V_boundary[nDim+2] << endl;
+        
+          //*--- Load the volume of the dual mesh cell ---*/
+          //numerics->SetVolume(geometry->node[iPoint]->GetVolume());
+
+          ///*--- Compute the drag source residual ---*/
+          //numerics->ComputeResidual(Residual, Jacobian_i, config);
+
+          ///*--- Add the source residual to the total ---*/
+          //LinSysRes.SubtractBlock(iPoint, Residual);
+    
+          ///*--- Add the implicit Jacobian contribution ---*/
+          //if (implicit) Jacobian.SubtractBlock(iPoint, iPoint, Jacobian_i);   
+            
+        }
+        
+      }
+    }
+    delete [] Normal;
+    delete [] Velocity_i;
+
+  }
+  
 
 
 void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics,
                                 CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  cout << "CImpactSolver BC_Far_Field*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Far_Field*************************************************************************************" << endl;
   unsigned short iDim;
   unsigned long iVertex, iPoint, Point_Normal;
 
   su2double *GridVel;
   su2double Area, UnitNormal[3] = {0.0,0.0,0.0};
-  su2double Density, Pressure, Energy,  Velocity[3] = {0.0,0.0,0.0};
-  su2double Density_Bound, Pressure_Bound, Vel_Bound[3] = {0.0,0.0,0.0};
-  su2double Density_Infty, Pressure_Infty, Vel_Infty[3] = {0.0,0.0,0.0};
-  su2double SoundSpeed, Entropy, Velocity2, Vn;
-  su2double SoundSpeed_Bound, Entropy_Bound, Vel2_Bound, Vn_Bound;
-  su2double SoundSpeed_Infty, Entropy_Infty, Vel2_Infty, Vn_Infty, Qn_Infty;
-  su2double RiemannPlus, RiemannMinus;
+  su2double Density, Energy,  Velocity[3] = {0.0,0.0,0.0};
+  su2double Density_Bound, Vel_Bound[3] = {0.0,0.0,0.0};
+  su2double Density_Infty, Vel_Infty[3] = {0.0,0.0,0.0};
+  su2double Pressure, Velocity2, Vn;
+  su2double Energy_Bound, Vel2_Bound, Vn_Bound;
+  su2double Energy_Infty, Vel2_Infty, Vn_Infty, Qn_Infty;
   su2double *V_infty, *V_domain;
 
-  su2double Gas_Constant     = config->GetGas_ConstantND();
+  //su2double Gas_Constant     = config->GetGas_ConstantND();
 
   bool implicit       = config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT;
   bool grid_movement  = config->GetGrid_Movement();
-  bool tkeNeeded = (((config->GetKind_Solver() == RANS ) ||
-                     (config->GetKind_Solver() == DISC_ADJ_RANS))
-                    && (config->GetKind_Turb_Model() == SST));
 
   su2double *Normal = new su2double[nDim];
 
@@ -5312,7 +5730,7 @@ void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container
 
     /*--- Allocate the value at the infinity ---*/
     V_infty = GetCharacPrimVar(val_marker, iVertex);
-
+    
     /*--- Check if the node belongs to the domain (i.e, not a halo node) ---*/
 
     if (geometry->node[iPoint]->GetDomain()) {
@@ -5330,14 +5748,7 @@ void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container
       /*--- Retrieve solution at the farfield boundary node ---*/
       V_domain = node[iPoint]->GetPrimitive();
 
-      /*--- Construct solution state at infinity for compressible flow by
-         using Riemann invariants, and then impose a weak boundary condition
-         by computing the flux using this new state for U. See CFD texts by
-         Hirsch or Blazek for more detail. Adapted from an original
-         implementation in the Stanford University multi-block (SUmb) solver
-         in the routine bcFarfield.f90 written by Edwin van der Weide,
-         last modified 06-12-2005. First, compute the unit normal at the
-         boundary nodes. ---*/
+         /*--- Must be modified for Pressure less ---*/
 
       Area = 0.0;
       for (iDim = 0; iDim < nDim; iDim++) Area += Normal[iDim]*Normal[iDim];
@@ -5353,30 +5764,30 @@ void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container
          v_bound.n.  ---*/
 
       Density_Bound = V_domain[nDim+2];
+      Energy_Bound = V_domain[nDim+3];
+      
       Vel2_Bound = 0.0; Vn_Bound = 0.0;
       for (iDim = 0; iDim < nDim; iDim++) {
         Vel_Bound[iDim] = V_domain[iDim+1];
         Vel2_Bound     += Vel_Bound[iDim]*Vel_Bound[iDim];
         Vn_Bound       += Vel_Bound[iDim]*UnitNormal[iDim];
       }
-      Pressure_Bound   = node[iPoint]->GetPressure();
-      SoundSpeed_Bound = sqrt(Gamma*Pressure_Bound/Density_Bound);
-      Entropy_Bound    = pow(Density_Bound, Gamma)/Pressure_Bound;
+      
 
       /*--- Store the primitive variable state for the freestream. Project
          the freestream velocity vector into the local normal direction,
          i.e. compute v_infty.n. ---*/
 
-      Density_Infty = GetDensity_Inf();
+      Density_Infty = GetLWC_Inf();
+      Energy_Infty = GetLWC_Energy_Inf()/Density_Infty;
+      
       Vel2_Infty = 0.0; Vn_Infty = 0.0;
       for (iDim = 0; iDim < nDim; iDim++) {
         Vel_Infty[iDim] = GetVelocity_Inf(iDim);
         Vel2_Infty     += Vel_Infty[iDim]*Vel_Infty[iDim];
         Vn_Infty       += Vel_Infty[iDim]*UnitNormal[iDim];
       }
-      Pressure_Infty   = GetPressure_Inf();
-      SoundSpeed_Infty = sqrt(Gamma*Pressure_Infty/Density_Infty);
-      Entropy_Infty    = pow(Density_Infty, Gamma)/Pressure_Infty;
+      
 
       /*--- Adjust the normal freestream velocity for grid movement ---*/
 
@@ -5386,43 +5797,6 @@ void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container
         for (iDim = 0; iDim < nDim; iDim++)
           Qn_Infty -= GridVel[iDim]*UnitNormal[iDim];
       }
-
-      /*--- Compute acoustic Riemann invariants: R = u.n +/- 2c/(gamma-1).
-         These correspond with the eigenvalues (u+c) and (u-c), respectively,
-         which represent the acoustic waves. Positive characteristics are
-         incoming, and a physical boundary condition is imposed (freestream
-         state). This occurs when either (u.n+c) > 0 or (u.n-c) > 0. Negative
-         characteristics are leaving the domain, and numerical boundary
-         conditions are required by extrapolating from the interior state
-         using the Riemann invariants. This occurs when (u.n+c) < 0 or
-         (u.n-c) < 0. Note that grid movement is taken into account when
-         checking the sign of the eigenvalue. ---*/
-
-      /*--- Check whether (u.n+c) is greater or less than zero ---*/
-
-      if (Qn_Infty > -SoundSpeed_Infty) {
-        /*--- Subsonic inflow or outflow ---*/
-        RiemannPlus = Vn_Bound + 2.0*SoundSpeed_Bound/Gamma_Minus_One;
-      } else {
-        /*--- Supersonic inflow ---*/
-        RiemannPlus = Vn_Infty + 2.0*SoundSpeed_Infty/Gamma_Minus_One;
-      }
-
-      /*--- Check whether (u.n-c) is greater or less than zero ---*/
-
-      if (Qn_Infty > SoundSpeed_Infty) {
-        /*--- Supersonic outflow ---*/
-        RiemannMinus = Vn_Bound - 2.0*SoundSpeed_Bound/Gamma_Minus_One;
-      } else {
-        /*--- Subsonic outflow ---*/
-        RiemannMinus = Vn_Infty - 2.0*SoundSpeed_Infty/Gamma_Minus_One;
-      }
-
-      /*--- Compute a new value for the local normal velocity and speed of
-         sound from the Riemann invariants. ---*/
-
-      Vn = 0.5 * (RiemannPlus + RiemannMinus);
-      SoundSpeed = 0.25 * (RiemannPlus - RiemannMinus)*Gamma_Minus_One;
 
       /*--- Construct the primitive variable state at the boundary for
          computing the flux for the weak boundary condition. The values
@@ -5435,34 +5809,28 @@ void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container
       if (Qn_Infty > 0.0)   {
         /*--- Outflow conditions ---*/
         for (iDim = 0; iDim < nDim; iDim++)
-          Velocity[iDim] = Vel_Bound[iDim] + (Vn-Vn_Bound)*UnitNormal[iDim];
-        Entropy = Entropy_Bound;
+          Velocity[iDim] = Vel_Bound[iDim];
+          Density = Density_Bound;
+          Energy = Energy_Bound;
+    
       } else  {
         /*--- Inflow conditions ---*/
         for (iDim = 0; iDim < nDim; iDim++)
-          Velocity[iDim] = Vel_Infty[iDim] + (Vn-Vn_Infty)*UnitNormal[iDim];
-        Entropy = Entropy_Infty;
+          Velocity[iDim] = Vel_Infty[iDim] ;
+          Density = Density_Infty;
+          Energy = Energy_Infty;
       }
 
-      /*--- Recompute the primitive variables. ---*/
-
-      Density = pow(Entropy*SoundSpeed*SoundSpeed/Gamma,1.0/Gamma_Minus_One);
-      Velocity2 = 0.0;
-      for (iDim = 0; iDim < nDim; iDim++) {
-        Velocity2 += Velocity[iDim]*Velocity[iDim];
-      }
-      Pressure = Density*SoundSpeed*SoundSpeed/Gamma;
-      Energy   = Pressure/(Gamma_Minus_One*Density) + 0.5*Velocity2;
-      if (tkeNeeded) Energy += GetTke_Inf();
 
       /*--- Store new primitive state for computing the flux. ---*/
-
-      V_infty[0] = Pressure/(Gas_Constant*Density);
+      su2double cpwater = 4185; //should be put in config file in the future
+      Pressure = 1.0e-8;
+      V_infty[0] = Energy/cpwater;
       for (iDim = 0; iDim < nDim; iDim++)
         V_infty[iDim+1] = Velocity[iDim];
       V_infty[nDim+1] = Pressure;
       V_infty[nDim+2] = Density;
-      V_infty[nDim+3] = Energy + Pressure/Density;
+      V_infty[nDim+3] = Energy;
 
 
 
@@ -5505,7 +5873,7 @@ void CImpactSolver::BC_Far_Field(CGeometry *geometry, CSolver **solver_container
 
 void CImpactSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container,
                             CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  cout << "CImpactSolver BC_Inlet*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Inlet*************************************************************************************" << endl;
   unsigned short iDim;
   unsigned long iVertex, iPoint;
   su2double P_Total, T_Total, Velocity[3], Velocity2, H_Total, Temperature, Riemann,
@@ -5768,7 +6136,7 @@ void CImpactSolver::BC_Inlet(CGeometry *geometry, CSolver **solver_container,
 
 void CImpactSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
                              CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
-  cout << "CImpactSolver BC_Outlet*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Outlet*************************************************************************************" << endl;
   unsigned short iVar, iDim;
   unsigned long iVertex, iPoint;
   su2double Pressure, P_Exit, Velocity[3],
@@ -5911,7 +6279,7 @@ void CImpactSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
 
 void CImpactSolver::BC_Sym_Plane(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                                 CConfig *config, unsigned short val_marker) {
-  cout << "CImpactSolver BC_Sym_Plane*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Sym_Plane*************************************************************************************" << endl;
   /*--- Call the Euler residual ---*/
 
   BC_Euler_Wall(geometry, solver_container, conv_numerics, config, val_marker);
@@ -5920,7 +6288,7 @@ void CImpactSolver::BC_Sym_Plane(CGeometry *geometry, CSolver **solver_container
 
 void CImpactSolver::BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                                          CConfig *config) {
-  cout << "CImpactSolver BC_Fluid_Interface*************************************************************************************" << endl;
+  //cout << "CImpactSolver BC_Fluid_Interface*************************************************************************************" << endl;
   unsigned long iVertex, jVertex, iPoint, Point_Normal = 0;
   unsigned short iDim, iVar, iMarker, nDonorVertex;
 
@@ -6025,12 +6393,16 @@ void CImpactSolver::BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_con
 }
 
 void CImpactSolver::BC_Dirichlet(CGeometry *geometry, CSolver **solver_container,
-                                CConfig *config, unsigned short val_marker) {cout << "CImpactSolver BC_Dirichlet*************************************************************************************" << endl; }
+                                CConfig *config, unsigned short val_marker) {
+//cout << "CImpactSolver BC_Dirichlet*************************************************************************************" << endl; 
+}
 
-void CImpactSolver::BC_Custom(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, unsigned short val_marker) {cout << "CImpactSolver BC_Custom*************************************************************************************" << endl; }
+void CImpactSolver::BC_Custom(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics, CConfig *config, unsigned short val_marker) {
+//cout << "CImpactSolver BC_Custom*************************************************************************************" << endl; 
+}
 
 void CImpactSolver::LoadRestart(CGeometry **geometry, CSolver ***solver, CConfig *config, int val_iter, bool val_update_geo) {
-  cout << "CImpactSolver LoadRestart*************************************************************************************" << endl;
+  //cout << "CImpactSolver LoadRestart*************************************************************************************" << endl;
   /*--- Restart the solution from file information ---*/
   unsigned short iDim, iVar, iMesh, iMeshFine;
   unsigned long iPoint, index, iChildren, Point_Fine;
@@ -6265,7 +6637,7 @@ void CImpactSolver::LoadRestart(CGeometry **geometry, CSolver ***solver, CConfig
 
 
 void CImpactSolver::SetFreeStream_Solution(CConfig *config) {
-  cout << "CImpactSolver SetFreeStream_Solution*************************************************************************************" << endl;
+  //cout << "CImpactSolver SetFreeStream_Solution*************************************************************************************" << endl;
   /*--- not used now ---*/
   unsigned long iPoint;
   unsigned short iDim;
@@ -6278,4 +6650,77 @@ void CImpactSolver::SetFreeStream_Solution(CConfig *config) {
     node[iPoint]->SetSolution(nVar-1, Density_Inf*Energy_Inf);
   }
 }
+
+void CImpactSolver::Impinging_Mass(CGeometry *geometry, CConfig *config) {
+
+  unsigned short iDim, iVar, jVar, kVar, jDim, iMarker;
+  unsigned long iPoint, iVertex;
+  su2double *Normal = NULL, Area, UnitNormal[3], *NormalArea;
+  su2double *Velocity_i, Density_i, MassFlow, ProjVelocity_i, VelMagnitude2_i;
+  unsigned short Boundary;
+  bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
+  bool grid_movement = config->GetGrid_Movement();
+
+  su2double Rho_Water = config->GetRho_Water();
+
+  /*--- Variables initialization ---*/
+  Normal = new su2double[nDim];
+  NormalArea = new su2double[nDim];
+  Velocity_i = new su2double[nDim];
+  Total_CMassOutlet = 0.0;
+  
+  /*--- Loop over the IMPACT_WALL markers ---*/
+  
+  for (iMarker = 0; iMarker < nMarker; iMarker++) {
+
+    Boundary = config->GetMarker_All_KindBC(iMarker);
+    
+    if (Boundary == IMPACT_WALL) {
+
+      /*--- Mass flow initialization at each Marker ---*/
+      //Total_CMassOutlet[iMarker] = 0.0;
+      
+      /*--- Loop over the vertices to compute the forces ---*/
+      
+      for (iVertex = 0; iVertex < geometry->nVertex[iMarker]; iVertex++) {
+         iPoint = geometry->vertex[iMarker][iVertex]->GetNode();
+         
+      /*--- Check if the node belongs to the domain (i.e, not a halo node) ---*/
+        
+         if (geometry->node[iPoint]->GetDomain()) {
+         
+
+          geometry->vertex[iMarker][iVertex]->GetNormal(Normal);
+
+          Area = 0.0;
+          for (iDim = 0; iDim < nDim; iDim++) Area += Normal[iDim]*Normal[iDim];
+          Area = sqrt (Area);
+
+          for (iDim = 0; iDim < nDim; iDim++) {
+            NormalArea[iDim] = -Normal[iDim];
+            UnitNormal[iDim] = -Normal[iDim]/Area;
+          }
+
+          //Normal = geometry->vertex[iMarker][iVertex]->GetNormal();
+          Density_i = node[iPoint]->GetDensity();
+          MassFlow = 0.0;
+          for (iDim = 0; iDim < nDim; iDim++) {
+          Velocity_i[iDim] = node[iPoint]->GetVelocity(iDim);
+          //ProjVelocity_i += Velocity_i[iDim]*UnitNormal[iDim];
+          //VelMagnitude2_i += Velocity_i[iDim]*Velocity_i[iDim];
+          MassFlow -= Normal[iDim]*Velocity_i[iDim]*Density_i*Rho_Water; 
+          }
+          CMassOutlet[iMarker][iVertex] = MassFlow;
+          Total_CMassOutlet += CMassOutlet[iMarker][iVertex];
+        }
+      }
+    }
+  }
+  delete [] Normal;
+  delete [] NormalArea;
+  delete [] Velocity_i;
+}
+  
+          
+          
 

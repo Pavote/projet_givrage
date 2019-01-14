@@ -432,7 +432,6 @@ void CFluidIteration::Preprocess(COutput *output,
   bool fsi = config_container[val_iZone]->GetFSI_Simulation();
   unsigned long FSIIter = config_container[val_iZone]->GetFSIIter();
 
-
   /*--- Set the initial condition for FSI problems with subiterations ---*/
   /*--- This must be done only in the first subiteration ---*/
   if( fsi  && ( FSIIter == 0 ) ){
@@ -488,6 +487,7 @@ void CFluidIteration::Iterate(COutput *output,
 
   /*--- Solve the Euler, Navier-Stokes or Reynolds-averaged Navier-Stokes (RANS) equations (one iteration) ---*/
   if (config_container[val_iZone]->GetKind_Solver() == IMPACT) {
+  
     integration_container[val_iZone][IMPACT_SOL]->MultiGrid_Iteration(geometry_container, solver_container, numerics_container,
                                                                   config_container, RUNTIME_IMPACT_SYS, IntIter, val_iZone);
   } else {
@@ -567,7 +567,6 @@ void CFluidIteration::Update(COutput *output,
       (config_container[val_iZone]->GetUnsteady_Simulation() == DT_STEPPING_2ND)) {
 
     /*--- Update dual time solver on all mesh levels ---*/
-
     for (iMesh = 0; iMesh <= config_container[val_iZone]->GetnMGLevels(); iMesh++) {
       integration_container[val_iZone][FLOW_SOL]->SetDualTime_Solver(geometry_container[val_iZone][iMesh], solver_container[val_iZone][iMesh][FLOW_SOL], config_container[val_iZone], iMesh);
       integration_container[val_iZone][FLOW_SOL]->SetConvergence(false);

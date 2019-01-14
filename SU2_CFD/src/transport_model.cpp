@@ -87,7 +87,6 @@ CSutherland::~CSutherland(void) { }
 void CSutherland::SetViscosity(su2double T, su2double rho) {
 
   Mu = Mu_ref*pow((T/T_ref),(3.0/2.0))*((T_ref + S)/(T + S));
-
 }
 
 void CSutherland::SetDerViscosity(su2double T, su2double rho) {

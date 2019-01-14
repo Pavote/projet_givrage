@@ -4983,7 +4983,7 @@ void CSourceGravity::ComputeResidual(su2double *val_residual, CConfig *config) {
 CSourceBodyForce::CSourceBodyForce(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) {
 
   /*--- Store the pointer to the constant body force vector. ---*/
-
+   cout << "FM: bodyforce init" << endl;
   Body_Force_Vector = new su2double[nDim];
   for (unsigned short iDim = 0; iDim < nDim; iDim++)
     Body_Force_Vector[iDim] = config->GetBody_Force_Vector()[iDim];
@@ -5002,7 +5002,7 @@ void CSourceBodyForce::ComputeResidual(su2double *val_residual, CConfig *config)
   su2double Force_Ref = config->GetForce_Ref();
 
   /*--- Zero the continuity contribution ---*/
-
+  
   val_residual[0] = 0.0;
 
   /*--- Momentum contribution ---*/

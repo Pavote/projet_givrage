@@ -475,7 +475,7 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
 
   switch (solver) {
     case EULER : SurfFlow_file <<  "\"Mach_Number\"" << "\n"; break;
-    case IMPACT : SurfFlow_file <<  "\"Mach_Number\"" << "\n"; break;
+    case IMPACT : SurfFlow_file <<  "\"Impinging_Mass\"" << "\n"; break;
     case NAVIER_STOKES: case RANS:
       if (nDim == 2) SurfFlow_file <<  "\"Skin_Friction_Coefficient_X\", \"Skin_Friction_Coefficient_Y\", \"Heat_Flux\"" << "\n";
       if (nDim == 3) SurfFlow_file <<  "\"Skin_Friction_Coefficient_X\", \"Skin_Friction_Coefficient_Y\", \"Skin_Friction_Coefficient_Z\", \"Heat_Flux\"" << "\n";
@@ -505,8 +505,8 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
         SurfFlow_file << scientific << Pressure << ", " << PressCoeff << ", ";
         switch (solver) {
           case IMPACT :
-            Mach = sqrt(FlowSolver->node[iPoint]->GetVelocity2()) / FlowSolver->node[iPoint]->GetSoundSpeed();
-            SurfFlow_file << scientific << Mach << "\n";
+            ImpMass = FlowSolver->GetCMass_Outlet(iMarker, iVertex);
+            SurfFlow_file << scientific << ImpMass << "\n";
             break;
           case EULER :
             Mach = sqrt(FlowSolver->node[iPoint]->GetVelocity2()) / FlowSolver->node[iPoint]->GetSoundSpeed();
@@ -4734,7 +4734,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
 
     su2double Total_CL = 0.0, Total_CD = 0.0, Total_CSF = 0.0, Total_CMx = 0.0, Total_CMy = 0.0, Total_CMz = 0.0, Total_CEff = 0.0,
     Total_CEquivArea = 0.0, Total_CNearFieldOF = 0.0, Total_CFx = 0.0, Total_CFy = 0.0, Total_CFz = 0.0, Total_CMerit = 0.0,
-    Total_CT = 0.0, Total_CQ = 0.0, Total_CWave = 0.0, Total_CHeat = 0.0,
+    Total_CT = 0.0, Total_CQ = 0.0, Total_CWave = 0.0, Total_CHeat = 0.0, Total_CMassOutlet = 0.0, ImpMass = 0.0,
     Total_Heat = 0.0, Total_MaxHeat = 0.0, Total_Temperature = 0.0, Total_Custom_ObjFunc = 0.0,
     Total_ComboObj = 0.0, Total_NetThrust = 0.0, Total_Power = 0.0, Total_AeroCD = 0.0, Total_SolidCD = 0.0, Total_IDR = 0.0, Total_IDC = 0.0,
     Total_AoA = 0.0;
@@ -5071,7 +5071,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
 
         Total_CL             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CL();
         Total_CD             = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CD();
-
+        Total_CMassOutlet   = solver_container[val_iZone][FinestMesh][IMPACT_SOL]->GetTotal_CMassOutlet();
         /*--- Flow Residuals ---*/
 
         for (iVar = 0; iVar < nVar_Flow; iVar++)
@@ -5709,7 +5709,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
             if (!Unsteady) cout << endl << " Iter" << "    Time(s)";
             else cout << endl << " IntIter" << " ExtIter";
 
-            cout << "     Res[Alpha]" << "     Res[AlphaE]";
+            cout << "     Res[Alpha]" << "     Res[AlphaVelx]";
 
             cout << endl;
 
@@ -6015,9 +6015,12 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
               cout.setf(ios::fixed, ios::floatfield);
               cout.width(13); cout << log10(residual_flow[0]);
               if (!equiv_area) {
-                if (nDim == 2 ) { cout.width(14); cout << log10(residual_flow[3]); }
-                else { cout.width(14); cout << log10(residual_flow[4]); }
+              /*--- For now, we do not solve energy, so print xMomentum res ---*/
+                cout.width(14); cout << log10(residual_flow[1]);
+                //if (nDim == 2 ) { cout.width(14); cout << log10(residual_flow[3]); }
+                //else { cout.width(14); cout << log10(residual_flow[4]); }
               }
+              cout.width(16); cout << min(10000.0, max(-10000.0, Total_CMassOutlet));
             }
             cout << endl;
           }
@@ -13015,11 +13018,15 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
         /*--- Load the air information for impact ---*/
 
         if (Kind_Solver == IMPACT) {
-          for (jVar = 0; jVar < 3; jVar++) {
-            Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetSolution(jVar);
+          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetSolution(0);
+          iVar++;
+          for (jVar = 1; jVar < 3; jVar++) {
+            Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetSolution(jVar)/
+            solver[FLOW_SOL]->node[iPoint]->GetSolution(0);
             iVar++;
             if (geometry->GetnDim() == 3) {
-              Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetSolution(3);
+              Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetSolution(3)/
+              solver[FLOW_SOL]->node[iPoint]->GetSolution(0);
               iVar++;
             }
           }

@@ -100,7 +100,7 @@ void CMultiGridIntegration::MultiGrid_Iteration(CGeometry ***geometry,
   }
 
   /*--- Set the current finest grid (full multigrid strategy) ---*/
-
+  
   FinestMesh = config[iZone]->GetFinestMesh();
 
   /*--- Perform the Full Approximation Scheme multigrid ---*/
@@ -116,7 +116,6 @@ void CMultiGridIntegration::MultiGrid_Iteration(CGeometry ***geometry,
                                                                          MESH_0, NO_RK_ITER, RunTime_EqSystem, true);
 
   /*--- Compute non-dimensional parameters and the convergence monitor ---*/
-
   NonDimensional_Parameters(geometry[iZone], solver_container[iZone],
                             numerics_container[iZone], config[iZone],
                             FinestMesh, RunTime_EqSystem, Iteration, &monitor);
@@ -156,7 +155,7 @@ void CMultiGridIntegration::MultiGrid_Cycle(CGeometry ***geometry,
     for (iRKStep = 0; iRKStep < iRKLimit; iRKStep++) {
 
       /*--- Send-Receive boundary conditions, and preprocessing ---*/
-
+      
       solver_container[iZone][iMesh][SolContainer_Position]->Preprocessing(geometry[iZone][iMesh], solver_container[iZone][iMesh], config[iZone], iMesh, iRKStep, RunTime_EqSystem, false);
 
       if (iRKStep == 0) {
@@ -179,7 +178,7 @@ void CMultiGridIntegration::MultiGrid_Cycle(CGeometry ***geometry,
       }
 
       /*--- Space integration ---*/
-
+    
       Space_Integration(geometry[iZone][iMesh], solver_container[iZone][iMesh], numerics_container[iZone][iMesh][SolContainer_Position], config[iZone], iMesh, iRKStep, RunTime_EqSystem);
 
       /*--- Time integration, update solution using the old solution plus the solution increment ---*/
@@ -713,6 +712,7 @@ void CMultiGridIntegration::NonDimensional_Parameters(CGeometry **geometry, CSol
 
   switch (RunTime_EqSystem) {
 
+    
     case RUNTIME_FLOW_SYS:
 
       /*--- Calculate the inviscid and viscous forces ---*/
@@ -765,6 +765,14 @@ void CMultiGridIntegration::NonDimensional_Parameters(CGeometry **geometry, CSol
         }
       }
 
+      break;
+      
+      case RUNTIME_IMPACT_SYS:
+      
+      /*--- Calculate impinging mass on wall ---*/
+      
+      solver_container[FinestMesh][IMPACT_SOL]->Impinging_Mass(geometry[FinestMesh], config);
+      
       break;
 
   }

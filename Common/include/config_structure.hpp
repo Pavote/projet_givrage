@@ -812,6 +812,8 @@ private:
   Temperature_Ref,  /*!< \brief Reference temperature for non-dimensionalization.*/
   Density_Ref,      /*!< \brief Reference density for non-dimensionalization.*/
   Velocity_Ref,     /*!< \brief Reference velocity for non-dimensionalization.*/
+  LWC_Ref,          /*!< \brief Reference LWC for non-dimensionalization.*/
+  LWC_FreeStreamND, /*!< \brief Farfiel LWC value.*/
   Time_Ref,                  /*!< \brief Reference time for non-dimensionalization. */
   Viscosity_Ref,              /*!< \brief Reference viscosity for non-dimensionalization. */
   Conductivity_Ref,           /*!< \brief Reference conductivity for non-dimensionalization. */
@@ -1749,6 +1751,18 @@ public:
    * \return Reference temperature for non-dimensionalization.
    */
   su2double GetTemperature_Ref(void);
+  
+  /*!
+   * \brief Get the value of the reference LWC for non-dimensionalization.
+   * \return Reference LWC for non-dimensionalization.
+   */
+  su2double GetLWC_Ref(void);
+  
+   /*!
+   * \brief Get the value of the LWC at Freestream.
+   * \return FreeStream LWC.
+   */
+  su2double GetLWC_FreeStreamND(void);
 
   /*!
    * \brief Get the value of the reference density for non-dimensionalization.
@@ -2360,6 +2374,18 @@ public:
    * \return Value of the Froude number.
    */
   void SetTemperature_Ref(su2double val_temperature_ref);
+  
+  /*!
+   * \brief Set the reference LWC.
+   * \return Value of the LWC.
+   */
+  void SetLWC_Ref(su2double val_LWC_ref);
+  
+  /*!
+   * \brief Set the reference LWC.
+   * \return Value of the LWC.
+   */
+  void SetLWC_FreeStreamND(su2double val_LWC_ND);
 
   /*!
    * \brief Set the Froude number for free surface problems.
