@@ -437,7 +437,7 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
   unsigned short iMarker;
   unsigned long iPoint, iVertex, Global_Index;
   su2double PressCoeff = 0.0, SkinFrictionCoeff[3], HeatFlux;
-  su2double xCoord = 0.0, yCoord = 0.0, zCoord = 0.0, Mach, Pressure;
+  su2double xCoord = 0.0, yCoord = 0.0, zCoord = 0.0, Mach, Pressure, ImpMass;
   char cstr[200];
 
   unsigned short solver = config->GetKind_Solver();
@@ -505,7 +505,7 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
         SurfFlow_file << scientific << Pressure << ", " << PressCoeff << ", ";
         switch (solver) {
           case IMPACT :
-            ImpMass = FlowSolver->GetCMass_Outlet(iMarker, iVertex);
+            ImpMass = FlowSolver->GetCMassOutlet(iMarker, iVertex);
             SurfFlow_file << scientific << ImpMass << "\n";
             break;
           case EULER :
@@ -577,6 +577,9 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
 
   su2double *Buffer_Send_Mach = new su2double [MaxLocalVertex_Surface];
   su2double *Buffer_Recv_Mach = NULL;
+  
+  su2double *Buffer_Send_Beta = new su2double [MaxLocalVertex_Surface];
+  su2double *Buffer_Recv_Beta = NULL;
 
   su2double *Buffer_Send_SkinFriction_x = new su2double [MaxLocalVertex_Surface];
   su2double *Buffer_Recv_SkinFriction_x = NULL;
@@ -602,6 +605,7 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
     Buffer_Recv_Press   = new su2double [nProcessor*MaxLocalVertex_Surface];
     Buffer_Recv_CPress  = new su2double [nProcessor*MaxLocalVertex_Surface];
     Buffer_Recv_Mach    = new su2double [nProcessor*MaxLocalVertex_Surface];
+    Buffer_Recv_Beta    = new su2double [nProcessor*MaxLocalVertex_Surface];
     Buffer_Recv_SkinFriction_x = new su2double [nProcessor*MaxLocalVertex_Surface];
     Buffer_Recv_SkinFriction_y = new su2double [nProcessor*MaxLocalVertex_Surface];
     if (nDim == 3) Buffer_Recv_SkinFriction_z = new su2double [nProcessor*MaxLocalVertex_Surface];
@@ -638,7 +642,7 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
           if (solver == EULER)
             Buffer_Send_Mach[nVertex_Surface] = sqrt(FlowSolver->node[iPoint]->GetVelocity2()) / FlowSolver->node[iPoint]->GetSoundSpeed();
           if (solver == IMPACT)
-            Buffer_Send_Mach[nVertex_Surface] = sqrt(FlowSolver->node[iPoint]->GetVelocity2()) / FlowSolver->node[iPoint]->GetSoundSpeed();
+            Buffer_Send_Beta[nVertex_Surface] = FlowSolver->GetCMassOutlet(iMarker, iVertex);
           if ((solver == NAVIER_STOKES) || (solver == RANS)) {
             Buffer_Send_SkinFriction_x[nVertex_Surface] = FlowSolver->GetCSkinFriction(iMarker, iVertex, 0);
             Buffer_Send_SkinFriction_y[nVertex_Surface] = FlowSolver->GetCSkinFriction(iMarker, iVertex, 1);
@@ -657,7 +661,7 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
   SU2_MPI::Gather(Buffer_Send_Press, MaxLocalVertex_Surface, MPI_DOUBLE, Buffer_Recv_Press, MaxLocalVertex_Surface, MPI_DOUBLE, MASTER_NODE, MPI_COMM_WORLD);
   SU2_MPI::Gather(Buffer_Send_CPress, MaxLocalVertex_Surface, MPI_DOUBLE, Buffer_Recv_CPress, MaxLocalVertex_Surface, MPI_DOUBLE, MASTER_NODE, MPI_COMM_WORLD);
   if (solver == EULER) SU2_MPI::Gather(Buffer_Send_Mach, MaxLocalVertex_Surface, MPI_DOUBLE, Buffer_Recv_Mach, MaxLocalVertex_Surface, MPI_DOUBLE, MASTER_NODE, MPI_COMM_WORLD);
-  if (solver == IMPACT) SU2_MPI::Gather(Buffer_Send_Mach, MaxLocalVertex_Surface, MPI_DOUBLE, Buffer_Recv_Mach, MaxLocalVertex_Surface, MPI_DOUBLE, MASTER_NODE, MPI_COMM_WORLD);
+  if (solver == IMPACT) SU2_MPI::Gather(Buffer_Send_Beta, MaxLocalVertex_Surface, MPI_DOUBLE, Buffer_Recv_Beta, MaxLocalVertex_Surface, MPI_DOUBLE, MASTER_NODE, MPI_COMM_WORLD);
   if ((solver == NAVIER_STOKES) || (solver == RANS)) {
     SU2_MPI::Gather(Buffer_Send_SkinFriction_x, MaxLocalVertex_Surface, MPI_DOUBLE, Buffer_Recv_SkinFriction_x, MaxLocalVertex_Surface, MPI_DOUBLE, MASTER_NODE, MPI_COMM_WORLD);
     SU2_MPI::Gather(Buffer_Send_SkinFriction_y, MaxLocalVertex_Surface, MPI_DOUBLE, Buffer_Recv_SkinFriction_y, MaxLocalVertex_Surface, MPI_DOUBLE, MASTER_NODE, MPI_COMM_WORLD);
@@ -700,7 +704,7 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
 
     switch (solver) {
       case EULER : SurfFlow_file <<  "\"Mach_Number\"" << "\n"; break;
-      case IMPACT : SurfFlow_file <<  "\"Mach_Number\"" << "\n"; break;
+      case IMPACT : SurfFlow_file <<  "\"Beta\"" << "\n"; break;
       case NAVIER_STOKES: case RANS:
         if (nDim == 2) SurfFlow_file << "\"Skin_Friction_Coefficient_X\", \"Skin_Friction_Coefficient_Y\", \"Heat_Flux\"" << "\n";
         if (nDim == 3) SurfFlow_file << "\"Skin_Friction_Coefficient_X\", \"Skin_Friction_Coefficient_Y\", \"Skin_Friction_Coefficient_Z\", \"Heat_Flux\"" << "\n";
@@ -736,8 +740,8 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
             SurfFlow_file << scientific << Mach << "\n";
             break;
           case IMPACT :
-            Mach = Buffer_Recv_Mach[Total_Index];
-            SurfFlow_file << scientific << Mach << "\n";
+            ImpMass = Buffer_Recv_Beta[Total_Index];
+            SurfFlow_file << scientific << ImpMass << "\n";
             break;
           case NAVIER_STOKES: case RANS:
             SkinFrictionCoeff[0] = Buffer_Recv_SkinFriction_x[Total_Index];
@@ -762,6 +766,7 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
     delete [] Buffer_Recv_Press;
     delete [] Buffer_Recv_CPress;
     delete [] Buffer_Recv_Mach;
+    delete [] Buffer_Recv_Beta;
     delete [] Buffer_Recv_SkinFriction_x;
     delete [] Buffer_Recv_SkinFriction_y;
     if (nDim == 3) delete [] Buffer_Recv_SkinFriction_z;
@@ -780,6 +785,7 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
   delete [] Buffer_Send_Press;
   delete [] Buffer_Send_CPress;
   delete [] Buffer_Send_Mach;
+  delete [] Buffer_Send_Beta;
   delete [] Buffer_Send_SkinFriction_x;
   delete [] Buffer_Send_SkinFriction_y;
   delete [] Buffer_Send_SkinFriction_z;
