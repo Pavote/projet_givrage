@@ -6278,13 +6278,11 @@ void CImpactSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
 
 
 void CImpactSolver::BC_Sym_Plane(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
-                                CConfig *config, unsigned short val_marker) {
-  //cout << "CImpactSolver BC_Sym_Plane*************************************************************************************" << endl;
-  /*--- Call the Euler residual ---*/
+                                CConfig *config, unsigned short val_marker) { }
 
-  BC_Euler_Wall(geometry, solver_container, conv_numerics, config, val_marker);
+void CImpactSolver::BC_Sym_Plane_old(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
+				     CConfig *config, unsigned short val_marker) { }
 
-}
 
 void CImpactSolver::BC_Fluid_Interface(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics, CNumerics *visc_numerics,
                                          CConfig *config) {

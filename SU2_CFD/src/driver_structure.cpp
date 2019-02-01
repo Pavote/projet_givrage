@@ -152,7 +152,9 @@ CDriver::CDriver(char* confFile,
     if (val_periodic) {
       geometry_container[iZone][MESH_0] = new CPhysicalGeometry(geometry_aux, config_container[iZone]);
     } else {
-      geometry_container[iZone][MESH_0] = new CPhysicalGeometry(geometry_aux, config_container[iZone], val_periodic);
+      //  geometry_container[iZone][MESH_0] = new CPhysicalGeometry(geometry_aux, config_container[iZone], val_periodic);
+    //  --- HB : try old version  for turboprop ---
+      geometry_container[iZone][MESH_0] = new CPhysicalGeometry(geometry_aux, config_container[iZone]);
     }
 
     /*--- Deallocate the memory of geometry_aux ---*/
